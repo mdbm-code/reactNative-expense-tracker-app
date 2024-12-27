@@ -5,6 +5,41 @@ import { GlobalStyles } from '../constans/styles';
 import Button from '../components/ui/Button';
 import { OrdersContext } from '../store/context/order-context';
 import OrderForm from '../components/ManageOrder/OrderForm';
+import Order from '../components/ManageOrder/Order';
+
+const dummyData = [
+  {
+    id: 'c1',
+    name: 'Имя 1',
+    unit: 'шт',
+    price: '4589.45',
+    qty: '34',
+    minimumPrice: '3000',
+  },
+  {
+    id: 'c2',
+    name: 'Имя 2',
+    unit: 'шт',
+    price: '4589.45',
+    qty: '34',
+    minimumPrice: '100',
+  },
+  { id: 'c3', name: 'Имя 3', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c4', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c5', name: 'Имя 1', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c6', name: 'Имя 2', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c7', name: 'Имя 3', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c8', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c9', name: 'Имя 1', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c10', name: 'Имя 2', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c11', name: 'Имя 3', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c12', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c13', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c14', name: 'Имя 1', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c15', name: 'Имя 2', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c16', name: 'Имя 3', unit: 'шт', price: '4589.45', qty: '34' },
+  { id: 'c17', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+];
 
 const ManageExpense = ({ route, navigation }) => {
   const { data, deleteOrder, updateOrder, addOrder } =
@@ -39,15 +74,32 @@ const ManageExpense = ({ route, navigation }) => {
     navigation.goBack();
   }
 
+  function pressCellHandler(payload) {
+    console.log(payload);
+  }
+
+  function updateTableValueHandler(payload) {
+    console.log(payload);
+  }
+
   return (
     <View style={styles.container}>
-      <OrderForm
+      <Order
+        onUpdateValue={updateTableValueHandler}
+        onPress={pressCellHandler}
         onCancel={canselHandler}
         onSubmit={confirmHandler}
         submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
         defaultValues={selectedOrder}
+        rows={dummyData}
       />
-      {isEditing && (
+      {/* <OrderForm
+        onCancel={canselHandler}
+        onSubmit={confirmHandler}
+        submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
+        defaultValues={selectedOrder}
+      /> */}
+      {/* {isEditing && (
         <View style={styles.deleteContainer}>
           <IconButton
             name={'trash'}
@@ -56,7 +108,7 @@ const ManageExpense = ({ route, navigation }) => {
             onPress={onDeleteHandler}
           />
         </View>
-      )}
+      )} */}
     </View>
   );
 };
@@ -66,7 +118,7 @@ export default ManageExpense;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    // padding: 24,
     backgroundColor: GlobalStyles.colors.primary800,
   },
 

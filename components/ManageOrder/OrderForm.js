@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Button from '../ui/Button';
 import { getFormattedDate2 } from '../../util/date';
 import { GlobalStyles } from '../../constans/styles';
+import TableRow from './table/TableRow';
+import TableHead from './table/TableHead';
+import Table from './table/Table';
 
 const OrderForm = ({
   onCancel,
@@ -128,6 +131,7 @@ export default OrderForm;
 const styles = StyleSheet.create({
   form: {
     // marginTop:40
+    flex: 1,
   },
   title: {
     fontSize: 18,
