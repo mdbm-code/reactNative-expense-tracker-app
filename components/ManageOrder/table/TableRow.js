@@ -10,6 +10,7 @@ import { GlobalStyles } from '../../../constans/styles';
 import { useState } from 'react';
 import Slider from '@react-native-community/slider';
 import Button from '../../ui/Button';
+import ModalCarousel from '../../ModalCarousel';
 
 const TableRow = ({
   inputConfig,
@@ -20,13 +21,19 @@ const TableRow = ({
   onActive,
   isActiveSlider,
   hideSlider,
+  onPressPrice,
+  isShowSlider,
+  onPressRow,
+  isActiveRow,
+  deactiveRow,
 }) => {
+  const [isModalVisible, setModalVisible] = useState(false);
   const initialPrice = rowData ? parseFloat(rowData['price']) : 0;
   const [inputs, setInputs] = useState({
     price: rowData ? rowData['price'] : '',
     qty: rowData ? rowData['qty'] : '',
   });
-  const [isActive, setIsActive] = useState(false);
+  const [isActiveImput, setIsActiveInput] = useState(false);
   const [previousQty, setPreviousQty] = useState(rowData ? rowData['qty'] : '');
 
   const inputStyles = [styles.input];
@@ -46,7 +53,7 @@ const TableRow = ({
   };
 
   function updateValueHandler(enteredText, key) {
-    setIsActive(false);
+    setIsActiveInput(false);
     onUpdate({
       key: key,
       old: rowData[key],
@@ -55,17 +62,43 @@ const TableRow = ({
     setInputs((prevState) => ({ ...prevState, [key]: enteredText }));
   }
 
-  const handlePricePress = () => {
-    onActive();
-    // setShowSlider((prev) => !prev); // Переключаем видимость слайдера
-    // setIsActive(true);
-  };
+  function pressCellHandler(name) {
+    if (name === 'price') {
+      onPressPrice();
+    }
+    if (name === 'name') {
+      if (Array.isArray(rowData['images']) && rowData['images'].length > 0) {
+        setModalVisible(true);
+      }
+    }
+    onPressRow();
+  }
 
-  const handleSliderChange = (value) => {
+  function closeModal() {
+    setModalVisible(false);
+  }
+
+  function onFocusInputHandler() {
+    setPreviousQty(inputs.qty); // Сохраняем предыдущее значение
+    setInputs((prevState) => ({ ...prevState, qty: '' })); // Очищаем поле
+    setIsActiveInput(true);
+    onPressRow();
+  }
+
+  function onBlurInputHandler() {
+    if (inputs.qty === '') {
+      setInputs((prevState) => ({ ...prevState, qty: previousQty })); // Возвращаем предыдущее значение
+    } else {
+      updateValueHandler(inputs.qty, 'qty'); // Отправляем сообщение наверх только если введено новое значение
+    }
+    setIsActiveInput(false);
+  }
+
+  const onChangeSlider = (value) => {
     setInputs((prevState) => ({ ...prevState, price: value.toString() }));
   };
 
-  const setPriceHandle = () => {
+  const onChoicePrice = () => {
     onUpdate({
       key: 'price',
       old: rowData['price'],
@@ -76,13 +109,20 @@ const TableRow = ({
 
   const rowCell = [styles.rowCell];
   const textCell = [styles.text];
-  if (isActive) {
+  const priceText = [styles.priceText];
+  const nameText = [styles.nameText];
+
+  if (isActiveRow) {
     rowCell.push(styles.isActive);
     textCell.push(styles.isActiveText);
   }
 
   if (rowData['minimumPrice'] && +rowData['minimumPrice'] < +rowData['price']) {
-    textCell.push(styles.underlinedText);
+    priceText.push(styles.underlinedText);
+  }
+
+  if (rowData['images']) {
+    nameText.push(styles.underlinedText);
   }
 
   return (
@@ -91,18 +131,18 @@ const TableRow = ({
         <View style={[...rowCell, styles.nameContainer]}>
           <Pressable
             android_ripple={true}
-            onPress={onPress.bind(this, rowData)}
+            onPress={() => pressCellHandler('name')}
             style={({ pressed }) => pressed && styles.pressed}
           >
-            <Text style={[...textCell, styles.nameText]}>{rowData.name}</Text>
+            <Text style={[...textCell, ...nameText]}>{rowData.name}</Text>
           </Pressable>
         </View>
         <View style={[...rowCell, styles.unitContainer]}>
           <Text style={[...textCell]}>{rowData.unit}</Text>
         </View>
         <View style={[...rowCell, styles.priceContainer]}>
-          <Pressable onPress={handlePricePress}>
-            <Text style={[...textCell, styles.numberText, styles.priceText]}>
+          <Pressable onPress={() => pressCellHandler('price')}>
+            <Text style={[...textCell, styles.numberText, ...priceText]}>
               {inputs.price}
             </Text>
           </Pressable>
@@ -124,36 +164,14 @@ const TableRow = ({
               Keyboard.dismiss(); // Скрываем клавиатуру
             }}
             keyboardType='decimal-pad'
-            onBlur={() => {
-              if (inputs.qty === '') {
-                setInputs((prevState) => ({ ...prevState, qty: previousQty })); // Возвращаем предыдущее значение
-              } else {
-                updateValueHandler(inputs.qty, 'qty'); // Отправляем сообщение наверх только если введено новое значение
-              }
-              setIsActive(false);
-            }}
-            onFocus={() => {
-              setPreviousQty(inputs.qty); // Сохраняем предыдущее значение
-              setInputs((prevState) => ({ ...prevState, qty: '' })); // Очищаем поле
-              setIsActive(true);
-            }}
+            onBlur={onBlurInputHandler}
+            onFocus={onFocusInputHandler}
           />
         </View>
       </View>
-      {isActiveSlider && rowData['minimumPrice'] && inputs.price && (
-        // <TableRowSlider
-        //   initialPrice={rowData ? parseFloat(rowData['price']) : 0}
-        //   onChange={handleSliderChange}
-        //   minimumValue={rowData['minimumPrice']}
-        //   maximumValue={rowData['price']}
-        //   step={1}
-        //   value={inputs.price}
-        // />
+      {isShowSlider && rowData['minimumPrice'] && inputs.price && (
         <View style={styles.sliderContainer}>
-          {/* <Text style={styles.percentageText}>
-            {calculatePercentageChange()}%
-          </Text> */}
-          <Button onPress={setPriceHandle}>
+          <Button onPress={onChoicePrice}>
             {calculatePercentageChange()}%
           </Button>
           <Slider
@@ -161,10 +179,17 @@ const TableRow = ({
             maximumValue={parseFloat(rowData['price'])}
             step={1}
             value={parseFloat(inputs.price) || 0}
-            onValueChange={handleSliderChange}
+            onValueChange={onChangeSlider}
+            minimumTrackTintColor='#FFFFFF'
+            maximumTrackTintColor='#000000'
           />
         </View>
       )}
+      <ModalCarousel
+        isVisible={isModalVisible}
+        onClose={closeModal}
+        images={rowData['images']}
+      />
     </>
   );
 };
@@ -186,6 +211,7 @@ const styles = StyleSheet.create({
     borderColor: GlobalStyles.colors.primary100,
     paddingHorizontal: 4,
     justifyContent: 'center',
+    minHeight: 36,
   },
   isActive: {
     backgroundColor: GlobalStyles.colors.primary50,

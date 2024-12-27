@@ -13,8 +13,12 @@ const Table = ({
   onPress,
   onUpdateValue,
 }) => {
-  const [showedSliderId, setShowSliderId] = useState(null);
-  const handleRowPress = (rowId) => {
+  const [activeRowId, setActiveRowId] = useState(false);
+  const [showSliderId, setShowSliderId] = useState(null);
+
+  const pressPriceHandler = (rowId) => {
+    console.log(rowId);
+
     setShowSliderId((prevActiveRow) =>
       prevActiveRow === rowId ? null : rowId
     );
@@ -34,9 +38,12 @@ const Table = ({
         rowData={{ ...item }}
         onPress={onPress}
         onUpdate={updateValueHandler}
-        onActive={() => handleRowPress(item.id)}
-        isActiveSlider={showedSliderId === item.id}
+        onPressPrice={() => pressPriceHandler(item.id)}
+        isShowSlider={showSliderId === item.id}
         hideSlider={hideSliderHandler}
+        onPressRow={() => setActiveRowId(item.id)}
+        isActiveRow={activeRowId === item.id}
+        deactiveRow={() => setActiveRowId(null)}
       />
     );
   }
