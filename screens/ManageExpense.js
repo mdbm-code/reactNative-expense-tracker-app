@@ -1,16 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useContext, useLayoutEffect } from 'react';
 import IconButton from '../components/ui/IconButton';
 import { GlobalStyles } from '../constans/styles';
 import Button from '../components/ui/Button';
 import { OrdersContext } from '../store/context/order-context';
+import OrderForm from '../components/ManageOrder/OrderForm';
 
 const ManageExpense = ({ route, navigation }) => {
+  const { data, deleteOrder, updateOrder, addOrder } =
+    useContext(OrdersContext);
   //route, navigation доступны только в компонентах, которые зарегистрированы в навигаторе (см. App.js)
   const editedExpenseId = route?.params?.id;
   const isEditing = !!editedExpenseId;
 
-  const { deleteOrder, updateOrder, addOrder } = useContext(OrdersContext);
+  const selectedOrder = data.find((item) => item.id === editedExpenseId);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,33 +30,23 @@ const ManageExpense = ({ route, navigation }) => {
     navigation.goBack();
   }
 
-  function confirmHandler() {
+  function confirmHandler(orderData) {
     if (isEditing) {
-      updateOrder(editedExpenseId, {
-        description: 'text-updated!!',
-        amount: 345,
-        date: new Date('2024-12-26'),
-      });
+      updateOrder(editedExpenseId, orderData);
     } else {
-      addOrder({
-        description: 'text',
-        amount: 345,
-        date: new Date('2024-12-26'),
-      });
+      addOrder(orderData);
     }
     navigation.goBack();
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonsContainer}>
-        <Button mode={'flat'} onPress={canselHandler} style={styles.button}>
-          Отмена
-        </Button>
-        <Button onPress={confirmHandler} style={styles.button}>
-          {isEditing ? 'Обновить' : 'Создать'}
-        </Button>
-      </View>
+      <OrderForm
+        onCancel={canselHandler}
+        onSubmit={confirmHandler}
+        submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
+        defaultValues={selectedOrder}
+      />
       {isEditing && (
         <View style={styles.deleteContainer}>
           <IconButton
@@ -76,16 +69,7 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: GlobalStyles.colors.primary800,
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    // flex: 1,
-    minWidth: 120,
-    marginHorizontal: 8,
-  },
+
   deleteContainer: {
     marginTop: 16,
     paddingTop: 8,

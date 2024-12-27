@@ -9,7 +9,7 @@ const ExpensesSummary = ({ periodName, orders }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.period}>{periodName}</Text>
-      <Text style={styles.sum}>{ordersSum.toFixed(2)} руб</Text>
+      <Text style={styles.sum}>{ordersSum?.toFixed(2)} руб</Text>
     </View>
   );
 };
