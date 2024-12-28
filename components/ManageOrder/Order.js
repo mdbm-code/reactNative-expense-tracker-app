@@ -1,10 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useLayoutEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import OrderForm from './OrderForm';
 import Table from './table/Table';
 import OrderTable from './OrderTable';
 import DebtTable from './DebtTable';
+import { useNavigation } from '@react-navigation/native';
+import IconButton from '../ui/IconButton';
+import { ClientsContext } from '../../store/context/client-context';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -46,8 +49,23 @@ const Order = ({
 }) => {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
+  const navigation = useNavigation();
+  const { setTabIndex } = useContext(ClientsContext);
 
-  // console.log('client', client);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ tintColor }) => (
+        <IconButton
+          name='add-circle-outline'
+          color={tintColor}
+          size={24}
+          onPress={() =>
+            navigation.navigate('ManageOrder', { clientId: client?.id })
+          }
+        />
+      ),
+    });
+  }, []);
 
   const FirstRoute = () => (
     <OrderForm
@@ -58,7 +76,7 @@ const Order = ({
     />
   );
 
-  const SecondRoute = () => (
+  const OrderRoute = () => (
     <OrderTable
       header={{
         name: 'Наименование товара',
@@ -91,7 +109,7 @@ const Order = ({
     () =>
       SceneMap({
         debt: DebtRoute,
-        order: SecondRoute,
+        order: OrderRoute,
         spec: FirstRoute,
         promo: FirstRoute,
       }),
@@ -104,8 +122,18 @@ const Order = ({
         navigationState={{ index, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
+        onIndexChange={(index) => {
+          setIndex(index);
+          setTabIndex(routes[index]);
+        }}
         initialLayout={{ width: layout.width }}
+        onTabPress={({ route, preventDefault }) => {
+          if (route.key === 'home') {
+            preventDefault();
+
+            // Do something else
+          }
+        }}
       />
     </View>
   );

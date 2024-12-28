@@ -20,6 +20,7 @@ import OrderContextProvider from './store/context/order-context.js';
 import AllClients from './screens/AllClients.js';
 import ClientContextProvider from './store/context/client-context.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ManageOrder from './screens/ManageOrder.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -115,6 +116,13 @@ export default function App() {
                 component={ManageExpense}
                 options={{
                   presentation: 'modal',
+                }}
+              />
+              <Stack.Screen
+                name='ManageOrder'
+                component={ManageOrder}
+                options={{
+                  presentation: 'fullScreenModal',
                 }}
               />
             </Stack.Navigator>

@@ -1,16 +1,12 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import React from 'react';
 import FallbackText from '../FallbackText';
-import { getFormattedDate, getFormattedDate2 } from '../../util/date';
 import DebtRow from './table/DebtRow';
-import { GlobalStyles } from '../../constans/styles';
 
 const DebtTable = ({ data }) => {
   if (!(typeof data === 'object' && Object.keys(data).length > 0)) {
     return <FallbackText title='Нет данных' />;
   }
-
-  console.log('DebtTable', data);
 
   return (
     <View style={styles.container}>

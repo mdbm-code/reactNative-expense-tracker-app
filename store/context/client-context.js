@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, useState } from 'react';
 
 const initialValue = [
   {
@@ -160,6 +160,7 @@ export const ClientsContext = createContext({
   addClient: ({ amount, description, date }) => {},
   deleteClient: (id) => {},
   updateClient: (id, { amount, description, date }) => {},
+  setTabIndex: (index) => {},
 });
 
 function clientReducer(state, action) {
@@ -185,6 +186,7 @@ function clientReducer(state, action) {
 
 function ClientContextProvider({ children }) {
   const [clientState, dispatch] = useReducer(clientReducer, initialValue);
+  const [tabIndex, setIndex] = useState({});
 
   function addClient(data) {
     dispatch({ type: 'ADD', payload: data });
@@ -196,11 +198,17 @@ function ClientContextProvider({ children }) {
     dispatch({ type: 'UPDATE', payload: { id: id, data: data } });
   }
 
+  function setTabIndex(index) {
+    setIndex(index);
+  }
+
   const value = {
     data: clientState,
+    tabIndex: tabIndex,
     addClient: addClient,
     deleteClient: deleteClient,
     updateClient: updateClient,
+    setTabIndex: setTabIndex,
   };
 
   return (

@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-const FallbackText = ({ title }) => {
+const FallbackText = ({ children, title }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.titleText}>{title}</Text>
+      <Text style={styles.titleText}>{children}</Text>
     </View>
   );
 };
