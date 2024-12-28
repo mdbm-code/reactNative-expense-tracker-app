@@ -1,28 +1,50 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, { useContext, useLayoutEffect } from 'react';
-import IconButton from '../components/ui/IconButton';
+// import IconButton from '../components/ui/IconButton';
 import { GlobalStyles } from '../constans/styles';
-import Button from '../components/ui/Button';
+// import Button from '../components/ui/Button';
 import { OrdersContext } from '../store/context/order-context';
-import OrderForm from '../components/ManageOrder/OrderForm';
+// import OrderForm from '../components/ManageOrder/OrderForm';
 import Order from '../components/ManageOrder/Order';
+import { ClientsContext } from '../store/context/client-context';
 
 const dummyData = [
   {
     id: 'c1',
     name: 'Имя 1',
     unit: 'шт',
+    basePrice: '5000',
     price: '4589.45',
     qty: '34',
+    ret: '15',
     minimumPrice: '3000',
+    qtyLog: [
+      { date: new Date('2024-12-01'), qty: 18 },
+      { date: new Date('2024-12-03'), qty: 25 },
+      { date: new Date('2024-12-06'), qty: 20 },
+      { date: new Date('2024-12-09'), qty: 2 },
+      { date: new Date('2024-12-14'), qty: 25 },
+      { date: new Date('2024-12-20'), qty: 25 },
+      { date: new Date('2024-12-24'), qty: 18 },
+    ],
   },
   {
     id: 'c2',
     name: 'Имя 2',
     unit: 'шт',
+    basePrice: '7000',
     price: '4589.45',
     qty: '34',
-    minimumPrice: '100',
+    minimumPrice: '1000',
+    qtyLog: [
+      { date: new Date('2024-12-01'), qty: 18 },
+      { date: new Date('2024-12-03'), qty: 25 },
+      { date: new Date('2024-12-06'), qty: 20 },
+      { date: new Date('2024-12-09'), qty: 2 },
+      { date: new Date('2024-12-14'), qty: 25 },
+      { date: new Date('2024-12-20'), qty: 25 },
+      { date: new Date('2024-12-24'), qty: 18 },
+    ],
   },
   {
     id: 'c3',
@@ -45,17 +67,41 @@ const dummyData = [
   { id: 'c14', name: 'Имя 1', unit: 'шт', price: '4589.45', qty: '34' },
   { id: 'c15', name: 'Имя 2', unit: 'шт', price: '4589.45', qty: '34' },
   { id: 'c16', name: 'Имя 3', unit: 'шт', price: '4589.45', qty: '34' },
-  { id: 'c17', name: 'Имя 4', unit: 'шт', price: '4589.45', qty: '34' },
+  {
+    id: 'c17',
+    name: 'Имя 4',
+    unit: 'шт',
+    price: '4589.45',
+    qty: '34',
+    basePrice: '7000',
+    price: '4589.45',
+    qty: '34',
+    minimumPrice: '1000',
+    qtyLog: [
+      { date: new Date('2024-12-01'), qty: 18 },
+      { date: new Date('2024-12-03'), qty: 25 },
+      { date: new Date('2024-12-06'), qty: 20 },
+      { date: new Date('2024-12-09'), qty: 2 },
+      { date: new Date('2024-12-14'), qty: 25 },
+      { date: new Date('2024-12-20'), qty: 25 },
+      { date: new Date('2024-12-24'), qty: 18 },
+    ],
+    images: ['2.jpg', '3.jpg', '4.jpg', '6.jpg'],
+  },
 ];
 
 const ManageExpense = ({ route, navigation }) => {
   const { data, deleteOrder, updateOrder, addOrder } =
     useContext(OrdersContext);
+  const { data: clients } = useContext(ClientsContext);
   //route, navigation доступны только в компонентах, которые зарегистрированы в навигаторе (см. App.js)
   const editedExpenseId = route?.params?.id;
+  console.log('editedExpenseId', editedExpenseId);
+
   const isEditing = !!editedExpenseId;
 
   const selectedOrder = data.find((item) => item.id === editedExpenseId);
+  const selectedClient = clients.find((item) => item.id === editedExpenseId);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -99,6 +145,7 @@ const ManageExpense = ({ route, navigation }) => {
         submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
         defaultValues={selectedOrder}
         rows={dummyData}
+        client={selectedClient}
       />
       {/* <OrderForm
         onCancel={canselHandler}

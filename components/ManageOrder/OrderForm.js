@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Button from '../ui/Button';
 import { getFormattedDate2 } from '../../util/date';
 import { GlobalStyles } from '../../constans/styles';
-import TableRow from './table/TableRow';
+import TableRow from './table/OrderRow';
 import TableHead from './table/TableHead';
 import Table from './table/Table';
 

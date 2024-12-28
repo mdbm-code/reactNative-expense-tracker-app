@@ -12,7 +12,7 @@ import Slider from '@react-native-community/slider';
 import Button from '../../ui/Button';
 import ModalCarousel from '../../ModalCarousel';
 
-const TableRow = ({
+const OrderRow = ({
   inputConfig,
   style,
   rowData,
@@ -28,12 +28,13 @@ const TableRow = ({
   deactiveRow,
 }) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isQtyImput, setIsQtyInput] = useState(false);
   const initialPrice = rowData ? parseFloat(rowData['price']) : 0;
   const [inputs, setInputs] = useState({
     price: rowData ? rowData['price'] : '',
     qty: rowData ? rowData['qty'] : '',
+    selectedQty: '',
   });
-  const [isActiveImput, setIsActiveInput] = useState(false);
   const [previousQty, setPreviousQty] = useState(rowData ? rowData['qty'] : '');
 
   const inputStyles = [styles.input];
@@ -53,13 +54,12 @@ const TableRow = ({
   };
 
   function updateValueHandler(enteredText, key) {
-    setIsActiveInput(false);
+    setInputs((prevState) => ({ ...prevState, [key]: enteredText }));
     onUpdate({
       key: key,
       old: rowData[key],
       new: enteredText.toString(),
     });
-    setInputs((prevState) => ({ ...prevState, [key]: enteredText }));
   }
 
   function pressCellHandler(name) {
@@ -78,20 +78,42 @@ const TableRow = ({
     setModalVisible(false);
   }
 
-  function onFocusInputHandler() {
+  function onFocusQtyInputHandler() {
     setPreviousQty(inputs.qty); // Сохраняем предыдущее значение
     setInputs((prevState) => ({ ...prevState, qty: '' })); // Очищаем поле
-    setIsActiveInput(true);
+    setIsQtyInput(true);
+    hideSlider();
     onPressRow();
   }
+  function onFocusPriceInputHandler() {
+    // setPreviousQty(inputs.price); // Сохраняем предыдущее значение
+    // setInputs((prevState) => ({ ...prevState, price: '' })); // Очищаем поле
+    // setIsActiveInput(true);
+    // onPressRow();
+    setIsQtyInput(false);
+  }
 
-  function onBlurInputHandler() {
+  function onBlurQtyInputHandler() {
+    console.log('onBlurQtyInputHandler', inputs);
+
     if (inputs.qty === '') {
-      setInputs((prevState) => ({ ...prevState, qty: previousQty })); // Возвращаем предыдущее значение
+      if (inputs.selectedQty) {
+        setInputs((prevState) => ({ ...prevState, qty: selectedQty })); // Возвращаем предыдущее значение
+        updateValueHandler(inputs.selectedQty, 'qty'); // Отправляем сообщение наверх только если введено новое значение
+      } else {
+        setInputs((prevState) => ({ ...prevState, qty: previousQty })); // Возвращаем предыдущее значение
+      }
     } else {
       updateValueHandler(inputs.qty, 'qty'); // Отправляем сообщение наверх только если введено новое значение
     }
-    setIsActiveInput(false);
+    setIsQtyInput(false);
+  }
+  function onBlurPriceInputHandler() {
+    if (inputs.price === '') {
+      // setInputs((prevState) => ({ ...prevState, price: previousQty })); // Возвращаем предыдущее значение
+      // } else {
+      //   updateValueHandler(inputs.price, 'price'); // Отправляем сообщение наверх только если введено новое значение
+    }
   }
 
   const onChangeSlider = (value) => {
@@ -105,6 +127,12 @@ const TableRow = ({
       new: inputs.price,
     });
     hideSlider();
+  };
+
+  const onChoiceQty = (value) => {
+    // setInputs((prevState) => ({ ...prevState, selectedQty: value }));
+    updateValueHandler(value, 'qty');
+    setIsQtyInput(false);
   };
 
   const rowCell = [styles.rowCell];
@@ -143,7 +171,7 @@ const TableRow = ({
         <View style={[...rowCell, styles.priceContainer]}>
           <Pressable onPress={() => pressCellHandler('price')}>
             <Text style={[...textCell, styles.numberText, ...priceText]}>
-              {inputs.price}
+              {rowData['price']}
             </Text>
           </Pressable>
         </View>
@@ -164,20 +192,49 @@ const TableRow = ({
               Keyboard.dismiss(); // Скрываем клавиатуру
             }}
             keyboardType='decimal-pad'
-            onBlur={onBlurInputHandler}
-            onFocus={onFocusInputHandler}
+            onBlur={onBlurQtyInputHandler}
+            onFocus={onFocusQtyInputHandler}
           />
         </View>
       </View>
-      {isShowSlider && rowData['minimumPrice'] && inputs.price && (
-        <View style={styles.sliderContainer}>
-          <Button onPress={onChoicePrice}>
-            {calculatePercentageChange()}%
-          </Button>
+      {isActiveRow && isShowSlider && rowData['minimumPrice'] && (
+        <View style={styles.sliderOutterContainer}>
+          <View style={styles.sliderInnerContainer}>
+            <Text style={styles.prevPrice}>{rowData['price']}</Text>
+            <Button onPress={onChoicePrice}>
+              {calculatePercentageChange()}%
+            </Button>
+            {/* <Text style={styles.currentPrice}>{inputs.price}</Text> */}
+            <TextInput
+              style={[
+                inputStyles,
+                ...textCell,
+                styles.numberText,
+                styles.currentPrice,
+              ]}
+              {...inputConfig}
+              value={inputs.price}
+              // onChangeText={(enteredText) => updateValueHandler(enteredText, 'qty')}
+              onChangeText={(enteredText) =>
+                setInputs((prevState) => ({ ...prevState, price: enteredText }))
+              }
+              // onFocus={() => setIsActive(true)} // Устанавливаем isActive в true при получении фокуса
+              returnKeyType='done' //'done', 'go', 'next', 'search', 'send'
+              // onBlur={() => updateValueHandler(inputs.qty, 'qty')} // Отправляем сообщение наверх при потере фокуса
+              onSubmitEditing={() => {
+                // updateValueHandler(inputs.qty, 'qty'); // Отправляем сообщение наверх при нажатии Enter
+                // Keyboard.dismiss(); // Скрываем клавиатуру
+              }}
+              keyboardType='decimal-pad'
+              onBlur={onBlurPriceInputHandler}
+              onFocus={onFocusPriceInputHandler}
+            />
+          </View>
           <Slider
+            style={styles.slider}
             minimumValue={parseFloat(rowData['minimumPrice'])}
             maximumValue={parseFloat(rowData['price'])}
-            step={1}
+            step={10}
             value={parseFloat(inputs.price) || 0}
             onValueChange={onChangeSlider}
             minimumTrackTintColor='#FFFFFF'
@@ -185,6 +242,26 @@ const TableRow = ({
           />
         </View>
       )}
+      {Array.isArray(rowData['qtyLog']) &&
+        rowData['qtyLog'].length > 0 &&
+        isQtyImput &&
+        isActiveRow && (
+          <>
+            <View style={styles.qtyLogContainer}>
+              {rowData['qtyLog'].map((item, index) => {
+                return (
+                  <Button
+                    key={index}
+                    style={styles.qtyLogButton}
+                    onPress={() => onChoiceQty(item?.qty)}
+                  >
+                    {item?.qty}
+                  </Button>
+                );
+              })}
+            </View>
+          </>
+        )}
       <ModalCarousel
         isVisible={isModalVisible}
         onClose={closeModal}
@@ -194,7 +271,7 @@ const TableRow = ({
   );
 };
 
-export default TableRow;
+export default OrderRow;
 
 const styles = StyleSheet.create({
   rowContainer: {
@@ -253,10 +330,44 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.75,
   },
-  sliderContainer: {
+  qtyLogContainer: {
+    flex: 1,
+    flexDirection: 'row',
     marginTop: 10,
-    paddingHorizontal: 20,
-    // flexDirection: 'row',
+    // paddingHorizontal: 20,
+    marginBottom: 24,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  qtyLogButton: { flex: 1, marginHorizontal: 2 },
+  sliderOutterContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    marginTop: 10,
+    // paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  sliderInnerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  slider: { flex: 1 },
+  prevPrice: {
+    flex: 0.4,
+    color: 'white',
+    fontSize: 12,
+    textAlignVertical: 'center',
+    paddingLeft: 10,
+  },
+  currentPrice: {
+    flex: 0.4,
+    color: 'white',
+    fontSize: 12,
+    textAlignVertical: 'center',
+    textAlign: 'right',
+    paddingRight: 10,
   },
   underlinedText: {
     textDecorationLine: 'underline', // Подчеркивание текста

@@ -17,6 +17,9 @@ import IconButton from './components/ui/IconButton.js';
 
 //state
 import OrderContextProvider from './store/context/order-context.js';
+import AllClients from './screens/AllClients.js';
+import ClientContextProvider from './store/context/client-context.js';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -40,11 +43,30 @@ function ExpensesOverview() {
       })}
     >
       <BottomTab.Screen
+        name='AllClients'
+        component={AllClients}
+        options={{
+          title: 'Мои клиенты',
+          tabBarLabel: 'Клиенты',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='people-outline' color={color} size={size} />
+          ),
+          headerRight: ({ tintColor }) => (
+            <IconButton
+              name='person-add-outline'
+              color={tintColor}
+              size={24}
+              onPress={() => navigation.navigate('ManageExpense')}
+            />
+          ),
+        }}
+      />
+      <BottomTab.Screen
         name='RecentExpenses'
         component={RecentExpenses}
         options={{
           title: 'Текущие заявки',
-          tabBarLabel: 'Недавние',
+          tabBarLabel: 'Сегодня',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='hourglass' color={color} size={size} />
           ),
@@ -55,7 +77,7 @@ function ExpensesOverview() {
         component={AllExpenses}
         options={{
           title: 'Все заявки',
-          tabBarLabel: 'Все',
+          tabBarLabel: 'Журнал',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='calendar' color={color} size={size} />
           ),
@@ -69,30 +91,35 @@ export default function App() {
   return (
     <>
       <StatusBar style='light' />
+
       <OrderContextProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-              headerTintColor: 'white',
-            }}
-          >
-            <Stack.Screen
-              name='ExpensesOverview'
-              component={ExpensesOverview}
-              options={{
-                headerShown: false,
+        <ClientContextProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: GlobalStyles.colors.primary500,
+                },
+                headerTintColor: 'white',
               }}
-            />
-            <Stack.Screen
-              name='ManageExpense'
-              component={ManageExpense}
-              options={{
-                presentation: 'modal',
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+            >
+              <Stack.Screen
+                name='ExpensesOverview'
+                component={ExpensesOverview}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name='ManageExpense'
+                component={ManageExpense}
+                options={{
+                  presentation: 'modal',
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ClientContextProvider>
       </OrderContextProvider>
     </>
   );

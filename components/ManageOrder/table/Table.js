@@ -1,8 +1,9 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import TableHead from './TableHead';
-import TableRow from './TableRow';
+import TableRow from './OrderRow';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { useState } from 'react';
+import OrderRow from './OrderRow';
 
 const Table = ({
   rows,
@@ -34,7 +35,7 @@ const Table = ({
 
   function renderItem({ item }) {
     return (
-      <TableRow
+      <OrderRow
         rowData={{ ...item }}
         onPress={onPress}
         onUpdate={updateValueHandler}

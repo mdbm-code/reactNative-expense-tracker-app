@@ -4,10 +4,13 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import OrderForm from './OrderForm';
 import Table from './table/Table';
 import OrderTable from './OrderTable';
+import DebtTable from './DebtTable';
 
 const routes = [
-  { key: 'first', title: 'Свойства' },
-  { key: 'second', title: 'Товары' },
+  { key: 'debt', title: 'Сверка' },
+  { key: 'order', title: 'Заявка' },
+  { key: 'spec', title: 'Спец' },
+  { key: 'promo', title: 'Акции' },
 ];
 
 const renderTabBar = (props) => (
@@ -39,9 +42,12 @@ const Order = ({
   submitButtonLabel,
   defaultValues,
   rows,
+  client,
 }) => {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
+
+  // console.log('client', client);
 
   const FirstRoute = () => (
     <OrderForm
@@ -67,6 +73,15 @@ const Order = ({
     />
   );
 
+  const DebtRoute = () => (
+    <DebtTable
+      onCancel={onCancel}
+      onSubmit={onSubmit}
+      submitButtonLabel={submitButtonLabel}
+      data={client['balance']}
+    />
+  );
+
   //useMemo`**: Этот хук используется для мемоизации значения,
   // чтобы избежать его пересоздания при каждой перерисовке компонента,
   // если зависимости не изменились. В данном случае, `renderScene`
@@ -75,8 +90,10 @@ const Order = ({
   const renderScene = useMemo(
     () =>
       SceneMap({
-        first: FirstRoute,
-        second: SecondRoute,
+        debt: DebtRoute,
+        order: SecondRoute,
+        spec: FirstRoute,
+        promo: FirstRoute,
       }),
     []
   );
