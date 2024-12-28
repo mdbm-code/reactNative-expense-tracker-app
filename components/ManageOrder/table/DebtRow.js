@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GlobalStyles } from '../../../constans/styles';
+import { getFormattedDate } from '../../../util/date';
 
-const DebtRow = ({ style, rowData, onPress, isActive }) => {
+const DebtRow = ({ isHeader, style, rowData, onPress, isActive }) => {
   const rowCell = [styles.rowCell];
   const textCell = [styles.text];
 
@@ -9,6 +10,13 @@ const DebtRow = ({ style, rowData, onPress, isActive }) => {
     rowCell.push(styles.isActive);
     textCell.push(styles.isActiveText);
   }
+
+  if (isHeader) {
+    rowCell.push(styles.headerCell);
+    textCell.push(styles.headerText);
+  }
+
+  console.log(rowData.date);
 
   return (
     <>
@@ -19,16 +27,22 @@ const DebtRow = ({ style, rowData, onPress, isActive }) => {
       >
         <View style={[styles.rowContainer, style]}>
           <View style={[...rowCell, styles.date]}>
-            <Text style={[...textCell]}>{rowData.date}</Text>
+            <Text style={[...textCell]}>
+              {getFormattedDate(rowData.date, true)}
+            </Text>
           </View>
           <View style={[...rowCell, styles.doc]}>
-            <Text style={[...textCell]}>{rowData.doc}</Text>
+            <Text style={[...textCell]}>{rowData.title}</Text>
           </View>
-          <View style={[...rowCell, styles.sum]}>
-            <Text style={[...textCell]}>{rowData.sum}</Text>
+          <View style={[...rowCell, styles.out]}>
+            <Text style={[...textCell]}>
+              {rowData.type === 'out' ? rowData.sum : ''}
+            </Text>
           </View>
-          <View style={[...rowCell, styles.balance]}>
-            <Text style={[...textCell]}>{rowData.balance}</Text>
+          <View style={[...rowCell, styles.in]}>
+            <Text style={[...textCell]}>
+              {rowData.type === 'in' ? rowData.sum : ''}
+            </Text>
           </View>
         </View>
       </Pressable>
@@ -66,16 +80,22 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   date: {
-    flex: 2,
+    flex: 2.7,
   },
   doc: {
     flex: 9,
     textAlign: 'left',
   },
-  sum: {
+  out: {
     flex: 3,
   },
-  balance: {
+  in: {
     flex: 3,
+  },
+  headerCell: {
+    backgroundColor: GlobalStyles.colors.primary400,
+  },
+  headerText: {
+    color: 'white',
   },
 });

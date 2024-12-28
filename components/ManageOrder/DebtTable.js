@@ -3,6 +3,7 @@ import React from 'react';
 import FallbackText from '../FallbackText';
 import { getFormattedDate, getFormattedDate2 } from '../../util/date';
 import DebtRow from './table/DebtRow';
+import { GlobalStyles } from '../../constans/styles';
 
 const DebtTable = ({ data }) => {
   if (!(typeof data === 'object' && Object.keys(data).length > 0)) {
@@ -13,22 +14,32 @@ const DebtTable = ({ data }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        Сальдо на {getFormattedDate(data?.pastDate)} = {data?.pastValue}
-      </Text>
+      {/* <Text style={[styles.text, styles.headerText]}>
+        Взаиморасчеты с клиентом:
+      </Text> */}
+      <DebtRow
+        rowData={{
+          date: data?.pastDate,
+          title: 'Начальное сальдо:',
+          sum: data?.pastValue,
+          type: 'out',
+        }}
+        isHeader={true}
+      />
       <ScrollView>
         {data?.docs?.map((row) => {
-          return (
-            <DebtRow
-              key={row.id}
-              rowData={{ date: '', doc: row.title, sum: row.sum }}
-            />
-          );
+          return <DebtRow key={row.id} rowData={row} />;
         })}
       </ScrollView>
-      <Text style={styles.text}>
-        Сальдо на {getFormattedDate(data?.lastDate)} = {data?.lastValue}
-      </Text>
+      <DebtRow
+        rowData={{
+          date: data?.lastDate,
+          title: 'Конечное сальдо:',
+          sum: data?.lastValue,
+          type: 'out',
+        }}
+        isHeader={true}
+      />
     </View>
   );
 };
@@ -41,5 +52,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
+  },
+  headerText: {
+    marginVertical: 14,
+    textAlign: 'center',
   },
 });

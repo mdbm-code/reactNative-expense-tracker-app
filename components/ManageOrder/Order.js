@@ -10,7 +10,7 @@ const routes = [
   { key: 'debt', title: 'Сверка' },
   { key: 'order', title: 'Заявка' },
   { key: 'spec', title: 'Спец' },
-  { key: 'promo', title: 'Акции' },
+  { key: 'promo', title: 'Возврат' },
 ];
 
 const renderTabBar = (props) => (
