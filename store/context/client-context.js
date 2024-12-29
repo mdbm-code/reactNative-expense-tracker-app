@@ -1,6 +1,10 @@
 import { createContext, useReducer, useState } from 'react';
+import { customers } from '../../data/customers';
+import { products } from '../../data/products';
 
-const initialValue = [
+const initialProducts = [];
+
+const initialClients = [
   {
     id: '00004274',
     name: 'Лидер ИП Мансуров Р.Р.',
@@ -155,7 +159,13 @@ const initialValue = [
   },
 ];
 
+const initialBalances = [];
+const initialOrders = [];
+
 export const ClientsContext = createContext({
+  customers: [],
+  products: [],
+  balances: [],
   data: [],
   addClient: ({ amount, description, date }) => {},
   deleteClient: (id) => {},
@@ -163,7 +173,7 @@ export const ClientsContext = createContext({
   setTabIndex: (index) => {},
 });
 
-function clientReducer(state, action) {
+function customerReducer(state, action) {
   switch (action.type) {
     case 'ADD':
       const id = new Date().toString() + Math.random().toString();
@@ -184,31 +194,155 @@ function clientReducer(state, action) {
   }
 }
 
-function ClientContextProvider({ children }) {
-  const [clientState, dispatch] = useReducer(clientReducer, initialValue);
-  const [tabIndex, setIndex] = useState({});
+function balanceReducer(state, action) {
+  switch (action.type) {
+    case 'ADD':
+      const id = new Date().toString() + Math.random().toString();
+      return [{ ...action.payload, id: id }, ...state];
+    case 'UPDATE':
+      const updatableOrderIndex = state.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      const updatableOrder = state[updatableOrderIndex];
+      const updatedItem = { ...updatableOrder, ...action.payload.data };
+      const updatedOrders = [...state];
+      updatedOrders[updatableOrderIndex] = updatedItem;
+      return updatedOrders;
+    case 'DELETE':
+      return state.filter((item) => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
 
+function orderReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_ONE': {
+      let newItem = { ...action.payload };
+
+      // Проверяем, есть ли у объекта ключ 'id'
+      if (!newItem.hasOwnProperty('id')) {
+        // Генерируем уникальный id
+        newItem.id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Возвращаем новый массив с добавленным элементом
+      return [newItem, ...state];
+    }
+    case 'ADD_MANY':
+      const newState = action.payload.map((item) => {
+        return {
+          ...item,
+        };
+      });
+      return newState;
+    case 'UPDATE_ONE': {
+      const updatedState = state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, ...action.payload.data }
+          : item
+      );
+      return updatedState;
+    }
+    case 'DELETE_ONE':
+      return state.filter((item) => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
+
+function productReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_ONE': {
+      let newItem = { ...action.payload };
+
+      // Проверяем, есть ли у объекта ключ 'id'
+      if (!newItem.hasOwnProperty('id')) {
+        // Генерируем уникальный id
+        newItem.id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Возвращаем новый массив с добавленным элементом
+      return [newItem, ...state];
+    }
+    case 'ADD_MANY':
+      const newState = action.payload.map((item) => {
+        return {
+          ...item,
+        };
+      });
+      return newState;
+    case 'UPDATE_ONE': {
+      const updatedState = state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, ...action.payload.data }
+          : item
+      );
+      return updatedState;
+    }
+    case 'DELETE_ONE':
+      return state.filter((item) => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
+
+function ClientContextProvider({ children }) {
+  //setup reducers
+  const [tabIndex, setIndex] = useState({});
+  const [customerState, dispatchClient] = useReducer(
+    customerReducer,
+    customers
+  );
+  const [balanceState, dispatchBalance] = useReducer(
+    balanceReducer,
+    initialBalances
+  );
+  const [productState, dispatchProduct] = useReducer(productReducer, products);
+  const [orderState, dispatchOrder] = useReducer(orderReducer, initialOrders);
+
+  //добавить нового клиента, сохранить координаты клиента, добавить телефон клиента
   function addClient(data) {
-    dispatch({ type: 'ADD', payload: data });
+    dispatchClient({ type: 'ADD', payload: data });
   }
   function deleteClient(id) {
-    dispatch({ type: 'DELETE', payload: id });
+    dispatchClient({ type: 'DELETE', payload: id });
   }
   function updateClient(id, data) {
-    dispatch({ type: 'UPDATE', payload: { id: id, data: data } });
+    dispatchClient({ type: 'UPDATE', payload: { id: id, data: data } });
   }
 
+  //управление заявками
+  function addOrder(data) {
+    dispatchOrder({ type: 'ADD_ONE', payload: data });
+  }
+  function updateOrder(id, data) {
+    dispatchOrder({ type: 'UPDATE_ONE', payload: { id: id, data: data } });
+  }
+  function deleteOrder(data) {
+    dispatchOrder({ type: 'DELETE_ONE', payload: id });
+  }
+
+  //храним и изменяем закладки документы, чтобы понимать откуда была запущен подбор товаров (заявка или возврат)
   function setTabIndex(index) {
     setIndex(index);
   }
 
+  //export
   const value = {
-    data: clientState,
+    customers: customerState,
+    balances: balanceState,
+    data: customerState,
     tabIndex: tabIndex,
+    products: productState,
+    orders: orderState,
     addClient: addClient,
     deleteClient: deleteClient,
     updateClient: updateClient,
     setTabIndex: setTabIndex,
+    addOrder,
+    updateOrder,
+    deleteOrder,
   };
 
   return (

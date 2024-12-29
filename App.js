@@ -19,8 +19,9 @@ import IconButton from './components/ui/IconButton.js';
 import OrderContextProvider from './store/context/order-context.js';
 import AllClients from './screens/AllClients.js';
 import ClientContextProvider from './store/context/client-context.js';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import ManageOrder from './screens/ManageOrder.js';
+// import { GestureHandlerRootView } from 'react-native-gesture-handler';
+// import ManageOrder from './screens/ManageOrderProducts.js';
+import ManageOrderProducts from './screens/ManageOrderProducts.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -120,7 +121,7 @@ export default function App() {
               />
               <Stack.Screen
                 name='ManageOrder'
-                component={ManageOrder}
+                component={ManageOrderProducts}
                 options={{
                   presentation: 'fullScreenModal',
                 }}

@@ -4,7 +4,7 @@ import FallbackText from '../components/FallbackText';
 import { GlobalStyles } from '../constans/styles';
 import { ClientsContext } from '../store/context/client-context';
 
-const ManageOrder = ({ navigation, route }) => {
+const ManageOrderProducts = ({ navigation, route }) => {
   const { tabIndex } = useContext(ClientsContext);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -22,7 +22,7 @@ const ManageOrder = ({ navigation, route }) => {
   );
 };
 
-export default ManageOrder;
+export default ManageOrderProducts;
 
 const styles = StyleSheet.create({
   container: {
