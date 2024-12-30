@@ -9,14 +9,15 @@ import ClientsRouter from './ClientsRouter';
 import { useState } from 'react';
 
 function ClientsOutput({ rows, expensesPeriod, fallbackText }) {
-  const [selectedRoute, setSelectedRoute] = useState('M2');
+  // const [selectedRoute, setSelectedRoute] = useState('M2');
 
   let content = <Text style={styles.infoText}>{fallbackText}</Text>;
+  const selectedRoute = '5';
 
   if (rows.length > 0) {
     let clients = [];
     if (selectedRoute) {
-      clients = rows.filter((item) => item.routes.includes(selectedRoute));
+      clients = rows.filter((item) => item.region === selectedRoute);
     } else {
       clients = rows;
     }
@@ -24,7 +25,7 @@ function ClientsOutput({ rows, expensesPeriod, fallbackText }) {
   }
 
   function selectRouteHandler(value) {
-    setSelectedRoute(value);
+    // setSelectedRoute(value);
   }
 
   return (

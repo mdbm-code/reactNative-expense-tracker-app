@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useContext } from 'react';
 import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput';
-import { OrdersContext } from '../store/context/order-context';
+import { ClientsContext } from '../store/context/client-context';
 
 const AllExpenses = () => {
-  const ordersCtx = useContext(OrdersContext);
+  const { orders } = useContext(ClientsContext);
 
   return (
     <View style={styles.root}>
       <ExpensesOutput
         expensesPeriod='За весь период'
-        orders={ordersCtx.data}
+        orders={orders}
         fallbackText={'Вы не сделали ни одной заявки'}
       />
     </View>

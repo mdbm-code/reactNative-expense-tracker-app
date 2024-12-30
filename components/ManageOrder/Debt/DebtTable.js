@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import React from 'react';
-import FallbackText from '../FallbackText';
-import DebtRow from './table/DebtRow';
+import FallbackText from '../../FallbackText';
+import DebtRow from '../table/DebtRow';
 
 const DebtTable = ({ data }) => {
   if (!(typeof data === 'object' && Object.keys(data).length > 0)) {

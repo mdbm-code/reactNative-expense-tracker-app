@@ -39,7 +39,7 @@ const ClientsList = ({ rows }) => {
       <FlatList
         // onDragEnd={({ data }) => setData(data)}
         data={rows}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.code}
         renderItem={renderExpenseItem}
       />
       {/* </GestureHandlerRootView> */}

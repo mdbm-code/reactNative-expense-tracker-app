@@ -8,20 +8,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { GlobalStyles } from './constans/styles';
 
 //screens
-import ManageExpense from './screens/ManageExpense';
+import ManageOrder from './screens/ManageOrder.js';
 import AllExpenses from './screens/AllExpenses';
 import RecentExpenses from './screens/RecentExpenses.js';
+import ManageOrderProducts from './screens/ManageOrderProducts.js';
+import AllClients from './screens/AllClients.js';
 
 //components
 import IconButton from './components/ui/IconButton.js';
 
 //state
 import OrderContextProvider from './store/context/order-context.js';
-import AllClients from './screens/AllClients.js';
 import ClientContextProvider from './store/context/client-context.js';
 // import { GestureHandlerRootView } from 'react-native-gesture-handler';
-// import ManageOrder from './screens/ManageOrderProducts.js';
-import ManageOrderProducts from './screens/ManageOrderProducts.js';
+import { Provider } from 'react-redux';
+import { reduxPersistor, reduxStore } from './store/redux/store.js';
+import { PersistGate } from 'redux-persist/integration/react';
+// import YaMap from 'react-native-yamap';
+// import { useEffect } from 'react';
+import Synchronization from './screens/Synchronization.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -39,7 +44,7 @@ function ExpensesOverview() {
             name='add'
             color={tintColor}
             size={24}
-            onPress={() => navigation.navigate('ManageExpense')}
+            onPress={() => navigation.navigate('ManageOrder')}
           />
         ),
       })}
@@ -58,7 +63,7 @@ function ExpensesOverview() {
               name='person-add-outline'
               color={tintColor}
               size={24}
-              onPress={() => navigation.navigate('ManageExpense')}
+              onPress={() => navigation.navigate('ManageOrder')}
             />
           ),
         }}
@@ -85,51 +90,71 @@ function ExpensesOverview() {
           ),
         }}
       />
+      <BottomTab.Screen
+        name='Sync'
+        component={Synchronization}
+        options={{
+          title: 'Обмен',
+          tabBarLabel: 'Обмен',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='sync-outline' color={color} size={size} />
+          ),
+        }}
+      />
     </BottomTab.Navigator>
   );
 }
 
 export default function App() {
+  // useEffect(() => {
+  //   // Инициализация карты
+  //   YaMap.init('b9011490-c148-406d-a52f-39c7d8c26fdb');
+  //   setDidLoad(true); // Устанавливаем состояние после инициализации
+  // }, []);
+
   return (
     <>
       <StatusBar style='light' />
-
-      <OrderContextProvider>
-        <ClientContextProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: GlobalStyles.colors.primary500,
-                },
-                headerTintColor: 'white',
-              }}
-            >
-              <Stack.Screen
-                name='ExpensesOverview'
-                component={ExpensesOverview}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name='ManageExpense'
-                component={ManageExpense}
-                options={{
-                  presentation: 'modal',
-                }}
-              />
-              <Stack.Screen
-                name='ManageOrder'
-                component={ManageOrderProducts}
-                options={{
-                  presentation: 'fullScreenModal',
-                }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ClientContextProvider>
-      </OrderContextProvider>
+      <Provider store={reduxStore}>
+        <PersistGate loading={null} persistor={reduxPersistor}>
+          <OrderContextProvider>
+            <ClientContextProvider>
+              <NavigationContainer>
+                <Stack.Navigator
+                  screenOptions={{
+                    headerStyle: {
+                      backgroundColor: GlobalStyles.colors.primary500,
+                    },
+                    headerTintColor: 'white',
+                  }}
+                >
+                  <Stack.Screen
+                    name='ExpensesOverview'
+                    component={ExpensesOverview}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name='ManageOrder'
+                    component={ManageOrder}
+                    options={{
+                      presentation: 'modal',
+                    }}
+                  />
+                  <Stack.Screen
+                    name='ManageOrderProducts'
+                    component={ManageOrderProducts}
+                    options={{
+                      presentation: 'fullScreenModal',
+                    }}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </ClientContextProvider>
+          </OrderContextProvider>
+        </PersistGate>
+      </Provider>
     </>
   );
 }

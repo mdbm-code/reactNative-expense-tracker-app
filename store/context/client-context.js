@@ -167,6 +167,7 @@ export const ClientsContext = createContext({
   products: [],
   balances: [],
   data: [],
+  orders: [],
   addClient: ({ amount, description, date }) => {},
   deleteClient: (id) => {},
   updateClient: (id, { amount, description, date }) => {},
@@ -330,6 +331,10 @@ function ClientContextProvider({ children }) {
 
   //export
   const value = {
+    userInfo: {
+      login: 'mdbm',
+      region: 5,
+    },
     customers: customerState,
     balances: balanceState,
     data: customerState,

@@ -1,0 +1,60 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
+import customersReducer from './slices/customersSlice';
+import debitCreditReducer from './slices/debitCreditSlice';
+import productsReducer from './slices/productsSlice';
+
+//Объединяю все редьюсеры с помощью `combineReducers`
+//Используется для объединения всех редьюсеров в один корневой редьюсер.
+const rootReducer = combineReducers({
+  customers: customersReducer,
+  documents: debitCreditReducer,
+  products: productsReducer,
+  //   productGroups: productGroupsReducer,
+  //   prices: pricesReducer,
+  //   tasks: tasksReducer,
+  //   orders: ordersReducer,
+});
+
+// Настраиваю конфигурацию persist
+//тут можно настроить  `blacklist` или `whitelist`,
+// чтобы указать, какие редьюсеры должны или не должны сохраняться.
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+  blacklist: ['customers'], // Укажите здесь слайсы, которые не нужно сохранять
+  //   whitelist: ['someSlice'], // Укажите здесь только те слайсы, которые нужно сохранять
+};
+
+// Создаю persistReducer
+//Применяется к корневому редьюсеру, чтобы добавить функциональность сохранения состояния.
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+//redux-persist**: Он автоматически заменяет `initialState` сохраненными данными,
+// если они существуют в хранилище. Если правильно настроили `persistReducer`,
+// то не нужно беспокоиться о том, что `initialState` будет перезаписывать сохраненные данные.
+
+// Настройка store
+const reduxStore = configureStore({
+  reducer: persistedReducer,
+  //getDefaultMiddleware -  Это функция, предоставляемая Redux Toolkit,
+  // которая позволяет  настраивать middleware по умолчанию.
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Игнорируем действия redux-persist
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+});
+//serializableCheck**: Это опция, которая позволяет вам игнорировать проверку
+// сериализуемости для определенных действий.
+// В данном случае мы игнорируем действия `persist/PERSIST` и `persist/REHYDRATE`,
+// которые используются `redux-persist`.
+
+// Создание persistStore
+const reduxPersistor = persistStore(reduxStore);
+//затем в App.js оборачиваю приложение с помощью <PersistGate loading={null} persistor={persistor}>
+//чтобы обеспечить восстановление состояния перед рендерингом.
+
+export { reduxStore, reduxPersistor };

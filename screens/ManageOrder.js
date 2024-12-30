@@ -7,6 +7,7 @@ import { OrdersContext } from '../store/context/order-context';
 // import OrderForm from '../components/ManageOrder/OrderForm';
 import Order from '../components/ManageOrder/Order';
 import { ClientsContext } from '../store/context/client-context';
+import { useSelector } from 'react-redux';
 
 const dummyData = [
   {
@@ -90,22 +91,30 @@ const dummyData = [
   },
 ];
 
-const ManageExpense = ({ route, navigation }) => {
+const ManageOrder = ({ route, navigation }) => {
+  const { currentCustomer } = useSelector((state) => state.customers);
   const { data, deleteOrder, updateOrder, addOrder } =
     useContext(OrdersContext);
   const { data: clients } = useContext(ClientsContext);
   //route, navigation доступны только в компонентах, которые зарегистрированы в навигаторе (см. App.js)
   const editedExpenseId = route?.params?.id;
-  console.log('editedExpenseId', editedExpenseId);
+  const customerId = route?.params?.customerId;
+  const orderId = route?.params?.orderId;
+  // console.log('customerId', customerId);
+  // console.log('orderId', orderId);
 
-  const isEditing = !!editedExpenseId;
+  const isEditing = !!orderId;
 
-  const selectedOrder = data.find((item) => item.id === editedExpenseId);
-  const selectedClient = clients.find((item) => item.id === editedExpenseId);
+  const orderCustomer = {};
+  const orderParams = {};
+  const orderCart = [];
+  // const selectedOrder = data.find((item) => item.id === editedExpenseId);
+  // const selectedClient = clients.find((item) => item.id === editedExpenseId);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: isEditing ? 'Корректировка' : 'Новая заявка',
+      title: currentCustomer?.name,
+      // title: isEditing ? 'Корректировка' : 'Новая заявка',
     });
   }, []);
 
@@ -143,9 +152,9 @@ const ManageExpense = ({ route, navigation }) => {
         onCancel={canselHandler}
         onSubmit={confirmHandler}
         submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
-        defaultValues={selectedOrder}
-        rows={dummyData}
-        client={selectedClient}
+        orderParams={orderParams}
+        rows={orderCart}
+        client={orderCustomer}
       />
       {/* <OrderForm
         onCancel={canselHandler}
@@ -167,7 +176,7 @@ const ManageExpense = ({ route, navigation }) => {
   );
 };
 
-export default ManageExpense;
+export default ManageOrder;
 
 const styles = StyleSheet.create({
   container: {
