@@ -4,13 +4,19 @@ import { persistReducer, persistStore } from 'redux-persist';
 import customersReducer from './slices/customersSlice';
 import debitCreditReducer from './slices/debitCreditSlice';
 import productsReducer from './slices/productsSlice';
+import routesReducer from './slices/routesSlice';
+import selectedsReducer from './slices/selectedsSlice';
+import ordersReducer from './slices/ordersSlice';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
 const rootReducer = combineReducers({
   customers: customersReducer,
-  documents: debitCreditReducer,
+  debitCredit: debitCreditReducer,
   products: productsReducer,
+  routes: routesReducer,
+  selecteds: selectedsReducer,
+  orders: ordersReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,
@@ -24,7 +30,7 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   blacklist: ['customers'], // Укажите здесь слайсы, которые не нужно сохранять
-  //   whitelist: ['someSlice'], // Укажите здесь только те слайсы, которые нужно сохранять
+  //whitelist: ['customers'], // Укажите здесь только те слайсы, которые нужно сохранять
 };
 
 // Создаю persistReducer

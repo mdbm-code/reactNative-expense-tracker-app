@@ -3,32 +3,41 @@ import { GlobalStyles } from '../../constans/styles';
 import { getFormattedDate } from '../../util/date';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { setCurrentCustomer } from '../../store/redux/slices/customersSlice';
+import { setSelectedCustomer } from '../../store/redux/slices/selectedsSlice';
+import IconButton from '../ui/IconButton';
 
-const ClientItem = ({ name, address, amount, id }) => {
+const ClientItem = ({ name, address, visit, id, code }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  function pressExpenseHandler(data) {
-    dispatch(setCurrentCustomer({ id, name }));
-    navigation.navigate('ManageOrder', { id, customerId: id, orderId: '' });
+  function selectCustomerHandler(data) {
+    dispatch(setSelectedCustomer({ id, code, name }));
+    navigation.navigate('ManageOrder', {
+      id: id,
+      customerId: id,
+      orderId: '',
+    });
   }
 
   return (
     <Pressable
-      onPress={pressExpenseHandler}
+      onPress={selectCustomerHandler}
       style={({ pressed }) => pressed && styles.pressed}
       android_ripple={true}
     >
       <View style={styles.container}>
-        <View style={styles.textContainer}>
+        {/* <View style={styles.textContainer}> */}
+        <View style={styles.firstLineContainer}>
           <Text style={[styles.textBase, styles.description]}>{name}</Text>
-          <Text style={[styles.textBase, styles.address]}>{address}</Text>
-          {/* <Text style={styles.textBase}>{getFormattedDate(date)}</Text> */}
+          <IconButton
+            color='white'
+            size={24}
+            viewStyle={styles.icon}
+            name={visit === 1 ? 'walk-outline' : 'call-outline'}
+          />
         </View>
-        {/* <View style={styles.amountContainer}>
-          <Text style={styles.amount}>{amount}</Text>
-        </View> */}
+        <Text style={[styles.textBase, styles.address]}>{address}</Text>
+        {/* </View> */}
       </View>
     </Pressable>
   );
@@ -41,8 +50,8 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 8,
     backgroundColor: GlobalStyles.colors.primary500,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    // justifyContent: 'space-between',
     borderRadius: 6,
 
     //for Androit
@@ -54,9 +63,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
   },
-  textContainer: {
+  // textContainer: {
+  //   // flex: 1, // Позволяет тексту занимать доступное пространство
+  //   flexShrink: 1, // Позволяет тексту сжиматься и переноситься по словам
+  // },
+  firstLineContainer: {
     // flex: 1, // Позволяет тексту занимать доступное пространство
-    flexShrink: 1, // Позволяет тексту сжиматься и переноситься по словам
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexShrink: 1,
+  },
+  icon: {
+    // flex: 1, // Позволяет тексту занимать доступное пространство
+    justifyContent: 'flex-start',
+    color: 'white',
+    margin: 0,
+    padding: 0,
   },
   pressed: {
     opacity: 0.75,
@@ -68,6 +90,7 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.primary200,
   },
   description: {
+    // flex: 9,
     fontSize: 16,
     marginBottom: 4,
     fontWeight: 'bold',

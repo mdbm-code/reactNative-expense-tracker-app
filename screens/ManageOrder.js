@@ -92,7 +92,7 @@ const dummyData = [
 ];
 
 const ManageOrder = ({ route, navigation }) => {
-  const { currentCustomer } = useSelector((state) => state.customers);
+  const { selectedCustomer } = useSelector((state) => state.selecteds);
   const { data, deleteOrder, updateOrder, addOrder } =
     useContext(OrdersContext);
   const { data: clients } = useContext(ClientsContext);
@@ -113,7 +113,7 @@ const ManageOrder = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: currentCustomer?.name,
+      title: selectedCustomer?.name,
       // title: isEditing ? 'Корректировка' : 'Новая заявка',
     });
   }, []);

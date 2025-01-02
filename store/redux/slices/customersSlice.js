@@ -21,8 +21,6 @@ export const fetchCustomers = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
-  currentCustomer: null,
-  routes: [],
   catalog: customers,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
@@ -40,9 +38,6 @@ const customersSlice = createSlice({
     // Добавление списка
     addCustomers: (state, action) => {
       state.catalog = action.payload;
-    },
-    setCurrentCustomer: (state, action) => {
-      state.currentCustomer = action.payload;
     },
     addRoutes: (state, action) => {
       state.routes = action.payload;
@@ -86,14 +81,8 @@ const customersSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const {
-  addNewCustomer,
-  addCustomers,
-  removeCustomer,
-  updateCustomer,
-  addRoutes,
-  setCurrentCustomer,
-} = customersSlice.actions;
+export const { addNewCustomer, addCustomers, removeCustomer, updateCustomer } =
+  customersSlice.actions;
 
 // Экспорт редьюсера для добавления в store
 export default customersSlice.reducer;

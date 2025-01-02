@@ -164,7 +164,7 @@ const Order = ({
           params: {
             labelText: '',
             icon: ({ route, focused, color, size }) => (
-              <Ionicons name={'layers-outline'} size={size} color={color} />
+              <Ionicons name={'apps-outline'} size={size} color={color} />
             ),
             // badge: ({ route }) => (
             //   <View

@@ -8,13 +8,13 @@ const ClientsRouter = ({ onSelect, value, isMultiple = false }) => {
       //   label='Маршруты'
       placeholder={value}
       options={[
-        { label: 'Понедельник', value: 'M1' },
-        { label: 'Вторник', value: 'M2' },
-        { label: 'Среда', value: 'M3' },
-        { label: 'Четверг', value: 'M4' },
-        { label: 'Пятница', value: 'M5' },
-        { label: 'Суббота', value: 'M6' },
-        { label: 'Воскресенье', value: 'M7' },
+        { label: 'Понедельник', value: '_1' },
+        { label: 'Вторник', value: '_2' },
+        { label: 'Среда', value: '_3' },
+        { label: 'Четверг', value: '_4' },
+        { label: 'Пятница', value: '_5' },
+        { label: 'Суббота', value: '_6' },
+        { label: 'Воскресенье', value: '_7' },
       ]}
       selectedValue={value}
       onValueChange={(value) => onSelect(value)}

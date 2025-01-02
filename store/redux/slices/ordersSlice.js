@@ -1,9 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { products } from '../../../data/products';
 
 // Пример асинхронной операции для получения списка клиентов с сервера
-export const fetchProducts = createAsyncThunk(
-  'products/fetchProducts',
+export const fetchOrders = createAsyncThunk(
+  'orders/fetchOrders',
   async (_, thunkAPI) => {
     try {
       const response = await fetch('https://api.example.com/customers');
@@ -21,23 +20,29 @@ export const fetchProducts = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
-  groups: [],
-  catalog: products,
+  catalog: [],
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
 };
 
 // Создание слайса
-const productsSlice = createSlice({
-  name: 'products',
+const ordersSlice = createSlice({
+  name: 'orders',
   initialState,
   reducers: {
     // Добавление списка
-    addProducts: (state, action) => {
+    addOrders: (state, action) => {
       state.catalog = action.payload;
     },
-    addFroups: (state, action) => {
-      state.groups = action.payload;
+    addOrder: (state, action) => {
+      state.catalog = [...state.catalog, { ...action.payload }];
+    },
+    updateOrder: (state, action) => {
+      const { id, changes } = action.payload;
+      const existingOrder = state.catalog.find((order) => order.id === id);
+      if (existingOrder) {
+        Object.assign(existingOrder, changes);
+      }
     },
   },
   //- **extraReducers**: Обрабатывает действия, созданные `createAsyncThunk`.
@@ -47,14 +52,14 @@ const productsSlice = createSlice({
   // - **rejected**: Устанавливает ошибку, если загрузка не удалась.
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
+      .addCase(fetchOrders.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
+      .addCase(fetchOrders.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.catalog = action.payload;
       })
-      .addCase(fetchProducts.rejected, (state, action) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
@@ -62,7 +67,7 @@ const productsSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const { addProducts, addFroups } = productsSlice.actions;
+export const { addOrders, addOrder, updateOrder } = ordersSlice.actions;
 
 // Экспорт редьюсера для добавления в store
-export default productsSlice.reducer;
+export default ordersSlice.reducer;

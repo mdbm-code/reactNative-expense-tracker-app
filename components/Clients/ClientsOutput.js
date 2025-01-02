@@ -1,43 +1,38 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-// import ExpensesSummary from './ExpensesSummary';
-// import ExpensesList from './ExpensesList';
+import { StyleSheet, Text, View } from 'react-native';
 import { GlobalStyles } from '../../constans/styles';
-// import ClientsList from '../ExpensesOutput/ClientsList';
-import ClientsSummary from './ClientsSummary';
 import ClientsList from './ClientsList';
 import ClientsRouter from './ClientsRouter';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedRoute } from '../../store/redux/slices/selectedsSlice';
+import { selectRoutePoints } from '../../store/redux/selectors/routes';
 
-function ClientsOutput({ rows, expensesPeriod, fallbackText }) {
-  // const [selectedRoute, setSelectedRoute] = useState('M2');
-
+function ClientsOutput({ fallbackText }) {
+  const dispatch = useDispatch();
+  const { selectedRoute } = useSelector((state) => state.selecteds);
+  const points = useSelector(selectRoutePoints);
   let content = <Text style={styles.infoText}>{fallbackText}</Text>;
-  const selectedRoute = '5';
-
-  if (rows.length > 0) {
-    let clients = [];
-    if (selectedRoute) {
-      clients = rows.filter((item) => item.region === selectedRoute);
-    } else {
-      clients = rows;
-    }
-    content = <ClientsList rows={clients} />;
+  if (typeof points === 'string') {
+    content = (
+      <View style={styles.container}>
+        <Text style={styles.infoText}>{points}</Text>
+      </View>
+    );
+  } else if (points.length > 0) {
+    content = <ClientsList rows={points} />;
   }
 
   function selectRouteHandler(value) {
-    // setSelectedRoute(value);
+    dispatch(setSelectedRoute(value));
   }
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => setShowAllRoutes(!showAllRoutes)}>
-        {/* <ClientsSummary periodName={expensesPeriod} rows={rows} /> */}
-        <ClientsRouter
-          value={selectedRoute}
-          onSelect={selectRouteHandler}
-          isMultiple={false}
-        />
-      </Pressable>
+      {/* <ClientsSummary periodName={expensesPeriod} rows={rows} /> */}
+      <ClientsRouter
+        value={selectedRoute}
+        onSelect={selectRouteHandler}
+        isMultiple={false}
+      />
       {content}
     </View>
   );
@@ -51,6 +46,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 24,
     backgroundColor: GlobalStyles.colors.primary700,
+    paddingBottom: 50,
   },
   infoText: {
     fontSize: 16,
