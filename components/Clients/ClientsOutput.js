@@ -43,7 +43,7 @@ export default ClientsOutput;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 6,
     paddingTop: 24,
     backgroundColor: GlobalStyles.colors.primary700,
     paddingBottom: 50,

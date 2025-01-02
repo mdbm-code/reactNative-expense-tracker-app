@@ -47,10 +47,12 @@ const reduxStore = configureStore({
   // которая позволяет  настраивать middleware по умолчанию.
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        // Игнорируем действия redux-persist
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-      },
+      immutableCheck: false, // Отключаем проверку неизменности
+      serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
+      // serializableCheck: {
+      //   // Игнорируем действия redux-persist
+      //   ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      // },
     }),
 });
 //serializableCheck**: Это опция, которая позволяет вам игнорировать проверку

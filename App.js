@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Импортируем GestureHandlerRootView
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -106,55 +108,51 @@ function ExpensesOverview() {
 }
 
 export default function App() {
-  // useEffect(() => {
-  //   // Инициализация карты
-  //   YaMap.init('b9011490-c148-406d-a52f-39c7d8c26fdb');
-  //   setDidLoad(true); // Устанавливаем состояние после инициализации
-  // }, []);
-
   return (
     <>
-      <StatusBar style='light' />
-      <Provider store={reduxStore}>
-        <PersistGate loading={null} persistor={reduxPersistor}>
-          <OrderContextProvider>
-            <ClientContextProvider>
-              <NavigationContainer>
-                <Stack.Navigator
-                  screenOptions={{
-                    headerStyle: {
-                      backgroundColor: GlobalStyles.colors.primary500,
-                    },
-                    headerTintColor: 'white',
-                  }}
-                >
-                  <Stack.Screen
-                    name='ExpensesOverview'
-                    component={ExpensesOverview}
-                    options={{
-                      headerShown: false,
+      <GestureHandlerRootView style={{ flex: 1 }}> {/* Оборачиваем в GestureHandlerRootView */}
+        <StatusBar style='light' />
+        <Provider store={reduxStore}>
+          <PersistGate loading={null} persistor={reduxPersistor}>
+            <OrderContextProvider>
+              <ClientContextProvider>
+                <NavigationContainer>
+                  <Stack.Navigator
+                    screenOptions={{
+                      headerStyle: {
+                        backgroundColor: GlobalStyles.colors.primary500,
+                      },
+                      headerTintColor: 'white',
                     }}
-                  />
-                  <Stack.Screen
-                    name='ManageOrder'
-                    component={ManageOrder}
-                    options={{
-                      presentation: 'modal',
-                    }}
-                  />
-                  <Stack.Screen
-                    name='ManageOrderProducts'
-                    component={ManageOrderProducts}
-                    options={{
-                      presentation: 'fullScreenModal',
-                    }}
-                  />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </ClientContextProvider>
-          </OrderContextProvider>
-        </PersistGate>
-      </Provider>
+                  >
+                    <Stack.Screen
+                      name='ExpensesOverview'
+                      component={ExpensesOverview}
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name='ManageOrder'
+                      component={ManageOrder}
+                    // options={{
+                    //   presentation: 'fullScreenModal',
+                    // }}
+                    />
+                    <Stack.Screen
+                      name='ManageOrderProducts'
+                      component={ManageOrderProducts}
+                    // options={{
+                    //   presentation: 'fullScreenModal',
+                    // }}
+                    />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </ClientContextProvider>
+            </OrderContextProvider>
+          </PersistGate>
+        </Provider>
+      </GestureHandlerRootView>
     </>
   );
 }

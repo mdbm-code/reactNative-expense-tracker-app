@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   icon: {
-    // flex: 1, // Позволяет тексту занимать доступное пространство
+    flex: 1, // Позволяет тексту занимать доступное пространство
     justifyContent: 'flex-start',
     color: 'white',
     margin: 0,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.primary200,
   },
   description: {
-    // flex: 9,
+    flex: 9,
     fontSize: 16,
     marginBottom: 4,
     fontWeight: 'bold',

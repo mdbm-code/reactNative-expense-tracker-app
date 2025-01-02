@@ -12,6 +12,8 @@ const initialState = {
   selectedOrderTab: 0,
   selectedTheme: 'light',
   selectedManager: '95',
+  selectedMenuLevel_1: null,
+  selectedMenuLevel_2: null,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
 };
@@ -41,6 +43,12 @@ const selectedsSlice = createSlice({
     setSelectedManager: (state, action) => {
       state.selectedManager = action.payload;
     },
+    setSelectedMenuLevel_1: (state, action) => {
+      state.selectedMenuLevel_1 = action.payload;
+    },
+    setSelectedMenuLevel_2: (state, action) => {
+      state.selectedMenuLevel_2 = action.payload;
+    },
   },
 });
 
@@ -52,6 +60,8 @@ export const {
   setSelectedOrderTab,
   setSelectedTheme,
   setSelectedManager,
+  setSelectedMenuLevel_1,
+  setSelectedMenuLevel_2,
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store

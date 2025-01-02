@@ -1,0 +1,15 @@
+export const groups = [
+	{ id: 'gp1', sort: 1, name: 'Группа 1.1', description: 'Группа 1', parent: '', },
+	{ id: 'gp2', sort: 4, name: 'Группа 1.1.1', description: 'Описание группы 2', parent: 'gp1', },
+	{ id: 'gp3', sort: 3, name: 'Группа 1.1.2', description: 'Описание группы 3', parent: 'gp1', },
+	{ id: 'gp4', sort: 2, name: 'Группа 1.1.3', description: 'Описание группы 4', parent: 'gp1', },
+	{ id: 'gp5', sort: 1, name: 'Группа 1.1.3', description: 'Описание группы 5', parent: 'gp1', },
+	{ id: 'gp6', sort: 3, name: 'Группа 1.2', description: 'Группа 2', parent: '', },
+	{ id: 'gp7', sort: 1, name: 'Группа 1.2.1', description: 'Описание группы 7', parent: 'gp6', },
+	{ id: 'gp8', sort: 2, name: 'Группа 1.2.2', description: 'Описание группы 8', parent: 'gp6', },
+	{ id: 'gp9', sort: 2, name: 'Группа 1.3', description: 'Группа 3', parent: '', },
+	{ id: 'gp10', sort: 1, name: 'Группа 1.3.1', description: 'Описание группы 10', parent: 'gp9', },
+	{ id: 'gp11', sort: 2, name: 'Группа 1.3.2', description: 'Описание группы 11', parent: 'gp9', },
+	{ id: 'gp12', sort: 3, name: 'Группа 1.3.3', description: 'Описание группы 12', parent: 'gp9', },
+	{ id: 'gp13', sort: 4, name: 'Группа 1.3.4', description: 'Описание группы 13', parent: 'gp9', },
+]
