@@ -1,20 +1,21 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import TextInput from '../../ui/TextInput'
 import { GlobalStyles } from '../../../constans/styles'
+import InputCell from '../../ui/InputCell'
 
-const TableRowCell = ({ onPress, title, style, titleStyle, inputStyles, inputConfig, onUpdateValue, keyName, flex = 1 }) => {
+const TableRowCell = ({ onPress, title, code, style, titleStyle, inputConfig, onUpdateValue, as, keyName, flex = 1 }) => {
 
-	let content = <Text style={[styles.text, titleStyle]}>{title}</Text>
+	let content = <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text>
 
-	if (typeof onUpdateValue === 'function') {
-		content = <TextInput
-			style={[inputStyles, styles.text, styles.numberText]}
+	if (as === 'input') {
+		content = <InputCell
+			style={[styles.text, styles.numberText, titleStyle && titleStyle]}
 			{...inputConfig}
-			value={title}
+			defaultValue={title}
 			onUpdate={onUpdateValue}
 			onFocus={onPress}
 			keyName={keyName}
+			code={code}
 		/>
 
 	} else if (typeof onPress === 'function') {
@@ -23,7 +24,7 @@ const TableRowCell = ({ onPress, title, style, titleStyle, inputStyles, inputCon
 			onPress={onPress}
 		// style={({ pressed }) => pressed && styles.pressed}
 		>
-			<Text style={[styles.text, titleStyle]}>{title}</Text>
+			<Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text>
 		</Pressable>
 	}
 
@@ -33,7 +34,7 @@ const TableRowCell = ({ onPress, title, style, titleStyle, inputStyles, inputCon
 	}
 
 	return (
-		<View style={[...rowCell, style]}>
+		<View style={[...rowCell, style && style]}>
 			{content}
 		</View>
 	)

@@ -3,7 +3,7 @@ import React from 'react'
 import TableRowCell from './TableRowCell';
 import { GlobalStyles } from '../../../constans/styles';
 
-const TableRow = ({ rowData, style, onPress, selected }) => {
+const TableRow = ({ rowData, style, onPress, as, onUpdateValue, selected }) => {
 
 	const titleStyle = [styles.text];
 	if (selected) {
@@ -11,52 +11,28 @@ const TableRow = ({ rowData, style, onPress, selected }) => {
 	}
 	return (<>
 		<View style={[styles.rowContainer, selected && styles.selected]}>
-			<TableRowCell title={rowData.name} flex={8} titleStyle={[...titleStyle, styles.name]} onPress={() => onPress('name', rowData.code)} />
-			{/* <View style={[...rowCell, styles.nameContainer]}>
-				<Pressable
-					android_ripple={true}
-					onPress={() => pressCellHandler('name')}
-					style={({ pressed }) => pressed && styles.pressed}
-				>
-					<Text style={[...textCell, ...nameText]}>{rowData.name}</Text>
-				</Pressable>
-			</View> */}
-
+			<TableRowCell
+				title={rowData.name}
+				flex={8}
+				titleStyle={[...titleStyle, styles.name]}
+				onPress={() => onPress('name', rowData.code)} />
 			{/* <TableRowCell title={rowData.unit} flex={2} titleStyle={[...titleStyle]} /> */}
+			<TableRowCell
+				title={rowData?.prices?.price}
+				flex={3}
+				titleStyle={[...titleStyle, styles.number]}
+				onPress={() => onPress('price', rowData.code, rowData['price'])} />
+			<TableRowCell
+				title={rowData?.qty}
+				flex={2}
+				titleStyle={[...titleStyle]}
+				as={'input'}
+				keyName={'qty'}
+				code={rowData.code}
+				onPress={onPress}
+				onUpdateValue={onUpdateValue}
+			/>
 
-			{/* <View style={[...rowCell, styles.unitContainer]}>
-				<Text style={[...textCell]}>{rowData.unit}</Text>
-			</View> */}
-			<TableRowCell title={rowData?.prices?.price} flex={3} titleStyle={[...titleStyle, styles.number]} onPress={() => onPress('price', rowData.code, rowData['price'])} />
-			{/* <View style={[...rowCell, styles.priceContainer]}>
-				<Pressable onPress={() => pressCellHandler('price')}>
-					<Text style={[...textCell, styles.numberText, ...priceText]}>
-						{rowData['price']}
-					</Text>
-				</Pressable>
-			</View> */}
-			<TableRowCell title={rowData?.qty} flex={2} titleStyle={[...titleStyle]} />
-			{/* <View style={[...rowCell, styles.qtyContainer]}>
-				<TextInput
-					style={[inputStyles, ...textCell, styles.numberText]}
-					{...inputConfig}
-					value={inputs.qty}
-					// onChangeText={(enteredText) => updateValueHandler(enteredText, 'qty')}
-					onChangeText={(enteredText) =>
-						setInputs((prevState) => ({ ...prevState, qty: enteredText }))
-					}
-					// onFocus={() => setIsActive(true)} // Устанавливаем isActive в true при получении фокуса
-					returnKeyType='done' //'done', 'go', 'next', 'search', 'send'
-					// onBlur={() => updateValueHandler(inputs.qty, 'qty')} // Отправляем сообщение наверх при потере фокуса
-					onSubmitEditing={() => {
-						updateValueHandler(inputs.qty, 'qty'); // Отправляем сообщение наверх при нажатии Enter
-						Keyboard.dismiss(); // Скрываем клавиатуру
-					}}
-					keyboardType='decimal-pad'
-					onBlur={onBlurQtyInputHandler}
-					onFocus={onFocusQtyInputHandler}
-				/>
-			</View> */}
 		</View>
 	</>)
 }

@@ -26,7 +26,7 @@ const Table = ({
   };
 
   function updateValueHandler(payload) {
-    // console.log('Table.updateValueHandler() : ', payload);
+    console.log('Table.updateValueHandler() : ', payload);
   }
 
   function hideSliderHandler() {
@@ -34,9 +34,9 @@ const Table = ({
   }
 
   function onPressHandler(columnName, code, value) {
-    console.log('columnName', columnName);
-    console.log('code', code);
-    console.log('value', value);
+    // console.log('columnName', columnName);
+    // console.log('code', code);
+    // console.log('value', value);
     setActiveRowId(code);
   }
 
@@ -45,6 +45,7 @@ const Table = ({
       rowData={{ ...item }}
       selected={activeRowId === item.code}
       onPress={onPressHandler}
+      onUpdateValue={updateValueHandler}
     />
       // <OrderRow
       //   rowData={{ ...item }}

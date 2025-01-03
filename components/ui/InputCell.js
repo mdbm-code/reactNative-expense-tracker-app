@@ -1,34 +1,34 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TextInput } from 'react-native'
 import React, { useState } from 'react'
 
-const TextInput = ({ value, keyName, selectedValue, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onUpdate }) => {
-	const [inputValue, setInputValue] = useState(value);
-	const [previousValue, setPreviousValue] = useState(value);
+const InputCell = ({ defaultValue, keyName, code, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onUpdate }) => {
+	const [inputValue, setInputValue] = useState(defaultValue);
+	const [previousValue, setPreviousValue] = useState(defaultValue);
 
 	function onBlurHandler() {
 		if (inputValue === '') {
 			if (selectedValue) {
-				onUpdate(selectedValue, keyName); // Отправляем сообщение наверх только если введено новое значение
+				onUpdate({ cell: keyName, value: selectedValue, old: previousValue }); // Отправляем сообщение наверх только если введено новое значение
 				setInputValue(selectedValue); // Возвращаем предыдущее значение
 			} else {
 				setInputValue(previousValue); // Возвращаем предыдущее значение
 			}
 		} else {
-			onUpdate(inputValue, keyName); // Отправляем сообщение наверх только если введено новое значение
+			onUpdate({ cell: keyName, value: inputValue, old: previousValue }); // Отправляем сообщение наверх только если введено новое значение
 		}
 	}
 
 	function onFocusHandler() {
 		setPreviousValue(inputValue); // Сохраняем предыдущее значение
 		setInputValue(''); // Очищаем поле
-		onFocus();
+		onFocus(keyName, code, defaultValue);
 	}
 
 	return (
 		<TextInput
-			style={[inputStyles, styles.text, styles.numberText]}
+			style={[styles.text, styles.numberText, style && style]}
 			{...inputConfig}
-			value={title}
+			value={inputValue}
 			// onChangeText={(enteredText) => updateValueHandler(enteredText, 'qty')}
 			onChangeText={(enteredText) =>
 				setInputValue(enteredText)
@@ -47,6 +47,14 @@ const TextInput = ({ value, keyName, selectedValue, returnKeyType = 'done', keyb
 	)
 }
 
-export default TextInput
+export default InputCell
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+	numberText: {
+		textAlign: 'right',
+	},
+	text: {
+		color: 'white',
+		textAlign: 'center',
+	},
+})
