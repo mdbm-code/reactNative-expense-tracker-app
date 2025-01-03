@@ -2,7 +2,10 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { GlobalStyles } from '../../../constans/styles';
 
 const TableHead = ({ style, name, unit, price, qty }) => {
-  return (
+  console.log(name, unit, price, qty);
+
+  return (<>
+    {/* <Text style={styles.text}>Component TableHead</Text> */}
     <View style={[styles.rowContainer, style]}>
       <View style={[styles.rowCell, styles.nameContainer]}>
         <Text style={[styles.text, styles.nameText]}>{name}</Text>
@@ -17,7 +20,7 @@ const TableHead = ({ style, name, unit, price, qty }) => {
         <Text style={[styles.text, styles.numberText]}>{qty}</Text>
       </View>
     </View>
-  );
+  </>);
 };
 
 export default TableHead;
@@ -40,6 +43,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   nameText: {
+    color: 'white',
     textAlign: 'left',
     textAlignVertical: 'top',
     paddingLeft: 4,

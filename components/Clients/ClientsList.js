@@ -2,7 +2,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import ClientItem from './ClientItem';
 
 function renderExpenseItem({ item }) {
-  return <ClientItem {...item} />;
+  return <ClientItem item={item} />;
 }
 
 const ClientsList = ({ rows }) => {

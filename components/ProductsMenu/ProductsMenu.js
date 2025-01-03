@@ -1,21 +1,24 @@
 import { FlatList, StyleSheet, View } from 'react-native'
 import React from 'react'
 
-import { groups } from '../../data/groups';
+// import { groups } from '../../data/groups';
 import ProductsMenuItem from './ProductsMenuItem';
+import { useSelector } from 'react-redux';
+import { selectGroups } from '../../store/redux/selectors/groups';
+import FallbackText from '../FallbackText';
 
 const ProductsMenu = ({ closeDrawer }) => {
-	const treeSortedArray = groups
-		.filter((item) => !item.parent)
-		.sort((a, b) => a.sort - b.sort)
-		.map((item) => ({ ...item, children: groups.filter((child) => child.parent === item.id).sort((a, b) => a.sort - b.sort) }));
+	const groups = useSelector(selectGroups);
 
+	if (typeof groups === 'string') {
+		return <FallbackText>{groups}</FallbackText>
+	}
 	return (
 		<View style={styles.container}>
 			<FlatList
-				data={treeSortedArray}
-				keyExtractor={(item) => item.id}
-				renderItem={(itemData) => <ProductsMenuItem {...itemData.item} rows={treeSortedArray} closeDrawer={closeDrawer} />}
+				data={groups}
+				keyExtractor={(item) => item.code}
+				renderItem={(itemData) => <ProductsMenuItem {...itemData.item} rows={groups} closeDrawer={closeDrawer} />}
 			/>
 		</View>
 	)

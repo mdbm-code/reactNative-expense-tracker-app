@@ -6,17 +6,13 @@ import { useDispatch } from 'react-redux';
 import { setSelectedCustomer } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 
-const ClientItem = ({ name, address, visit, id, code }) => {
+const ClientItem = ({ item }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   function selectCustomerHandler(data) {
-    dispatch(setSelectedCustomer({ id, code, name }));
-    navigation.navigate('ManageOrder', {
-      id: id,
-      customerId: id,
-      orderId: '',
-    });
+    dispatch(setSelectedCustomer({ ...item }));
+    navigation.navigate('ManageOrder');
   }
 
   return (
@@ -28,15 +24,15 @@ const ClientItem = ({ name, address, visit, id, code }) => {
       <View style={styles.container}>
         {/* <View style={styles.textContainer}> */}
         <View style={styles.firstLineContainer}>
-          <Text style={[styles.textBase, styles.description]}>{name}</Text>
+          <Text style={[styles.textBase, styles.description]}>{item?.name}</Text>
           <IconButton
             color='white'
             size={24}
             viewStyle={styles.icon}
-            name={visit === 1 ? 'walk-outline' : 'call-outline'}
+            name={item?.visit === 1 ? 'walk-outline' : 'call-outline'}
           />
         </View>
-        <Text style={[styles.textBase, styles.address]}>{address}</Text>
+        <Text style={[styles.textBase, styles.address]}>{item?.address}</Text>
         {/* </View> */}
       </View>
     </Pressable>

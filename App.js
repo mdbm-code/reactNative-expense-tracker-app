@@ -1,4 +1,4 @@
-import 'react-native-gesture-handler';
+// import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Импортируем GestureHandlerRootView
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -110,7 +110,7 @@ function ExpensesOverview() {
 export default function App() {
   return (
     <>
-      <GestureHandlerRootView style={{ flex: 1 }}> {/* Оборачиваем в GestureHandlerRootView */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style='light' />
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>

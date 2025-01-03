@@ -6,14 +6,20 @@ import { setSelectedMenuLevel_1, setSelectedMenuLevel_2 } from '../../store/redu
 import ProductsMenuButton from './ProductsMenuButton'
 
 
-const ProductsMenuItem = ({ name, id, rows, closeDrawer }) => {
+const ProductsMenuItem = ({ name, code, rows, closeDrawer }) => {
 	const dispatch = useDispatch();
 	const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(state => state.selecteds);
 
-	function onPressHandler1(value) {
-		dispatch(setSelectedMenuLevel_1(value));
+	function onPressHandler1(level1code) {
+		if (selectedMenuLevel_1 === level1code) {
+			dispatch(setSelectedMenuLevel_1(null));
+		} else {
+			dispatch(setSelectedMenuLevel_1(level1code));
+		}
+		//всегда сбрасываем выбранный пункт второго уровня, если кликнули на первый уровень 
 		dispatch(setSelectedMenuLevel_2(null));
 	}
+
 	function onPressHandler2(value) {
 		dispatch(setSelectedMenuLevel_2(value));
 		closeDrawer();
@@ -21,8 +27,9 @@ const ProductsMenuItem = ({ name, id, rows, closeDrawer }) => {
 
 	let subLevels = [];
 
-	if (selectedMenuLevel_1 === id && Array.isArray(rows)) {
-		const parent = rows.find(root => root.id === selectedMenuLevel_1);
+	if (selectedMenuLevel_1 === code && Array.isArray(rows)) {
+		//если у выбранной группы первого уровня есть дочерние элементы, то формируем из них массив subLevels для вывода
+		const parent = rows.find(root => root.code === selectedMenuLevel_1);
 		if (parent['children'] && Array.isArray(parent['children']) && parent['children'].length > 0) {
 			subLevels = [...parent.children];
 		}
@@ -33,12 +40,12 @@ const ProductsMenuItem = ({ name, id, rows, closeDrawer }) => {
 		subLevelContent = <View style={styles.sublevelContainer}>
 			<FlatList
 				data={subLevels}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.code}
 				renderItem={(itemData) => {
 					return <ProductsMenuButton
 						title={itemData.item.name}
-						selected={selectedMenuLevel_2 === itemData.item.id}
-						onPress={() => onPressHandler2(itemData.item.id)} />
+						selected={selectedMenuLevel_2 === itemData.item.code}
+						onPress={() => onPressHandler2(itemData.item.code)} />
 				}}
 			/>
 		</View>
@@ -47,9 +54,9 @@ const ProductsMenuItem = ({ name, id, rows, closeDrawer }) => {
 	return (<>
 		<ProductsMenuButton
 			title={name}
-			selected={selectedMenuLevel_1 === id}
-			iconName={selectedMenuLevel_1 === id ? 'chevron-up-outline' : 'chevron-down-outline'}
-			onPress={() => onPressHandler1(id)} />
+			selected={selectedMenuLevel_1 === code}
+			iconName={selectedMenuLevel_1 === code ? 'chevron-up-outline' : 'chevron-down-outline'}
+			onPress={() => onPressHandler1(code)} />
 		{subLevelContent}
 	</>
 	)
@@ -102,26 +109,5 @@ const styles = StyleSheet.create({
 	textBase: {
 		color: GlobalStyles.colors.primary50,
 	},
-	// address: {
-	// 	color: GlobalStyles.colors.primary200,
-	// },
-	// description: {
-	// 	flex: 9,
-	// 	fontSize: 16,
-	// 	marginBottom: 4,
-	// 	fontWeight: 'bold',
-	// },
-	// amountContainer: {
-	// 	paddingHorizontal: 12,
-	// 	paddingVertical: 4,
-	// 	backgroundColor: 'white',
-	// 	justifyContent: 'center',
-	// 	alignItems: 'center',
-	// 	borderRadius: 4,
-	// 	minWidth: 80,
-	// },
-	// amount: {
-	// 	color: GlobalStyles.colors.primary500,
-	// 	fontWeight: 'bold',
-	// },
+
 });

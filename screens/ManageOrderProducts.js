@@ -1,25 +1,35 @@
-import React, { useContext, useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { DrawerLayout } from 'react-native-gesture-handler';
 import { GlobalStyles } from '../constans/styles';
-import { ClientsContext } from '../store/context/client-context';
 import IconButton from '../components/ui/IconButton';
 import ProductMenu from '../components/ProductsMenu/';
 import ProductsOutput from '../components/ProductsOutput';
+import { useDrawerStatus } from '@react-navigation/drawer';
+import { useSelector } from 'react-redux';
+import { selectProducts } from '../store/redux/selectors/products';
 
 const ManageOrderProducts = ({ navigation, route }) => {
-  const { tabIndex } = useContext(ClientsContext);
+
   const drawerRef = useRef(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const products = useSelector(selectProducts);
 
   const openDrawer = () => {
     drawerRef.current?.openDrawer();
+    setIsDrawerOpen(true);
   };
 
   const closeDrawer = () => {
     drawerRef.current?.closeDrawer();
+    setIsDrawerOpen(false);
   };
 
+  const toggleDrawer = () => {
+    isDrawerOpen ? closeDrawer() : openDrawer();
+  };
 
+  // console.log('isDrawerOpen', isDrawerOpen);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Подбор товаров',
@@ -28,17 +38,15 @@ const ManageOrderProducts = ({ navigation, route }) => {
           name="menu"
           color="white"
           size={24}
-          onPress={openDrawer}
-        // onPress={() => navigation.toggleDrawer()}
+          onPress={toggleDrawer}
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, isDrawerOpen]);
 
 
   const renderDrawerContent = () => (
     <View style={styles.drawerContent}>
-      {/* <Text style={styles.drawerText}>Drawer Content</Text> */}
       <ProductMenu closeDrawer={closeDrawer} />
     </View>
   );
@@ -51,18 +59,10 @@ const ManageOrderProducts = ({ navigation, route }) => {
       drawerType="front"
       renderNavigationView={renderDrawerContent}
     >
+
       <View style={styles.container} onTouchStart={closeDrawer}>
-        {/* <IconButton
-          name="menu"
-          color="white"
-          size={24}
-          onPress={openDrawer}
-          style={styles.menuButton}
-        /> */}
-        {/* <Text style={styles.text}>
-          client Id: {route?.params?.clientId} from tab: {tabIndex?.key} : {tabIndex?.title}
-        </Text> */}
-        <ProductsOutput />
+        {/* <Text style={styles.text}>Component ManageOrderProducts</Text> */}
+        <ProductsOutput products={products} />
       </View>
     </DrawerLayout>
   );
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: GlobalStyles.colors.primary800,
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   menuButton: {
     position: 'absolute',

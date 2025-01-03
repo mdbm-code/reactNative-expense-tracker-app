@@ -21,7 +21,6 @@ export const fetchProducts = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
-  groups: [],
   catalog: products,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
@@ -35,9 +34,6 @@ const productsSlice = createSlice({
     // Добавление списка
     addProducts: (state, action) => {
       state.catalog = action.payload;
-    },
-    addFroups: (state, action) => {
-      state.groups = action.payload;
     },
   },
   //- **extraReducers**: Обрабатывает действия, созданные `createAsyncThunk`.
@@ -62,7 +58,7 @@ const productsSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const { addProducts, addFroups } = productsSlice.actions;
+export const { addProducts } = productsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
 export default productsSlice.reducer;

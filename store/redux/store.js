@@ -4,9 +4,11 @@ import { persistReducer, persistStore } from 'redux-persist';
 import customersReducer from './slices/customersSlice';
 import debitCreditReducer from './slices/debitCreditSlice';
 import productsReducer from './slices/productsSlice';
+import groupsReducer from './slices/groupsSlice';
 import routesReducer from './slices/routesSlice';
 import selectedsReducer from './slices/selectedsSlice';
 import ordersReducer from './slices/ordersSlice';
+import currentOrderReducer from './slices/currentOrdersSlice';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
@@ -14,9 +16,11 @@ const rootReducer = combineReducers({
   customers: customersReducer,
   debitCredit: debitCreditReducer,
   products: productsReducer,
+  groups: groupsReducer,
   routes: routesReducer,
   selecteds: selectedsReducer,
   orders: ordersReducer,
+  currentOrders: currentOrderReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,
