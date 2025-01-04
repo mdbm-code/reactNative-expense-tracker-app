@@ -1,27 +1,27 @@
 import { StyleSheet, TextInput } from 'react-native'
 import React, { useState } from 'react'
 
-const InputCell = ({ defaultValue, keyName, code, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onUpdate }) => {
+const InputCell = ({ returnParams = {}, defaultValue, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onChangeValue }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
 	const [previousValue, setPreviousValue] = useState(defaultValue);
 
 	function onBlurHandler() {
 		if (inputValue === '') {
 			if (selectedValue) {
-				onUpdate({ cell: keyName, value: selectedValue, old: previousValue }); // Отправляем сообщение наверх только если введено новое значение
+				onChangeValue({ ...returnParams, newValue: selectedValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
 				setInputValue(selectedValue); // Возвращаем предыдущее значение
 			} else {
 				setInputValue(previousValue); // Возвращаем предыдущее значение
 			}
 		} else {
-			onUpdate({ cell: keyName, value: inputValue, old: previousValue }); // Отправляем сообщение наверх только если введено новое значение
+			onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
 		}
 	}
 
 	function onFocusHandler() {
 		setPreviousValue(inputValue); // Сохраняем предыдущее значение
 		setInputValue(''); // Очищаем поле
-		onFocus(keyName, code, defaultValue);
+		onFocus(returnParams);
 	}
 
 	return (
@@ -37,7 +37,7 @@ const InputCell = ({ defaultValue, keyName, code, selectedValue, style, returnKe
 			returnKeyType={returnKeyType} //'done', 'go', 'next', 'search', 'send'
 			// onBlur={() => updateValueHandler(inputs.qty, 'qty')} // Отправляем сообщение наверх при потере фокуса
 			onSubmitEditing={() => {
-				onUpdate(inputValue, keyName); // Отправляем сообщение наверх при нажатии Enter
+				onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue }); // Отправляем сообщение наверх при нажатии Enter
 				Keyboard.dismiss(); // Скрываем клавиатуру
 			}}
 			keyboardType={keyboardType}

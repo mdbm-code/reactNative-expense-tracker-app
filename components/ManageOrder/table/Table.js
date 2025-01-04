@@ -1,9 +1,12 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import TableHead from './TableHead';
 import TableRow from './TableRow';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { useState } from 'react';
-import OrderRow from './OrderRow';
+// import OrderRow from './OrderRow';
+import { useDispatch, useSelector } from 'react-redux';
+import { findAndUpdateOrderRow } from '../../../store/redux/slices/currentOrdersSlice';
+import { GlobalStyles } from '../../../constans/styles';
 
 const Table = ({
   rows,
@@ -16,8 +19,11 @@ const Table = ({
 }) => {
   const [activeRowId, setActiveRowId] = useState(false);
   const [showSliderId, setShowSliderId] = useState(null);
+  const customerCode = useSelector(state => state.selecteds?.selectedCustomer?.code);
+  const dispatch = useDispatch();
 
   const pressPriceHandler = (rowId) => {
+    const dispatch = useDispatch();
     // console.log(rowId);
 
     // setShowSliderId((prevActiveRow) =>
@@ -25,19 +31,27 @@ const Table = ({
     // );
   };
 
-  function updateValueHandler(payload) {
-    console.log('Table.updateValueHandler() : ', payload);
+  function changeValueHandler(returnParams) {
+    // console.log('Table.changeValueHandler() : ', returnParams);
+    //cell: keyName, value: selectedValue, old: previousValue
+    if (returnParams.field === 'qty') {
+      const payload = {
+        customerCode: customerCode,
+        productCode: returnParams.productCode,
+        price: returnParams.price,
+        qty: returnParams.newValue
+      }
+      dispatch(findAndUpdateOrderRow(payload));
+    }
+
   }
 
   function hideSliderHandler() {
     // setShowSliderId(null);
   }
 
-  function onPressHandler(columnName, code, value) {
-    // console.log('columnName', columnName);
-    // console.log('code', code);
-    // console.log('value', value);
-    setActiveRowId(code);
+  function onPressHandler({ productCode }) {
+    setActiveRowId(productCode);
   }
 
   function renderItem({ item }) {
@@ -45,7 +59,7 @@ const Table = ({
       rowData={{ ...item }}
       selected={activeRowId === item.code}
       onPress={onPressHandler}
-      onUpdateValue={updateValueHandler}
+      onChangeValue={changeValueHandler}
     />
       // <OrderRow
       //   rowData={{ ...item }}
@@ -73,10 +87,15 @@ const Table = ({
     );
   }
 
+  const columns = [
+    { title: 'Наименование', flex: 8, },
+    { title: 'Цена', flex: 3, },
+    { title: 'Колво', flex: 2, },
+  ]
+
   return (
     <View style={[styles.rootContainer]}>
-      {/* <Text style={styles.infoText}>Component Table</Text> */}
-      <TableHead {...header} />
+      <TableHead сolumns={columns} />
       {content}
     </View>
   );
@@ -93,5 +112,8 @@ const styles = StyleSheet.create({
   },
   rootContainer: {
     flex: 1,
+  },
+  headerContainer: {
+    backgroundColor: GlobalStyles.colors.primary400,
   },
 });

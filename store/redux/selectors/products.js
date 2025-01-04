@@ -4,7 +4,7 @@ import { createSelector } from 'reselect';
 const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
 const getSelectedGroup = (state) => state.selecteds.selectedMenuLevel_2;
 const getProducts = (state) => state.products.catalog;
-const getCurrentOrders = (state) => state.currentOrders.docs;
+const getCurrentOrders = (state) => state.currentOrders.rows;
 
 export const selectProducts = createSelector(
 	[getSelectedGroup, getProducts, getSelectedCustomer, getCurrentOrders],
@@ -19,12 +19,18 @@ export const selectProducts = createSelector(
 
 
 				let productsQty = {};
+
+
 				if (Array.isArray(currentOrders) && currentOrders.length > 0) {
-					const doc = currentOrders.find(doc => doc.customerCode === selectedCustomer.code);
-					if (doc?.rows && Array.isArray(doc.rows) && doc.rows.length > 0) {
-						doc.rows.forEach(row => {
-							productsQty[row.productId] = row.qty;
+					const rows = currentOrders.filter(row => row.customerCode === selectedCustomer.code);
+					// console.log('Array.isArray(rows)', Array.isArray(rows));
+					// console.log('rows.length', rows?.length);
+
+					if (rows && Array.isArray(rows) && rows.length > 0) {
+						rows.forEach(row => {
+							productsQty[row.productCode] = row.qty;
 						});
+						// console.log('productsQty', productsQty);
 					}
 				}
 
@@ -52,7 +58,7 @@ export const selectProducts = createSelector(
 							customerPrice = item.prices.find(item => item.price === selectedCustomer.price)?.value || '';
 						}
 
-						return { ...item, prices: { price: customerPrice }, qty: productsQty[item.code]?.qty || '' };
+						return { ...item, prices: { price: customerPrice }, qty: productsQty[item.code] || '' };
 					});
 
 				// console.log('toReturn', toReturn);

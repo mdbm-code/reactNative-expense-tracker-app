@@ -9,6 +9,7 @@ import routesReducer from './slices/routesSlice';
 import selectedsReducer from './slices/selectedsSlice';
 import ordersReducer from './slices/ordersSlice';
 import currentOrderReducer from './slices/currentOrdersSlice';
+import themesReducer from './slices/themeSlice';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   selecteds: selectedsReducer,
   orders: ordersReducer,
   currentOrders: currentOrderReducer,
+  palette: themesReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,
@@ -33,7 +35,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: ['customers'], // Укажите здесь слайсы, которые не нужно сохранять
+  blacklist: ['palette'], // Укажите здесь слайсы, которые не нужно сохранять
   //whitelist: ['customers'], // Укажите здесь только те слайсы, которые нужно сохранять
 };
 

@@ -1,5 +1,14 @@
-const selectedCustomer = (state) => state.userStore.selectedCustomer;
-export const selectDebitCredit = (state) => {
-  const selectedCustomerCode = 5; //selectRegionId(state); // Получаем regionId из userStore
-  return state.customers.customers.filter((item) => item.region === regionId);
-};
+import { createSelector } from 'reselect';
+
+const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
+const getDocuments = (state) => state.debitCredit.documents;
+export const selectDebitCredit = createSelector(
+  [getSelectedCustomer, getDocuments],
+  (selectedCustomer, documents) => {
+
+    if (!selectedCustomer) return 'Покупатель не выбран';
+    const obj = documents.find((item) => item.payerCode === selectedCustomer.payerCode);
+    // console.log('obj', obj);
+
+    return documents.find((item) => item.payerCode === selectedCustomer.payerCode) || 'документы взаиморасчетов отсутствуют или не загружены';
+  });

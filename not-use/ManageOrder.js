@@ -5,9 +5,10 @@ import { GlobalStyles } from '../constans/styles';
 // import Button from '../components/ui/Button';
 import { OrdersContext } from '../store/context/order-context';
 // import OrderForm from '../components/ManageOrder/OrderForm';
-import Order from '../components/ManageOrder/Order';
+import Order from '../screens/CustomerScreen';
 import { ClientsContext } from '../store/context/client-context';
 import { useSelector } from 'react-redux';
+import CustomerDoc from '../screens/CustomerScreen';
 
 const dummyData = [
   {
@@ -97,9 +98,9 @@ const ManageOrder = ({ route, navigation }) => {
     useContext(OrdersContext);
   const { data: clients } = useContext(ClientsContext);
   //route, navigation доступны только в компонентах, которые зарегистрированы в навигаторе (см. App.js)
-  const editedExpenseId = route?.params?.id;
-  const customerId = route?.params?.customerId;
-  const orderId = route?.params?.orderId;
+  const editedExpenseId = ''; //route?.params?.id;
+  const customerId = ''; //route?.params?.customerId;
+  const orderId = ''; //route?.params?.orderId;
   // console.log('customerId', customerId);
   // console.log('orderId', orderId);
 
@@ -112,19 +113,19 @@ const ManageOrder = ({ route, navigation }) => {
   // const selectedClient = clients.find((item) => item.id === editedExpenseId);
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: selectedCustomer?.name,
-      // title: isEditing ? 'Корректировка' : 'Новая заявка',
-    });
+    // navigation.setOptions({
+    //   title: selectedCustomer?.name,
+    //   // title: isEditing ? 'Корректировка' : 'Новая заявка',
+    // });
   }, []);
 
   function onDeleteHandler() {
     deleteOrder(editedExpenseId);
-    navigation.goBack();
+    //navigation.goBack();
   }
 
   function canselHandler() {
-    navigation.goBack();
+    //navigation.goBack();
   }
 
   function confirmHandler(orderData) {
@@ -133,7 +134,7 @@ const ManageOrder = ({ route, navigation }) => {
     } else {
       addOrder(orderData);
     }
-    navigation.goBack();
+    //navigation.goBack();
   }
 
   function pressCellHandler(payload) {
@@ -146,7 +147,7 @@ const ManageOrder = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Order
+      <CustomerDoc
         onUpdateValue={updateTableValueHandler}
         onPress={pressCellHandler}
         onCancel={canselHandler}
@@ -156,22 +157,6 @@ const ManageOrder = ({ route, navigation }) => {
         rows={orderCart}
         client={orderCustomer}
       />
-      {/* <OrderForm
-        onCancel={canselHandler}
-        onSubmit={confirmHandler}
-        submitButtonLabel={isEditing ? 'Обновить' : 'Создать'}
-        defaultValues={selectedOrder}
-      /> */}
-      {/* {isEditing && (
-        <View style={styles.deleteContainer}>
-          <IconButton
-            name={'trash'}
-            color={GlobalStyles.colors.error500}
-            size={36}
-            onPress={onDeleteHandler}
-          />
-        </View>
-      )} */}
     </View>
   );
 };

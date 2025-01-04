@@ -3,13 +3,13 @@ import { StyleSheet, View, Text } from 'react-native';
 import { DrawerLayout } from 'react-native-gesture-handler';
 import { GlobalStyles } from '../constans/styles';
 import IconButton from '../components/ui/IconButton';
-import ProductMenu from '../components/ProductsMenu/';
-import ProductsOutput from '../components/ProductsOutput';
+import ProductMenu from '../components/ManageProductsScreen/ProductsMenu';
+import ProductsOutput from '../components/ManageProductsScreen/ProductsOutput';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../store/redux/selectors/products';
 
-const ManageOrderProducts = ({ navigation, route }) => {
+const ManageProductsScreen = ({ navigation, route }) => {
 
   const drawerRef = useRef(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -68,7 +68,7 @@ const ManageOrderProducts = ({ navigation, route }) => {
   );
 };
 
-export default ManageOrderProducts;
+export default ManageProductsScreen;
 
 const styles = StyleSheet.create({
   container: {

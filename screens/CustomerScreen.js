@@ -1,18 +1,16 @@
-import React, { useContext, useLayoutEffect, useMemo } from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import React, { useMemo, useLayoutEffect } from 'react';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import OrderForm from './OrderForm';
-import Table from './table/Table';
-import OrderTable from './OrderTable';
-import DebtTable from './Debt/DebtTable';
-import { useNavigation } from '@react-navigation/native';
-import IconButton from '../ui/IconButton';
-import { ClientsContext } from '../../store/context/client-context';
-import FallbackText from '../FallbackText';
+import FallbackText from '../components/FallbackText';
 import { Ionicons } from '@expo/vector-icons';
-import CustomerOnMap from '../Clients/CustomerOnMap';
-import Debt from './Debt';
-import { useSelector } from 'react-redux';
+// import Debt from '../components/ManageOrder/Debt';
+import { useDispatch, useSelector } from 'react-redux';
+import CustomerDocOrder from '../components/CustomerScreen/CustomerDocOrder';
+import { setSelectedDocTab } from '../store/redux/slices/selectedsSlice';
+// import { useNavigation } from '@react-navigation/native';
+import IconButton from '../components/ui/IconButton';
+import CustomerDocDebt from '../components/CustomerScreen/CustomerDocDebt';
+import { GlobalStyles } from '../constans/styles';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -43,85 +41,28 @@ const renderTabBar = (props) => (
   />
 );
 
-const Order = ({
-  onUpdateValue,
-  onPress,
-  onCancel,
-  onSubmit,
-  submitButtonLabel,
-  orderParams,
-  rows,
-  client,
-}) => {
+const CustomerScreen = ({ route, navigation }) => {
   const layout = useWindowDimensions();
+  // const navigation = useNavigation();
   const [index, setIndex] = React.useState(0);
-  const navigation = useNavigation();
-  const { setTabIndex } = useContext(ClientsContext);
+  const dispatch = useDispatch();
+  const { selectedCustomer } = useSelector((state) => state.selecteds);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: ({ tintColor }) => (
-        <IconButton
-          name='add-circle-outline'
-          color={tintColor}
-          size={24}
-          onPress={() =>
-            navigation.navigate('ManageOrderProducts', { clientId: client?.id })
-          }
-        />
-      ),
-    });
-  }, []);
+  const onIndexChangeHandler = (ind) => {
+    dispatch(setSelectedDocTab(ind));
+  };
 
   const TaskRoute = () => (
-    // <OrderForm
-    //   onCancel={onCancel}
-    //   onSubmit={onSubmit}
-    //   submitButtonLabel={submitButtonLabel}
-    //   defaultValues={orderParams}
-    // />
     <FallbackText>Спецзадачи, акции</FallbackText>
   );
 
-  const OrderRoute = () => (
-    <FallbackText>Таблица заявки</FallbackText>
-    // <OrderTable
-    //   header={{
-    //     name: 'Наименование товара',
-    //     unit: 'ед.',
-    //     price: 'Цена',
-    //     qty: 'Кол',
-    //   }}
-    //   rows={rows}
-    //   keyName='id'
-    //   onPress={onPress}
-    //   onUpdateValue={onUpdateValue}
-    // />
-  );
-
-  const DebtRoute = () => <Debt />;
+  const OrderRoute = () => <CustomerDocOrder />;
+  const DebtRoute = () => <CustomerDocDebt />;
 
   const ReturnRoute = () => (
-    // <OrderForm
-    //   onCancel={onCancel}
-    //   onSubmit={onSubmit}
-    //   submitButtonLabel={submitButtonLabel}
-    //   defaultValues={orderParams}
-    // />
     <FallbackText>Возврат товара</FallbackText>
   );
   const ParamsRoute = () => (
-    // <OrderForm
-    //   onCancel={onCancel}
-    //   onSubmit={onSubmit}
-    //   submitButtonLabel={submitButtonLabel}
-    //   defaultValues={orderParams}
-    // />
-    // <CustomerOnMap
-    //   location={{ latitude: 37.6176, longitude: 55.7558 }}
-    //   title={'title'}
-    //   description={'description'}
-    // />
     <FallbackText>Профиль</FallbackText>
   );
 
@@ -142,15 +83,38 @@ const Order = ({
     []
   );
 
+  useLayoutEffect(() => {
+    const currentRoute = routes[index].key;
+    if (currentRoute === 'order' || currentRoute === 'return') {
+      navigation.setOptions({
+        title: selectedCustomer?.name,
+        headerRight: ({ tintColor }) => (
+          <IconButton
+            name='add-circle-outline'
+            color={tintColor}
+            size={24}
+            onPress={() => navigation.navigate('ManageProductsScreen')}
+          />
+        ),
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: null,
+      });
+    }
+  }, [navigation, index]);
+
   return (
     <View style={styles.rootContainer}>
       <TabView
+        swipeEnabled={false}
         navigationState={{ index, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={(index) => {
           setIndex(index);
-          setTabIndex(routes[index]);
+          // setTabIndex(routes[index]);
+          onIndexChangeHandler(index);
         }}
         initialLayout={{ width: layout.width }}
         onTabPress={({ route, preventDefault }) => {
@@ -183,10 +147,18 @@ const Order = ({
   );
 };
 
-export default Order;
+export default CustomerScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
+    backgroundColor: GlobalStyles.colors.primary800,
+  },
+  deleteContainer: {
+    marginTop: 16,
+    paddingTop: 8,
+    borderTopWidth: 2,
+    borderTopColor: GlobalStyles.colors.primary200,
+    alignItems: 'center',
   },
 });

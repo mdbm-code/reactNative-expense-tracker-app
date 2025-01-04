@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { GlobalStyles } from '../../../constans/styles'
-import InputCell from '../../ui/InputCell'
+import { GlobalStyles } from '../../constans/styles';
+import InputCell from '../../components/ui/InputCell'
 
-const TableRowCell = ({ onPress, title, style, titleStyle, inputConfig, onChangeValue, returnParams, as, flex = 1, selected }) => {
+const GridTableRowCell = ({ onPress, title, style, titleStyle, inputConfig, onChangeValue, returnParams, as, flex = 1 }) => {
 
 	let content = <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text>
 
@@ -39,7 +39,7 @@ const TableRowCell = ({ onPress, title, style, titleStyle, inputConfig, onChange
 	)
 }
 
-export default TableRowCell
+export default GridTableRowCell
 
 const styles = StyleSheet.create({
 	rowCell: {

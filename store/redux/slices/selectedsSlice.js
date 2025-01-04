@@ -9,7 +9,7 @@ const initialState = {
   selectedRoute: null,
   selectedCustomer: null,
   selectedOrder: null,
-  selectedOrderTab: 0,
+  selectedDocTab: 0,
   selectedTheme: 'light',
   selectedManager: '95',
   selectedMenuLevel_1: null,
@@ -34,8 +34,8 @@ const selectedsSlice = createSlice({
     setSelectedOrder: (state, action) => {
       state.selectedOrder = action.payload;
     },
-    setSelectedOrderTab: (state, action) => {
-      state.selectedOrderTab = action.payload;
+    setSelectedDocTab: (state, action) => {
+      state.selectedDocTab = action.payload;
     },
     setSelectedTheme: (state, action) => {
       state.selectedTheme = action.payload;
@@ -57,7 +57,7 @@ export const {
   setSelectedRoute,
   setSelectedCustomer,
   setSelectedOrder,
-  setSelectedOrderTab,
+  setSelectedDocTab,
   setSelectedTheme,
   setSelectedManager,
   setSelectedMenuLevel_1,

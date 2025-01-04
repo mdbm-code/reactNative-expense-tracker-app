@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { GlobalStyles } from './constans/styles';
 
 //screens
-import ManageOrder from './screens/ManageOrder.js';
-import AllExpenses from './screens/AllExpenses';
-import RecentExpenses from './screens/RecentExpenses.js';
-import ManageOrderProducts from './screens/ManageOrderProducts.js';
-import AllClients from './screens/AllClients.js';
+// import ManageOrder from './screens/ManageOrder.js';
+// import AllExpenses from './screens/AllExpenses';
+// import RecentExpenses from './screens/RecentExpenses.js';
+// import ManageOrderProducts from './screens/ManageOrderProducts.js';
+import CustomersListScreen from './screens/CustomersListScreen.js';
 
 //components
 import IconButton from './components/ui/IconButton.js';
@@ -28,12 +28,16 @@ import { reduxPersistor, reduxStore } from './store/redux/store.js';
 import { PersistGate } from 'redux-persist/integration/react';
 // import YaMap from 'react-native-yamap';
 // import { useEffect } from 'react';
-import Synchronization from './screens/Synchronization.js';
+import SynchronizationScreen from './screens/SynchronizationScreen.js';
+import CustomerScreen from './screens/CustomerScreen.js';
+import ManageProductsScreen from './screens/ManageProductsScreen.js';
+import ThemeProvider from './store/context/theme-context.js';
+// import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 
-function ExpensesOverview() {
+function CustomersOverview() {
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
@@ -43,17 +47,17 @@ function ExpensesOverview() {
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => (
           <IconButton
-            name='add'
+            name='search'
             color={tintColor}
             size={24}
-            onPress={() => navigation.navigate('ManageOrder')}
+            onPress={() => navigation.navigate('CustomerScreen')}
           />
         ),
       })}
     >
       <BottomTab.Screen
-        name='AllClients'
-        component={AllClients}
+        name='CustomersListScreen'
+        component={CustomersListScreen}
         options={{
           title: 'Мои клиенты',
           tabBarLabel: 'Клиенты',
@@ -62,15 +66,15 @@ function ExpensesOverview() {
           ),
           headerRight: ({ tintColor }) => (
             <IconButton
-              name='person-add-outline'
+              name='search'
               color={tintColor}
               size={24}
-              onPress={() => navigation.navigate('ManageOrder')}
+              onPress={() => navigation.navigate('CustomerScreen')}
             />
           ),
         }}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name='RecentExpenses'
         component={RecentExpenses}
         options={{
@@ -80,8 +84,8 @@ function ExpensesOverview() {
             <Ionicons name='hourglass' color={color} size={size} />
           ),
         }}
-      />
-      <BottomTab.Screen
+      /> */}
+      {/* <BottomTab.Screen
         name='AllExpenses'
         component={AllExpenses}
         options={{
@@ -91,10 +95,10 @@ function ExpensesOverview() {
             <Ionicons name='calendar' color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       <BottomTab.Screen
         name='Sync'
-        component={Synchronization}
+        component={SynchronizationScreen}
         options={{
           title: 'Обмен',
           tabBarLabel: 'Обмен',
@@ -108,48 +112,52 @@ function ExpensesOverview() {
 }
 
 export default function App() {
+
+
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style='light' />
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>
-            <OrderContextProvider>
-              <ClientContextProvider>
-                <NavigationContainer>
-                  <Stack.Navigator
-                    screenOptions={{
-                      headerStyle: {
-                        backgroundColor: GlobalStyles.colors.primary500,
-                      },
-                      headerTintColor: 'white',
-                    }}
-                  >
-                    <Stack.Screen
-                      name='ExpensesOverview'
-                      component={ExpensesOverview}
-                      options={{
-                        headerShown: false,
+            <ThemeProvider>
+              <OrderContextProvider>
+                <ClientContextProvider>
+                  <NavigationContainer>
+                    <Stack.Navigator
+                      screenOptions={{
+                        headerStyle: {
+                          backgroundColor: GlobalStyles.colors.primary500,
+                        },
+                        headerTintColor: 'white',
                       }}
-                    />
-                    <Stack.Screen
-                      name='ManageOrder'
-                      component={ManageOrder}
-                    // options={{
-                    //   presentation: 'fullScreenModal',
-                    // }}
-                    />
-                    <Stack.Screen
-                      name='ManageOrderProducts'
-                      component={ManageOrderProducts}
-                    // options={{
-                    //   presentation: 'fullScreenModal',
-                    // }}
-                    />
-                  </Stack.Navigator>
-                </NavigationContainer>
-              </ClientContextProvider>
-            </OrderContextProvider>
+                    >
+                      <Stack.Screen
+                        name='CustomersOverview'
+                        component={CustomersOverview} //маршруты дня (список клиентов)
+                        options={{
+                          headerShown: false,
+                        }}
+                      />
+                      <Stack.Screen
+                        name='CustomerScreen'
+                        component={CustomerScreen} //страница клиента
+                      // options={{
+                      //   presentation: 'fullScreenModal',
+                      // }}
+                      />
+                      <Stack.Screen
+                        name='ManageProductsScreen'
+                        component={ManageProductsScreen} //подбор товаров в заявку клиента
+                      // options={{
+                      //   presentation: 'fullScreenModal',
+                      // }}
+                      />
+                    </Stack.Navigator>
+                  </NavigationContainer>
+                </ClientContextProvider>
+              </OrderContextProvider>
+            </ThemeProvider>
           </PersistGate>
         </Provider>
       </GestureHandlerRootView>

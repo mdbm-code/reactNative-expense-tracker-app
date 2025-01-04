@@ -6,7 +6,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
-  docs: [],
+  rows: [],
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
 };
@@ -16,21 +16,28 @@ const currentOrdersSlice = createSlice({
   name: 'currentOrders',
   initialState,
   reducers: {
-
     findAndUpdateOrderRow: (state, action) => {
-      const { customerId, productId, price, qty } = action.payload
-      if (customerId && productId && price) {
-        const existedRow = state.rows.find(row => row.customerId === customerId && row.productId === productId);
-        if (existedRow) {
-          existedRow.price = price;
-          existedRow.qty = qty;
+      const { customerCode, productCode, price, qty } = action.payload
+      if (customerCode && productCode && price) {
+        let row = state.rows.find(row => row.customerCode === customerCode && row.productCode === productCode);
+        if (row) {
+          row.price = price;
+          row.qty = qty;
+          console.log('update exiting row', row);
+
         } else {
-          state.rows.push({ customerId, productId, price, qty });
+          row = {
+            customerCode,
+            productCode,
+            price,
+            qty
+          };
+          state.rows.push(row);
+          console.log('add new row', row);
         }
-      } else {
-        return state.rows
       }
-    }
+    },
+    //следующий редьюсер
   },
 
 });

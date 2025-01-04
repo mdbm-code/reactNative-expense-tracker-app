@@ -7,7 +7,7 @@ const ExpenseItem = ({ description, date, amount, id }) => {
   const navigation = useNavigation();
 
   function pressExpenseHandler() {
-    navigation.navigate('ManageOrder', { id });
+    navigation.navigate('CustomerScreen', { id });
   }
 
   return (

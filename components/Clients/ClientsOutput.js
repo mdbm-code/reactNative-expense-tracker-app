@@ -8,8 +8,10 @@ import { selectRoutePoints } from '../../store/redux/selectors/routes';
 
 function ClientsOutput({ fallbackText }) {
   const dispatch = useDispatch();
+
   const { selectedRoute } = useSelector((state) => state.selecteds);
   const points = useSelector(selectRoutePoints);
+
   let content = <Text style={styles.infoText}>{fallbackText}</Text>;
   if (typeof points === 'string') {
     content = (
@@ -18,6 +20,8 @@ function ClientsOutput({ fallbackText }) {
       </View>
     );
   } else if (points.length > 0) {
+    // console.log(points);
+
     content = <ClientsList rows={points} />;
   }
 

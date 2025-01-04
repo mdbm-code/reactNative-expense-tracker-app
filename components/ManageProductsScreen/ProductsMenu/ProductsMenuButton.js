@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import IconButton from '../ui/IconButton'
-import { GlobalStyles } from '../../constans/styles'
+import IconButton from '../../ui/IconButton'
+import { GlobalStyles } from '../../../constans/styles'
 import { Ionicons } from '@expo/vector-icons';
 
 const ProductsMenuButton = ({ title, iconName, onPress, selected }) => {

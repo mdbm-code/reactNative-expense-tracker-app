@@ -1,67 +1,90 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+import TableRowCell from './TableRowCell';
 import { GlobalStyles } from '../../../constans/styles';
 
-const TableHead = ({ style, name, unit, price, qty }) => {
-  console.log(name, unit, price, qty);
+const TableHead = ({ onPress, selected, style, columns }) => {
 
-  return (<>
-    {/* <Text style={styles.text}>Component TableHead</Text> */}
-    <View style={[styles.rowContainer, style]}>
-      <View style={[styles.rowCell, styles.nameContainer]}>
-        <Text style={[styles.text, styles.nameText]}>{name}</Text>
-      </View>
-      <View style={[styles.rowCell, styles.unitContainer]}>
-        <Text style={[styles.text]}>{unit}</Text>
-      </View>
-      <View style={[styles.rowCell, styles.priceContainer]}>
-        <Text style={[styles.text, styles.numberText]}>{price}</Text>
-      </View>
-      <View style={[styles.rowCell, styles.qtyContainer]}>
-        <Text style={[styles.text, styles.numberText]}>{qty}</Text>
-      </View>
-    </View>
-  </>);
-};
+	const titleStyle = [styles.text];
+	if (selected) {
+		titleStyle.push(styles.selectedText);
+	}
+	const containerStyle = [styles.rowContainer];
+	if (style) {
+		containerStyle.push(style);
+	}
+	if (selected) {
+		containerStyle.push(styles.selected);
+	}
 
-export default TableHead;
+	if (Array.isArray(columns) && columns.length > 0) {
+		return (
+			<View style={[...containerStyle]}>
+				{columns.map((column, index) => (
+					<TableRowCell
+						key={index}
+						title={column?.title}
+						flex={column?.flex}
+						titleStyle={[...titleStyle, column?.titleStyle]}
+						onPress={column?.onPress}
+					/>
+				))}
+			</View>
+		)
+	}
+
+	return (<>
+		<View style={[...containerStyle, selected && styles.selected]}>
+			<TableRowCell
+				title={'Наименование'}
+				flex={8}
+				titleStyle={[...titleStyle, styles.name]}
+			/>
+			{/* <TableRowCell title={'Ед.'} flex={2} titleStyle={[...titleStyle]} /> */}
+			<TableRowCell
+				title={'Цена'}
+				flex={3}
+				titleStyle={[...titleStyle, styles.number]}
+			/>
+			<TableRowCell
+				title={'Колво'}
+				flex={2}
+				titleStyle={[...titleStyle]}
+			/>
+
+		</View>
+	</>)
+}
+
+export default TableHead
 
 const styles = StyleSheet.create({
-  rowContainer: {
-    flexDirection: 'row',
-  },
-  rowCell: {
-    flex: 1,
-    borderWidth: 0.2,
-    borderColor: GlobalStyles.colors.primary100,
-    paddingHorizontal: 4,
-    justifyContent: 'center',
-    backgroundColor: GlobalStyles.colors.primary400,
-  },
-  text: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 12,
-  },
-  nameText: {
-    color: 'white',
-    textAlign: 'left',
-    textAlignVertical: 'top',
-    paddingLeft: 4,
-  },
-  nameContainer: {
-    flex: 1,
-    textAlign: 'left',
-  },
-  unitContainer: {
-    flex: 0.2,
-  },
-  priceContainer: {
-    flex: 0.25,
-  },
-  qtyContainer: {
-    flex: 0.15,
-  },
-  numberText: {
-    textAlign: 'right',
-  },
-});
+	rowContainer: {
+		flexDirection: 'row',
+		borderBottomWidth: 1,
+		borderBottomColor: GlobalStyles.colors.primary100
+	},
+	rowCell: {
+		flex: 1,
+		borderWidth: 0.2,
+		borderColor: GlobalStyles.colors.primary100,
+		paddingHorizontal: 4,
+		justifyContent: 'center',
+		minHeight: 36,
+	},
+	text: {
+		color: 'white',
+	},
+	selectedText: {
+		color: 'black',
+	},
+	name: {
+		textAlign: 'left',
+	},
+	number: {
+		textAlign: 'right',
+	},
+	selected: {
+		backgroundColor: GlobalStyles.colors.primary50,
+	}
+})

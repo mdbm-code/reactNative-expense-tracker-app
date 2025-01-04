@@ -4,8 +4,8 @@ import React from 'react'
 // import { groups } from '../../data/groups';
 import ProductsMenuItem from './ProductsMenuItem';
 import { useSelector } from 'react-redux';
-import { selectGroups } from '../../store/redux/selectors/groups';
-import FallbackText from '../FallbackText';
+import { selectGroups } from '../../../store/redux/selectors/groups';
+import FallbackText from '../../FallbackText';
 
 const ProductsMenu = ({ closeDrawer }) => {
 	const groups = useSelector(selectGroups);

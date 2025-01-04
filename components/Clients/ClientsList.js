@@ -1,17 +1,17 @@
 import { FlatList, StyleSheet, View } from 'react-native';
 import ClientItem from './ClientItem';
 
-function renderExpenseItem({ item }) {
-  return <ClientItem item={item} />;
+function renderExpenseItem(itemData, palette) {
+  return <ClientItem item={itemData.item} palette={palette} />;
 }
 
-const ClientsList = ({ rows }) => {
+const ClientsList = ({ rows, palette }) => {
   return (
     <View style={styles.container}>
       <FlatList
         data={rows}
         keyExtractor={(item) => item.code}
-        renderItem={renderExpenseItem}
+        renderItem={(itemData) => renderExpenseItem(itemData, palette)}
       />
     </View>
   );

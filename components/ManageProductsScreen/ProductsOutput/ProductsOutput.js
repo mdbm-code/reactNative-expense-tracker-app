@@ -1,8 +1,8 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import FallbackText from '../FallbackText'
-import OrderTable from '../ManageOrder/OrderTable'
-import Table from '../ManageOrder/table/Table'
+import FallbackText from '../../FallbackText'
+import OrderTable from '../../ManageOrder/OrderTable'
+import Table from '../../ManageOrder/table/Table'
 
 const ProductsOutput = ({ products }) => {
 

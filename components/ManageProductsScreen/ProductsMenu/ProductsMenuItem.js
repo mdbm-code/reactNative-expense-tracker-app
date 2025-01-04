@@ -1,8 +1,8 @@
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { GlobalStyles } from '../../constans/styles'
+import { GlobalStyles } from '../../../constans/styles'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSelectedMenuLevel_1, setSelectedMenuLevel_2 } from '../../store/redux/slices/selectedsSlice'
+import { setSelectedMenuLevel_1, setSelectedMenuLevel_2 } from '../../../store/redux/slices/selectedsSlice'
 import ProductsMenuButton from './ProductsMenuButton'
 
 

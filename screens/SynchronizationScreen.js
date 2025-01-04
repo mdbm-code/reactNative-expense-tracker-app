@@ -12,11 +12,14 @@ import { addProducts } from '../store/redux/slices/productsSlice';
 
 import { routes } from '../data/routes';
 import { products } from '../data/products';
+import { documents } from '../data/documents';
 import { groups } from '../data/groups';
 import { selectProducts } from '../store/redux/selectors/products';
 import { addGroups } from '../store/redux/slices/groupsSlice';
 import { selectGroups } from '../store/redux/selectors/groups';
-const Synchronization = () => {
+import { addDocuments } from '../store/redux/slices/debitCreditSlice';
+import { toggleTheme } from '../store/redux/slices/themeSlice';
+const SynchronizationScreen = () => {
   const dispatch = useDispatch();
   // const state = useSelector((state) => state.routes);
   const [showSelecteds, setShowSelecteds] = useState(false);
@@ -24,6 +27,7 @@ const Synchronization = () => {
   // const selectedPoints = useSelector(selectRoutePoints);
   const selectedProducts = useSelector(selectProducts);
   const selectedGroups = useSelector(selectGroups);
+  const selectedDocs = useSelector(state => state.debitCredit.documents);
 
   const loadRoutesHandler = () => {
     dispatch(addRoutes(routes));
@@ -32,6 +36,9 @@ const Synchronization = () => {
   const loadProductsHandler = () => {
     dispatch(addProducts(products));
   };
+  const loadDebitCredit = () => {
+    dispatch(addDocuments(documents));
+  };
 
   const loadGroupsHandler = () => {
     dispatch(addGroups(groups));
@@ -39,6 +46,10 @@ const Synchronization = () => {
 
   const showRoutesHandler = () => {
     setShowSelecteds(true);
+  }
+
+  const toggleThemeHandler = () => {
+    dispatch(toggleTheme());
   }
 
   // return <FallbackText style={styles.bg}>Synchronization Screen</FallbackText>;
@@ -53,6 +64,12 @@ const Synchronization = () => {
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={loadGroupsHandler}>Загрузить группы товаров</Button>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button onPress={loadDebitCredit}>Загрузить акты-сверки</Button>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button onPress={toggleThemeHandler}>Сменить тему</Button>
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={showRoutesHandler}>Показать текущие состояния</Button>
@@ -97,6 +114,9 @@ const Synchronization = () => {
               <Text style={styles.text}>
                 groups: {typeof selectedGroups} {Array.isArray(selectedGroups) ? ` array(${selectedGroups.length})` : selectedGroups}
               </Text>
+              <Text style={styles.text}>
+                documents: {typeof selectedDocs} {Array.isArray(selectedDocs) ? ` array(${selectedDocs.length})` : selectedDocs}
+              </Text>
               {/* <Text style={styles.text}>
                 selectedPoints: {typeof selectedPoints}
               </Text> */}
@@ -116,7 +136,7 @@ const Synchronization = () => {
   );
 };
 
-export default Synchronization;
+export default SynchronizationScreen;
 
 const styles = StyleSheet.create({
   root: {
