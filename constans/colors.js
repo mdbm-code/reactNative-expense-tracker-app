@@ -24,7 +24,7 @@ export const colorShades = {
 			dark: 400,
 		},
 	}
-}
+};
 export const colorPalettes = {
 	light: {
 		primary: {
@@ -233,7 +233,6 @@ export const colorPalettes = {
 		divider: 'rgba(255, 255, 255, 0.12)',
 	}
 };
-
 export const colors = {
 	deepPurple: {
 		50: '#ede7f6',
@@ -443,4 +442,4 @@ export const colors = {
 		A400: '#00e5ff',
 		A700: '#00b8d4'
 	},
-}
+};

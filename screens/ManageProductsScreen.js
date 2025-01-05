@@ -8,12 +8,14 @@ import ProductsOutput from '../components/ManageProductsScreen/ProductsOutput';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '../store/redux/selectors/products';
+import { getThemePalette } from '../store/redux/selectors/theme';
 
 const ManageProductsScreen = ({ navigation, route }) => {
 
   const drawerRef = useRef(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const products = useSelector(selectProducts);
+  const theme = useSelector(getThemePalette);
 
   const openDrawer = () => {
     drawerRef.current?.openDrawer();
@@ -33,10 +35,14 @@ const ManageProductsScreen = ({ navigation, route }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Подбор товаров',
+      headerStyle: {
+        backgroundColor: theme.primary.main
+      },
+      headerTintColor: theme.primary.contrastText,
       headerRight: () => (
         <IconButton
           name="menu"
-          color="white"
+          color={theme.primary.contrastText}
           size={24}
           onPress={toggleDrawer}
         />

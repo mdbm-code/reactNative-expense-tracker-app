@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
   selecteds: selectedsReducer,
   orders: ordersReducer,
   currentOrders: currentOrderReducer,
-  palette: themesReducer,
+  theme: themesReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,

@@ -11,6 +11,7 @@ import { setSelectedDocTab } from '../store/redux/slices/selectedsSlice';
 import IconButton from '../components/ui/IconButton';
 import CustomerDocDebt from '../components/CustomerScreen/CustomerDocDebt';
 import { GlobalStyles } from '../constans/styles';
+import { getThemePalette } from '../store/redux/selectors/theme';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -47,6 +48,7 @@ const CustomerScreen = ({ route, navigation }) => {
   const [index, setIndex] = React.useState(0);
   const dispatch = useDispatch();
   const { selectedCustomer } = useSelector((state) => state.selecteds);
+  const theme = useSelector(getThemePalette);
 
   const onIndexChangeHandler = (ind) => {
     dispatch(setSelectedDocTab(ind));
@@ -88,6 +90,10 @@ const CustomerScreen = ({ route, navigation }) => {
     if (currentRoute === 'order' || currentRoute === 'return') {
       navigation.setOptions({
         title: selectedCustomer?.name,
+        headerStyle: {
+          backgroundColor: theme.primary.main, // цвет фона
+        },
+        headerTintColor: theme.primary.contrastText,
         headerRight: ({ tintColor }) => (
           <IconButton
             name='add-circle-outline'
@@ -100,6 +106,10 @@ const CustomerScreen = ({ route, navigation }) => {
     } else {
       navigation.setOptions({
         headerRight: null,
+        headerStyle: {
+          backgroundColor: theme.primary.main, // цвет фона
+        },
+        headerTintColor: theme.primary.contrastText,
       });
     }
   }, [navigation, index]);

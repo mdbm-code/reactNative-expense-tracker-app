@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { setSelectedCustomer } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 
-const ClientItem = ({ item, palette }) => {
+const ClientItem = ({ item, theme }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -14,11 +14,15 @@ const ClientItem = ({ item, palette }) => {
     dispatch(setSelectedCustomer({ ...item }));
     navigation.navigate('CustomerScreen');
   }
-  const containerStyle = [styles.container, { backgroundColor: item?.hasOrder ? palette.primary.light : palette.grey[300] }]
+  // const containerStyle = [styles.container,]
+  const containerStyle = [styles.container, { backgroundColor: item?.hasOrder ? theme.success.light : theme.warning.light }]
 
-  const iconStyle = [styles.icon, { color: palette.text.disabled }];
-  const textTitle = [styles.textBase, { color: palette.text.primary }];
-  const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
+  // const iconStyle = [styles.icon,];
+  const textTitle = [styles.textBase,];
+  const textSubtitle = [styles.textBase,];
+  const iconStyle = [styles.icon];
+  // const textTitle = [styles.textBase, { color: palette.text.primary }];
+  // const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
 
   return (
     <Pressable
@@ -31,7 +35,7 @@ const ClientItem = ({ item, palette }) => {
         <View style={styles.firstLineContainer}>
           <Text style={[...textTitle, styles.description]}>{item?.name}</Text>
           <IconButton
-            color='white'
+            color={theme.primary.contrastText}
             size={24}
             viewStyle={[...iconStyle]}
             name={item?.visit === 1 ? 'walk-outline' : 'call-outline'}

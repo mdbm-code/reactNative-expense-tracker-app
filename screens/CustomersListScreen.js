@@ -5,7 +5,7 @@ import { setSelectedRoute } from '../store/redux/slices/selectedsSlice';
 import { selectRoutePoints } from '../store/redux/selectors/routes';
 import ClientsList from '../components/Clients/ClientsList';
 import ClientsRouter from '../components/Clients/ClientsRouter';
-import { getThemePalette } from '../store/redux/selectors/palette';
+import { getThemePalette } from '../store/redux/selectors/theme';
 import { loadColors } from '../store/redux/slices/themeSlice';
 // import { GlobalStyles } from '../constans/styles';
 // import { useTheme } from '../store/context/theme-context';
@@ -20,15 +20,15 @@ const CustomersListScreen = () => {
   const { selectedRoute } = useSelector((state) => state.selecteds);
   const points = useSelector(selectRoutePoints);
   // Получаем текущую тему и палитру из состояния Redux
-  const palette = useSelector(getThemePalette);
+  const theme = useSelector(getThemePalette);
 
-  console.log('palette:', palette);
+  // console.log('palette:', palette);
 
   let content = <Text style={styles.infoText}>Список ваших клиентов пуст</Text>;
   if (typeof points === 'string') {
     content = <Text style={styles.infoText}>{points}</Text>;
   } else if (points.length > 0) {
-    content = <ClientsList rows={points} palette={palette} />;
+    content = <ClientsList rows={points} theme={theme} />;
   }
 
   function selectRouteHandler(value) {
@@ -36,7 +36,8 @@ const CustomersListScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: palette.background.default }]}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      {/* <View style={[styles.container, { backgroundColor: palette.background.default }]}> */}
       {/* <ClientsSummary periodName={expensesPeriod} rows={rows} /> */}
       <ClientsRouter
         value={selectedRoute}

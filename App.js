@@ -23,7 +23,7 @@ import IconButton from './components/ui/IconButton.js';
 import OrderContextProvider from './store/context/order-context.js';
 import ClientContextProvider from './store/context/client-context.js';
 // import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { reduxPersistor, reduxStore } from './store/redux/store.js';
 import { PersistGate } from 'redux-persist/integration/react';
 // import YaMap from 'react-native-yamap';
@@ -32,19 +32,25 @@ import SynchronizationScreen from './screens/SynchronizationScreen.js';
 import CustomerScreen from './screens/CustomerScreen.js';
 import ManageProductsScreen from './screens/ManageProductsScreen.js';
 import ThemeProvider from './store/context/theme-context.js';
+import { getThemePalette } from './store/redux/selectors/theme.js';
 // import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 
 function CustomersOverview() {
+  const theme = useSelector(getThemePalette);
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        headerTintColor: 'white',
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        headerStyle: { backgroundColor: theme.primary.main },
+        //headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        headerTintColor: theme.primary.contrastText,
+        tabBarStyle: { backgroundColor: theme.primary.main },
+        // tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        tabBarActiveTintColor: theme.primary.contrastText,
+        tabBarInactiveTintColor: theme.secondary.contrastText,
+        // tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => (
           <IconButton
             name='search'
@@ -120,44 +126,42 @@ export default function App() {
         <StatusBar style='light' />
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>
-            <ThemeProvider>
-              <OrderContextProvider>
-                <ClientContextProvider>
-                  <NavigationContainer>
-                    <Stack.Navigator
-                      screenOptions={{
-                        headerStyle: {
-                          backgroundColor: GlobalStyles.colors.primary500,
-                        },
-                        headerTintColor: 'white',
+            <OrderContextProvider>
+              <ClientContextProvider>
+                <NavigationContainer>
+                  <Stack.Navigator
+                    screenOptions={{
+                      // headerStyle: {
+                      //   backgroundColor: GlobalStyles.colors.primary500,
+                      // },
+                      headerTintColor: 'white',
+                    }}
+                  >
+                    <Stack.Screen
+                      name='CustomersOverview'
+                      component={CustomersOverview} //маршруты дня (список клиентов)
+                      options={{
+                        headerShown: false,
                       }}
-                    >
-                      <Stack.Screen
-                        name='CustomersOverview'
-                        component={CustomersOverview} //маршруты дня (список клиентов)
-                        options={{
-                          headerShown: false,
-                        }}
-                      />
-                      <Stack.Screen
-                        name='CustomerScreen'
-                        component={CustomerScreen} //страница клиента
-                      // options={{
-                      //   presentation: 'fullScreenModal',
-                      // }}
-                      />
-                      <Stack.Screen
-                        name='ManageProductsScreen'
-                        component={ManageProductsScreen} //подбор товаров в заявку клиента
-                      // options={{
-                      //   presentation: 'fullScreenModal',
-                      // }}
-                      />
-                    </Stack.Navigator>
-                  </NavigationContainer>
-                </ClientContextProvider>
-              </OrderContextProvider>
-            </ThemeProvider>
+                    />
+                    <Stack.Screen
+                      name='CustomerScreen'
+                      component={CustomerScreen} //страница клиента
+                    // options={{
+                    //   presentation: 'fullScreenModal',
+                    // }}
+                    />
+                    <Stack.Screen
+                      name='ManageProductsScreen'
+                      component={ManageProductsScreen} //подбор товаров в заявку клиента
+                    // options={{
+                    //   presentation: 'fullScreenModal',
+                    // }}
+                    />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </ClientContextProvider>
+            </OrderContextProvider>
           </PersistGate>
         </Provider>
       </GestureHandlerRootView>
