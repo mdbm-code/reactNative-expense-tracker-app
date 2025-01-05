@@ -49,6 +49,10 @@ const selectedsSlice = createSlice({
     setSelectedMenuLevel_2: (state, action) => {
       state.selectedMenuLevel_2 = action.payload;
     },
+    setUnselectMenu: (state, action) => {
+      state.selectedMenuLevel_1 = null;
+      state.selectedMenuLevel_2 = null;
+    },
   },
 });
 
@@ -62,6 +66,7 @@ export const {
   setSelectedManager,
   setSelectedMenuLevel_1,
   setSelectedMenuLevel_2,
+  setUnselectMenu
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store

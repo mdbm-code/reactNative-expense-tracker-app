@@ -11,14 +11,15 @@ const ClientItem = ({ item, theme }) => {
   const dispatch = useDispatch();
 
   function selectCustomerHandler(data) {
+    // console.log('SelectedCustomer:', item);
     dispatch(setSelectedCustomer({ ...item }));
     navigation.navigate('CustomerScreen');
   }
   // const containerStyle = [styles.container,]
-  const containerStyle = [styles.container, { backgroundColor: item?.hasOrder ? theme.success.light : theme.warning.light }]
+  const containerStyle = [styles.container, { backgroundColor: item?.hasOrder ? theme.secondary.main : theme.secondary.light }]
 
   // const iconStyle = [styles.icon,];
-  const textTitle = [styles.textBase,];
+  const textTitle = [styles.textBase, { color: theme.primary.contrastText }];
   const textSubtitle = [styles.textBase,];
   const iconStyle = [styles.icon];
   // const textTitle = [styles.textBase, { color: palette.text.primary }];
@@ -38,7 +39,7 @@ const ClientItem = ({ item, theme }) => {
             color={theme.primary.contrastText}
             size={24}
             viewStyle={[...iconStyle]}
-            name={item?.visit === 1 ? 'walk-outline' : 'call-outline'}
+            name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
           />
         </View>
         <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     flex: 9,
     fontSize: 16,
     marginBottom: 4,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
   // amountContainer: {
   //   paddingHorizontal: 12,

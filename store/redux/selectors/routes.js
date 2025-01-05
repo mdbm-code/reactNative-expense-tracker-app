@@ -77,6 +77,7 @@ export const selectRoutePoints = createSelector(
         payerCode: item.payerCode,
         name: item.name,
         phone: item.phone,
+        price: item.price,
         region: item.region,
         address: item.address || '',
         visit: customersParams[item.code]?.visit,

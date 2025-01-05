@@ -7,14 +7,17 @@ import GridTable from '../GridTable';
 import { selectDebitCredit } from '../../store/redux/selectors/debts';
 import FallbackText from '../FallbackText';
 import { getFormattedDate } from '../../util/date';
+import { getThemePalette } from '../../store/redux/selectors/theme';
 
 const CustomerDocDebt = () => {
 	const obj = useSelector(selectDebitCredit);
+	const theme = useSelector(getThemePalette);
 	if (typeof obj === 'string') return <FallbackText>{obj}</FallbackText>
 	const rows = obj?.docs || [];
 
 	const updatedRows = rows.map(row => {
 		return {
+			code: row.id || row.code,
 			title: `${row.title} ${getFormattedDate(row.date) || ''}`,
 			sum: row.in !== 0 ? row.in : row.out,
 		}
@@ -50,11 +53,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	headerContainer: {
-		backgroundColor: GlobalStyles.colors.primary400,
+		// backgroundColor: GlobalStyles.colors.primary400,
 	},
 	text: {
 		color: 'white',
-		fontSize: 18,
+		fontSize: 16,
 		marginBottom: 4
 	}
 })

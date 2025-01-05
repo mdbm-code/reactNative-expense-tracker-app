@@ -10,6 +10,10 @@ const GridTable = ({ rows, columns, onPress, onChangeText, rowId = 'id' }) => {
 	const [selectedRow, setSelectedRow] = useState('');
 	if (typeof rows === 'string') return <FallbackText >{rows}</FallbackText>
 
+	// console.log('rowId', rowId);
+	// console.log('GridTable.rows', rows);
+
+
 	if (!Array.isArray(columns) || columns.length === 0) {
 		return <FallbackText>Параметр colums должен быть массивом с описанием колонок</FallbackText>
 	}

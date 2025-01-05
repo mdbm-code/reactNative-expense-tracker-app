@@ -1,5 +1,5 @@
 import React, { useMemo, useLayoutEffect } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import FallbackText from '../components/FallbackText';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import { setSelectedDocTab } from '../store/redux/slices/selectedsSlice';
 // import { useNavigation } from '@react-navigation/native';
 import IconButton from '../components/ui/IconButton';
 import CustomerDocDebt from '../components/CustomerScreen/CustomerDocDebt';
-import { GlobalStyles } from '../constans/styles';
+// import { GlobalStyles } from '../constans/styles';
 import { getThemePalette } from '../store/redux/selectors/theme';
 
 const routes = [
@@ -21,13 +21,13 @@ const routes = [
   { key: 'params', title: 'params' },
 ];
 
-const renderTabBar = (props) => (
+const renderTabBar = (props, theme) => (
   <TabBar
     {...props}
     indicatorStyle={{ backgroundColor: 'white' }}
-    style={{ backgroundColor: 'blue' }}
+    style={{ backgroundColor: theme.secondary.light, color: 'blue', }}
     labelStyle={{
-      color: 'white',
+      color: 'red',
       textAlign: 'top', // Горизонтальное центрирование текста
       fontSize: 12, // Убедитесь, что размер шрифта подходит
     }}
@@ -45,9 +45,10 @@ const renderTabBar = (props) => (
 const CustomerScreen = ({ route, navigation }) => {
   const layout = useWindowDimensions();
   // const navigation = useNavigation();
-  const [index, setIndex] = React.useState(0);
+
   const dispatch = useDispatch();
-  const { selectedCustomer } = useSelector((state) => state.selecteds);
+  const { selectedCustomer, selectedDocTab } = useSelector((state) => state.selecteds);
+  const [index, setIndex] = React.useState(selectedDocTab);
   const theme = useSelector(getThemePalette);
 
   const onIndexChangeHandler = (ind) => {
@@ -115,12 +116,12 @@ const CustomerScreen = ({ route, navigation }) => {
   }, [navigation, index]);
 
   return (
-    <View style={styles.rootContainer}>
+    <View style={[styles.rootContainer, { backgroundColor: theme.primary.dark }]}>
       <TabView
         swipeEnabled={false}
         navigationState={{ index, routes }}
         renderScene={renderScene}
-        renderTabBar={renderTabBar}
+        renderTabBar={(props) => renderTabBar(props, theme)}
         onIndexChange={(index) => {
           setIndex(index);
           // setTabIndex(routes[index]);
@@ -135,8 +136,29 @@ const CustomerScreen = ({ route, navigation }) => {
           }
         }}
         options={{
+          debt: {
+            label: ({ route, labelText, focused, color }) => (
+              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+            ),
+          },
+          order: {
+            label: ({ route, labelText, focused, color }) => (
+              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+            ),
+          },
+          spec: {
+            label: ({ route, labelText, focused, color }) => (
+              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+            ),
+          },
+          return: {
+            label: ({ route, labelText, focused, color }) => (
+              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+            ),
+          },
           params: {
-            labelText: '',
+            labelText: 'ss',
+
             icon: ({ route, focused, color, size }) => (
               <Ionicons name={'apps-outline'} size={size} color={color} />
             ),
@@ -162,13 +184,13 @@ export default CustomerScreen;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: GlobalStyles.colors.primary800,
+    // backgroundColor: GlobalStyles.colors.primary800,
   },
-  deleteContainer: {
-    marginTop: 16,
-    paddingTop: 8,
-    borderTopWidth: 2,
-    borderTopColor: GlobalStyles.colors.primary200,
-    alignItems: 'center',
-  },
+  // deleteContainer: {
+  //   marginTop: 16,
+  //   paddingTop: 8,
+  //   borderTopWidth: 2,
+  //   borderTopColor: GlobalStyles.colors.primary200,
+  //   alignItems: 'center',
+  // },
 });

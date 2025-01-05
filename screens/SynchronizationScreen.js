@@ -1,24 +1,30 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-// import FallbackText from '../components/FallbackText';
 import { GlobalStyles } from '../constans/styles';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { addRoutes } from '../store/redux/slices/routesSlice';
+
+//components
 import Button from '../components/ui/Button';
-// import { selectRoutePoints } from '../store/redux/selectors/routes';
+
+//actions
+import { addRoutes } from '../store/redux/slices/routesSlice';
 import { addProducts } from '../store/redux/slices/productsSlice';
+import { addGroups } from '../store/redux/slices/groupsSlice';
+import { addDocuments } from '../store/redux/slices/debitCreditSlice';
+import { addSales } from '../store/redux/slices/salesSlice';
+import { toggleTheme } from '../store/redux/slices/themeSlice';
 
+//selectors
+import { selectProducts } from '../store/redux/selectors/products';
+import { selectGroups } from '../store/redux/selectors/groups';
 
+//initial data
 import { routes } from '../data/routes';
 import { products } from '../data/products';
 import { documents } from '../data/documents';
 import { groups } from '../data/groups';
-import { selectProducts } from '../store/redux/selectors/products';
-import { addGroups } from '../store/redux/slices/groupsSlice';
-import { selectGroups } from '../store/redux/selectors/groups';
-import { addDocuments } from '../store/redux/slices/debitCreditSlice';
-import { toggleTheme } from '../store/redux/slices/themeSlice';
+import { sales } from '../data/sales';
+
 const SynchronizationScreen = () => {
   const dispatch = useDispatch();
   // const state = useSelector((state) => state.routes);
@@ -42,6 +48,9 @@ const SynchronizationScreen = () => {
 
   const loadGroupsHandler = () => {
     dispatch(addGroups(groups));
+  };
+  const loadSalesHandler = () => {
+    dispatch(addSales(sales));
   };
 
   const showRoutesHandler = () => {
@@ -67,6 +76,9 @@ const SynchronizationScreen = () => {
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={loadDebitCredit}>Загрузить акты-сверки</Button>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button onPress={loadSalesHandler}>Загрузить продажи клиентов</Button>
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={toggleThemeHandler}>Сменить тему</Button>

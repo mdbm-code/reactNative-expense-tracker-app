@@ -33,6 +33,7 @@ import CustomerScreen from './screens/CustomerScreen.js';
 import ManageProductsScreen from './screens/ManageProductsScreen.js';
 import ThemeProvider from './store/context/theme-context.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
+import ThemeScreen from './screens/ThemeScreen.js';
 // import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
@@ -43,10 +44,10 @@ function CustomersOverview() {
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: theme.primary.main },
+        headerStyle: { backgroundColor: theme.bg },
         //headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: theme.primary.contrastText,
-        tabBarStyle: { backgroundColor: theme.primary.main },
+        tabBarStyle: { backgroundColor: theme.bg },
         // tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: theme.primary.contrastText,
         tabBarInactiveTintColor: theme.secondary.contrastText,
@@ -110,6 +111,17 @@ function CustomersOverview() {
           tabBarLabel: 'Обмен',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='sync-outline' color={color} size={size} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name='Theme'
+        component={ThemeScreen}
+        options={{
+          title: 'Тема',
+          tabBarLabel: 'Тема',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='color-palette-outline' color={color} size={size} />
           ),
         }}
       />

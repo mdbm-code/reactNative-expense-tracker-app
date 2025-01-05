@@ -47,7 +47,7 @@ export const loadColors = () => async (dispatch) => {
 		dispatch(setColors(colors));
 		dispatch(setShades(colorShades));
 		dispatch(setPalette(colorPalettes));
-		dispatch(setPrimaryColor('blue'));
+		dispatch(setPrimaryColor('teal'));
 		dispatch(setSecondaryColor('deepPurple'));
 
 	} catch (error) {

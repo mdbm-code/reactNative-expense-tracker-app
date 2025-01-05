@@ -10,6 +10,7 @@ import selectedsReducer from './slices/selectedsSlice';
 import ordersReducer from './slices/ordersSlice';
 import currentOrderReducer from './slices/currentOrdersSlice';
 import themesReducer from './slices/themeSlice';
+import salesReducer from './slices/salesSlice';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   orders: ordersReducer,
   currentOrders: currentOrderReducer,
   theme: themesReducer,
+  sales: salesReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,
