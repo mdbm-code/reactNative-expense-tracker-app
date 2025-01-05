@@ -14,7 +14,7 @@ const ProductsOutput = ({ rows }) => {
 	const dispatch = useDispatch();
 
 	// const rows = useSelector(selectProducts);
-	const customerCode = useSelector(state => state.selecteds?.selectedCustomer?.code);
+	const { code: customerCode, minSum } = useSelector(state => state.selecteds?.selectedCustomer);
 	if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>
 	if (!typeof customerCode === 'string') return <FallbackText>{'Покупатель не выбран'}</FallbackText>
 
@@ -36,7 +36,9 @@ const ProductsOutput = ({ rows }) => {
 
 		const payload = {
 			customerCode: customerCode,
+			minSum: minSum,
 			productCode: value.code,
+			base_price: value.base_price,
 			price: value.price,
 			qty: value.newValue
 		}

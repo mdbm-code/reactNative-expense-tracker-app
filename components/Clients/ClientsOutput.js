@@ -12,6 +12,8 @@ function ClientsOutput({ fallbackText }) {
   const { selectedRoute } = useSelector((state) => state.selecteds);
   const points = useSelector(selectRoutePoints);
 
+
+
   let content = <Text style={styles.infoText}>{fallbackText}</Text>;
   if (typeof points === 'string') {
     content = (

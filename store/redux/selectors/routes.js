@@ -5,7 +5,8 @@ const getSelectedManager = (state) => state.selecteds.selectedManager;
 const getSelectedRotes = (state) => state.selecteds.selectedRoute;
 const getCustomers = (state) => state.customers.catalog;
 const getRoutesCatalog = (state) => state.routes.catalog;
-const getCurrentOrders = (state) => state.currentOrders.rows;
+const getCurrentOrders = (state) => state.currentOrders.docs;
+
 
 
 //createSelector`**: Используется для создания мемоизированного селектора.
@@ -56,9 +57,13 @@ export const selectRoutePoints = createSelector(
       customersParams[item.customerCode] = { sort: item.sort, visit: item.visit };
     });
 
-    let ordersCustomers = [];
+    // let customerWhoHasOrder = [];
+    let customersOrders = {};
     if (Array.isArray(currentOrders) && currentOrders.length > 0) {
-      ordersCustomers = currentOrders.map(row => row.customerCode);
+      currentOrders.forEach(doc => {
+        // customerWhoHasOrder.push(doc.customerCode);
+        customersOrders[doc.customerCode] = doc;
+      });
     }
 
     // const allowedCodes = [];
@@ -82,7 +87,11 @@ export const selectRoutePoints = createSelector(
         address: item.address || '',
         visit: customersParams[item.code]?.visit,
         sort: customersParams[item.code]?.sort,
-        hasOrder: ordersCustomers.includes(item.code)
+        hasOrder: !!customersOrders[item.code],
+        baseTotal: customersOrders[item.code]?.baseTotal,
+        total: customersOrders[item.code]?.total,
+        percent: customersOrders[item.code]?.percent,
+        minSum: customersOrders[item.code]?.minSum
       }))
       .sort((a, b) => a.sort > b.sort);
   });

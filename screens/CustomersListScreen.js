@@ -22,7 +22,7 @@ const CustomersListScreen = () => {
   // Получаем текущую тему и палитру из состояния Redux
   const theme = useSelector(getThemePalette);
 
-  // console.log('palette:', palette);
+  // console.log('points', points);
 
   let content = <Text style={styles.infoText}>Список ваших клиентов пуст</Text>;
   if (typeof points === 'string') {

@@ -1,10 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { GlobalStyles } from '../../constans/styles';
+// import { GlobalStyles } from '../../constans/styles';
 // import { getFormattedDate } from '../../util/date';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { setSelectedCustomer } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
+import GridTableRow from '../GridTable/GridTableRow';
+// import GridTable from '../GridTable';
 
 const ClientItem = ({ item, theme }) => {
   const navigation = useNavigation();
@@ -25,6 +27,20 @@ const ClientItem = ({ item, theme }) => {
   // const textTitle = [styles.textBase, { color: palette.text.primary }];
   // const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
 
+  let secondLine = <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>;
+  if (item?.hasOrder) {
+    const cells = [
+      { title: item?.baseTotal, flex: 3 },
+      { title: item?.total, flex: 3 },
+      { title: `${item?.percent}%`, flex: 3 },
+    ]
+    secondLine = (
+      <View style={styles.secondLineContainer}>
+        <GridTableRow cells={cells} />
+      </View>
+    );
+  }
+
   return (
     <Pressable
       onPress={selectCustomerHandler}
@@ -42,7 +58,8 @@ const ClientItem = ({ item, theme }) => {
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
           />
         </View>
-        <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
+        {secondLine}
+        {/* <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text> */}
         {/* </View> */}
       </View>
     </Pressable>

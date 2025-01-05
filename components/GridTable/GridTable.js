@@ -6,9 +6,10 @@ import FallbackText from '../FallbackText';
 import GridTableRow from './GridTableRow';
 import GridTableHead from './GridTableHead';
 
-const GridTable = ({ rows, columns, onPress, onChangeText, rowId = 'id' }) => {
+const GridTable = ({ rows, columns, onPress, onChangeText, rowId = 'id', simple }) => {
 	const [selectedRow, setSelectedRow] = useState('');
 	if (typeof rows === 'string') return <FallbackText >{rows}</FallbackText>
+	console.log('simple', simple);
 
 	// console.log('rowId', rowId);
 	// console.log('GridTable.rows', rows);
