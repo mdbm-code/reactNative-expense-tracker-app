@@ -37,7 +37,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: ['palette', 'currentOrders'], // Укажите здесь слайсы, которые не нужно сохранять
+  //blacklist: ['palette'], // Укажите здесь слайсы, которые не нужно сохранять
   //whitelist: ['customers'], // Укажите здесь только те слайсы, которые нужно сохранять
 };
 
