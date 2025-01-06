@@ -18,22 +18,31 @@ const ClientItem = ({ item, theme }) => {
     navigation.navigate('CustomerScreen');
   }
   // const containerStyle = [styles.container,]
-  const containerStyle = [styles.container, { backgroundColor: item?.hasOrder ? theme.secondary.main : theme.secondary.light }]
+  const containerStyle = [
+    styles.container,
+    {
+      backgroundColor: item?.hasOrder
+        ? theme.listItem.active
+        : theme.listItem.disabled,
+    },
+  ];
 
   // const iconStyle = [styles.icon,];
   const textTitle = [styles.textBase, { color: theme.primary.contrastText }];
-  const textSubtitle = [styles.textBase,];
+  const textSubtitle = [styles.textBase];
   const iconStyle = [styles.icon];
   // const textTitle = [styles.textBase, { color: palette.text.primary }];
   // const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
 
-  let secondLine = <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>;
+  let secondLine = (
+    <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
+  );
   if (item?.hasOrder) {
     const cells = [
       { title: item?.baseTotal, flex: 3 },
       { title: item?.total, flex: 3 },
       { title: `${item?.percent}%`, flex: 3 },
-    ]
+    ];
     secondLine = (
       <View style={styles.secondLineContainer}>
         <GridTableRow cells={cells} />

@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 //constants
-import { GlobalStyles } from './constans/styles';
+// import { GlobalStyles } from './constans/styles';
 
 //screens
 // import ManageOrder from './screens/ManageOrder.js';
@@ -31,9 +31,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import SynchronizationScreen from './screens/SynchronizationScreen.js';
 import CustomerScreen from './screens/CustomerScreen.js';
 import ManageProductsScreen from './screens/ManageProductsScreen.js';
-import ThemeProvider from './store/context/theme-context.js';
+// import ThemeProvider from './store/context/theme-context.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
 import ThemeScreen from './screens/ThemeScreen.js';
+import DaySummaryScreen from './screens/DaySummaryScreen.js';
 // import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
@@ -44,13 +45,13 @@ function CustomersOverview() {
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: theme.bg },
+        headerStyle: { backgroundColor: theme.bar.color },
         //headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        headerTintColor: theme.primary.contrastText,
-        tabBarStyle: { backgroundColor: theme.bg },
+        headerTintColor: theme.bar.active,
+        tabBarStyle: { backgroundColor: theme.bar.color },
         // tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        tabBarActiveTintColor: theme.primary.contrastText,
-        tabBarInactiveTintColor: theme.secondary.contrastText,
+        tabBarActiveTintColor: theme.bar.active,
+        tabBarInactiveTintColor: theme.bar.text,
         // tabBarActiveTintColor: GlobalStyles.colors.accent500,
         headerRight: ({ tintColor }) => (
           <IconButton
@@ -81,17 +82,18 @@ function CustomersOverview() {
           ),
         }}
       />
-      {/* <BottomTab.Screen
-        name='RecentExpenses'
-        component={RecentExpenses}
+      <BottomTab.Screen
+        name='DaySummary'
+        component={DaySummaryScreen}
         options={{
-          title: 'Текущие заявки',
-          tabBarLabel: 'Сегодня',
+          title: 'Итоги дня',
+          tabBarLabel: 'Итоги дня',
           tabBarIcon: ({ size, color }) => (
-            <Ionicons name='hourglass' color={color} size={size} />
+            <Ionicons name='flag-outline' color={color} size={size} />
           ),
+          headerRight: null,
         }}
-      /> */}
+      />
       {/* <BottomTab.Screen
         name='AllExpenses'
         component={AllExpenses}
@@ -112,6 +114,7 @@ function CustomersOverview() {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='sync-outline' color={color} size={size} />
           ),
+          headerRight: null,
         }}
       />
       <BottomTab.Screen
@@ -123,6 +126,7 @@ function CustomersOverview() {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='color-palette-outline' color={color} size={size} />
           ),
+          headerRight: null,
         }}
       />
     </BottomTab.Navigator>
@@ -130,8 +134,6 @@ function CustomersOverview() {
 }
 
 export default function App() {
-
-
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -159,16 +161,16 @@ export default function App() {
                     <Stack.Screen
                       name='CustomerScreen'
                       component={CustomerScreen} //страница клиента
-                    // options={{
-                    //   presentation: 'fullScreenModal',
-                    // }}
+                      // options={{
+                      //   presentation: 'fullScreenModal',
+                      // }}
                     />
                     <Stack.Screen
                       name='ManageProductsScreen'
                       component={ManageProductsScreen} //подбор товаров в заявку клиента
-                    // options={{
-                    //   presentation: 'fullScreenModal',
-                    // }}
+                      // options={{
+                      //   presentation: 'fullScreenModal',
+                      // }}
                     />
                   </Stack.Navigator>
                 </NavigationContainer>

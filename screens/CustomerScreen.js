@@ -12,6 +12,8 @@ import IconButton from '../components/ui/IconButton';
 import CustomerDocDebt from '../components/CustomerScreen/CustomerDocDebt';
 // import { GlobalStyles } from '../constans/styles';
 import { getThemePalette } from '../store/redux/selectors/theme';
+import { useNavigation } from '@react-navigation/native';
+import CustomerProfileScreen from './CustomerProfileScreen';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -25,7 +27,7 @@ const renderTabBar = (props, theme) => (
   <TabBar
     {...props}
     indicatorStyle={{ backgroundColor: 'white' }}
-    style={{ backgroundColor: theme.secondary.light, color: 'blue', }}
+    style={{ backgroundColor: theme.secondary.light, color: 'blue' }}
     labelStyle={{
       color: 'red',
       textAlign: 'top', // Горизонтальное центрирование текста
@@ -47,27 +49,26 @@ const CustomerScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
 
   const dispatch = useDispatch();
-  const { selectedCustomer, selectedDocTab } = useSelector((state) => state.selecteds);
-  const [index, setIndex] = React.useState(selectedDocTab);
+  const { selectedCustomer, selectedDocTab } = useSelector(
+    (state) => state.selecteds
+  );
+  // console.log('selectedDocTab', selectedDocTab);
+
+  const [index, setIndex] = React.useState(1);
   const theme = useSelector(getThemePalette);
 
   const onIndexChangeHandler = (ind) => {
+    // setIndex(index);
     dispatch(setSelectedDocTab(ind));
   };
 
-  const TaskRoute = () => (
-    <FallbackText>Спецзадачи, акции</FallbackText>
-  );
-
+  const TaskRoute = () => <FallbackText>Спецзадачи, акции</FallbackText>;
   const OrderRoute = () => <CustomerDocOrder />;
+
   const DebtRoute = () => <CustomerDocDebt />;
 
-  const ReturnRoute = () => (
-    <FallbackText>Возврат товара</FallbackText>
-  );
-  const ParamsRoute = () => (
-    <FallbackText>Профиль</FallbackText>
-  );
+  const ReturnRoute = () => <FallbackText>Возврат товара</FallbackText>;
+  const ParamsRoute = () => <CustomerProfileScreen />;
 
   //useMemo`**: Этот хук используется для мемоизации значения,
   // чтобы избежать его пересоздания при каждой перерисовке компонента,
@@ -87,7 +88,10 @@ const CustomerScreen = ({ route, navigation }) => {
   );
 
   useLayoutEffect(() => {
+    // console.log('index', index);
+
     const currentRoute = routes[index].key;
+
     if (currentRoute === 'order' || currentRoute === 'return') {
       navigation.setOptions({
         title: selectedCustomer?.name,
@@ -116,7 +120,9 @@ const CustomerScreen = ({ route, navigation }) => {
   }, [navigation, index]);
 
   return (
-    <View style={[styles.rootContainer, { backgroundColor: theme.primary.dark }]}>
+    <View
+      style={[styles.rootContainer, { backgroundColor: theme.primary.dark }]}
+    >
       <TabView
         swipeEnabled={false}
         navigationState={{ index, routes }}
@@ -124,8 +130,9 @@ const CustomerScreen = ({ route, navigation }) => {
         renderTabBar={(props) => renderTabBar(props, theme)}
         onIndexChange={(index) => {
           setIndex(index);
-          // setTabIndex(routes[index]);
-          onIndexChangeHandler(index);
+          //setTabIndex(routes[index]);
+          // dispatch(setSelectedDocTab(ind));
+          // onIndexChangeHandler(index);
         }}
         initialLayout={{ width: layout.width }}
         onTabPress={({ route, preventDefault }) => {
@@ -138,29 +145,41 @@ const CustomerScreen = ({ route, navigation }) => {
         options={{
           debt: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+              <Text style={{ color: theme.bg.active }}>
+                {labelText ?? route.name}
+              </Text>
             ),
           },
           order: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+              <Text style={{ color: theme.bg.active }}>
+                {labelText ?? route.name}
+              </Text>
             ),
           },
           spec: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+              <Text style={{ color: theme.bg.active }}>
+                {labelText ?? route.name}
+              </Text>
             ),
           },
           return: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.secondary.contrastText }}>{labelText ?? route.name}</Text>
+              <Text style={{ color: theme.bg.active }}>
+                {labelText ?? route.name}
+              </Text>
             ),
           },
           params: {
             labelText: 'ss',
 
             icon: ({ route, focused, color, size }) => (
-              <Ionicons name={'apps-outline'} size={size} color={color} />
+              <Ionicons
+                name={'information-circle-outline'}
+                size={size}
+                color={color}
+              />
             ),
             // badge: ({ route }) => (
             //   <View

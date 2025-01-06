@@ -15,15 +15,50 @@ export const fetchCustomers = createAsyncThunk(
   }
 );
 
+export const uploadPhoto = createAsyncThunk(
+  'photo/uploadPhoto',
+  async (photoUri, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('photo', {
+        uri: photoUri,
+        type: 'image/jpeg',
+        name: 'photo.jpg',
+      });
+
+      const response = await axios.post(
+        'https://your-server.com/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Начальное состояние
 //initialState**: Это состояние будет использоваться только при первом запуске
 // приложения или если данные не были сохранены ранее.
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  photos: [],
   catalog: customers,
-  status: 'idle', // idle | loading | succeeded | failed
-  error: null,
+  error: {
+    catalog: null,
+    photos: null,
+  },
+  status: {
+    catalog: 'idle', // idle | loading | succeeded | failed
+    photos: 'idle', // idle | loading | succeeded | failed
+  },
 };
 
 // Создание слайса
@@ -31,6 +66,19 @@ const customersSlice = createSlice({
   name: 'customers',
   initialState,
   reducers: {
+    setCustomerPhoto: (state, action) => {
+      const { code, uri } = action.payload;
+
+      const existingCustomer = state.photos.find(
+        (customer) => customer.code === code
+      );
+
+      if (existingCustomer) {
+        existingCustomer.uri = uri;
+      } else {
+        state.photos.push({ code, uri });
+      }
+    },
     // Добавление нового клиента
     addNewCustomer: (state, action) => {
       state.catalog.push(action.payload);
@@ -66,23 +114,42 @@ const customersSlice = createSlice({
   // - **rejected**: Устанавливает ошибку, если загрузка не удалась.
   extraReducers: (builder) => {
     builder
+      // Обработчики для fetchCustomers
       .addCase(fetchCustomers.pending, (state) => {
-        state.status = 'loading';
+        state.status.catalog = 'loading';
       })
       .addCase(fetchCustomers.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status.catalog = 'succeeded';
         state.catalog = action.payload;
       })
       .addCase(fetchCustomers.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        state.status.catalog = 'failed';
+        state.error.catalog = action.payload;
+      })
+
+      // Обработчики для uploadPhoto
+      .addCase(uploadPhoto.pending, (state) => {
+        state.status.photos = 'loading';
+      })
+      .addCase(uploadPhoto.fulfilled, (state) => {
+        state.status.photos = 'succeeded';
+        //state.photos = []; // Очищаем URI после успешной загрузки
+      })
+      .addCase(uploadPhoto.rejected, (state, action) => {
+        state.status.photos = 'failed';
+        state.error.photos = action.payload;
       });
   },
 });
 
 // Экспорт действий для использования в компонентах
-export const { addNewCustomer, addCustomers, removeCustomer, updateCustomer } =
-  customersSlice.actions;
+export const {
+  setCustomerPhoto,
+  addNewCustomer,
+  addCustomers,
+  removeCustomer,
+  updateCustomer,
+} = customersSlice.actions;
 
 // Экспорт редьюсера для добавления в store
 export default customersSlice.reducer;

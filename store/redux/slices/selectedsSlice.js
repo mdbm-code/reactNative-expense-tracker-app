@@ -6,6 +6,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  searchString: '',
   selectedRoute: null,
   selectedCustomer: null,
   selectedOrder: null,
@@ -23,7 +24,9 @@ const selectedsSlice = createSlice({
   name: 'selecteds',
   initialState,
   reducers: {
-    // Добавление нового клиента
+    setSearchString: (state, action) => {
+      state.searchString = action.payload;
+    },
     setSelectedRoute: (state, action) => {
       state.selectedRoute = action.payload;
     },
@@ -45,19 +48,23 @@ const selectedsSlice = createSlice({
     },
     setSelectedMenuLevel_1: (state, action) => {
       state.selectedMenuLevel_1 = action.payload;
+      state.searchString = '';
     },
     setSelectedMenuLevel_2: (state, action) => {
       state.selectedMenuLevel_2 = action.payload;
+      state.searchString = '';
     },
     setUnselectMenu: (state, action) => {
       state.selectedMenuLevel_1 = null;
       state.selectedMenuLevel_2 = null;
+      state.searchString = '';
     },
   },
 });
 
 // Экспорт действий для использования в компонентах
 export const {
+  setSearchString,
   setSelectedRoute,
   setSelectedCustomer,
   setSelectedOrder,
@@ -66,7 +73,7 @@ export const {
   setSelectedManager,
   setSelectedMenuLevel_1,
   setSelectedMenuLevel_2,
-  setUnselectMenu
+  setUnselectMenu,
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store

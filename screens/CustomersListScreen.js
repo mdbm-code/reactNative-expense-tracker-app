@@ -17,14 +17,23 @@ const CustomersListScreen = () => {
     dispatch(loadColors());
   }, [dispatch]);
 
-  const { selectedRoute } = useSelector((state) => state.selecteds);
+  const selecteds = useSelector(
+    // const { selectedRoute, searchString } = useSelector(
+    (state) => state.selecteds
+  );
+  // console.log('selecteds', selecteds);
+
   const points = useSelector(selectRoutePoints);
   // Получаем текущую тему и палитру из состояния Redux
   const theme = useSelector(getThemePalette);
 
   // console.log('points', points);
 
-  let content = <Text style={styles.infoText}>Список ваших клиентов пуст</Text>;
+  let content = (
+    <Text style={[styles.infoText, { color: theme.text?.primary }]}>
+      Список ваших клиентов пуст
+    </Text>
+  );
   if (typeof points === 'string') {
     content = <Text style={styles.infoText}>{points}</Text>;
   } else if (points.length > 0) {
@@ -36,11 +45,11 @@ const CustomersListScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+    <View style={[styles.container, { backgroundColor: theme.bg.color }]}>
       {/* <View style={[styles.container, { backgroundColor: palette.background.default }]}> */}
       {/* <ClientsSummary periodName={expensesPeriod} rows={rows} /> */}
       <ClientsRouter
-        value={selectedRoute}
+        value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}
         isMultiple={false}
       />
