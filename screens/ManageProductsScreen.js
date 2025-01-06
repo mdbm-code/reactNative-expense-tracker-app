@@ -1,21 +1,22 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { DrawerLayout } from 'react-native-gesture-handler';
-import { GlobalStyles } from '../constans/styles';
+// import { GlobalStyles } from '../constans/styles';
 import IconButton from '../components/ui/IconButton';
 import ProductMenu from '../components/ManageProductsScreen/ProductsMenu';
 import ProductsOutput from '../components/ManageProductsScreen/ProductsOutput';
-import { useDrawerStatus } from '@react-navigation/drawer';
+// import { useDrawerStatus } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProducts } from '../store/redux/selectors/products';
 import { getThemePalette } from '../store/redux/selectors/theme';
 import ProductsMenuButton from '../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
 import {
   setSearchString,
-  setSelectedMenuLevel_2,
+  // setSelectedMenuLevel_2,
   setUnselectMenu,
 } from '../store/redux/slices/selectedsSlice';
 import SearchPanel from '../components/SearchPanel';
+import { findAndUpdateOrderRow } from '../store/redux/slices/currentOrdersSlice';
 
 const ManageProductsScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -100,6 +101,44 @@ const ManageProductsScreen = ({ navigation, route }) => {
     // setShowSearchPanel(false); // Закрываем панель поиска
   };
 
+
+  function onChangeTextHandler(value) {
+    const payload = {
+      customerCode: customerCode,
+      minSum: minSum,
+      productCode: value.code,
+      base_price: value.base_price,
+      price: value.price,
+      qty: value.newValue,
+    };
+    // console.log('onChangeTextHandler.payload:', payload);
+    dispatch(findAndUpdateOrderRow(payload));
+
+    //"base_price": 54.6, "code": "ТД000110", "description": "5-10", "id": "ТД000110", "multiple": 9, "name": "Айран БУДЬ ЗДОРОВ 0,1% 1 л.",
+    // "newValue": "5", "oldValue": "", "parentCode": "29", "prices": { "price": "" }, "qty": "", "shortName": "Айран БУДЬ ЗДОРОВ 0, 1 % 1 л.",
+    // "specs": [{"spec": "SO - 0 - 0 - 2817 - 0 - 0 - 1366E", "value": 53.39}, {"spec": "SO - 0 - 0 - 2817 - 0 - 0 - 1128389E", "value": 57}], "unit": "шт"}
+  }
+
+  function onLongPressHandler(event) {
+    // if (deletable) {
+    //   Alert.alert('Удалить?', `Вы хотите удалить элемент: ${event.name}?`, [
+    //     {
+    //       text: 'Отмена',
+    //       style: 'cancel',
+    //     },
+    //     {
+    //       text: 'Удалить',
+    //       onPress: () => {
+    //         dispatch(
+    //           deleteOrderRow({ customerCode, productCode: event?.code })
+    //         );
+    //       },
+    //     },
+    //   ]);
+    // }
+  }
+
+
   return (
     <DrawerLayout
       ref={drawerRef}
@@ -125,7 +164,7 @@ const ManageProductsScreen = ({ navigation, route }) => {
         )}
         {/* <Text style={styles.text}>Component ManageOrderProducts</Text> */}
 
-        <ProductsOutput
+        <ProductsOutput onLongPress={onLongPressHandler} onChangeText={onChangeTextHandler}
           rows={products}
           style={showSearchPanel && { marginTop: 30 }}
         />

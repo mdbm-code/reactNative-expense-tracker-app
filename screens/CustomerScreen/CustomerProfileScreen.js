@@ -8,11 +8,11 @@ import {
 } from 'react-native';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { getThemePalette } from '../store/redux/selectors/theme';
-import PhoneButton from '../components/ui/PhoneButton';
-import Photo from '../components/Photo/Photo';
+import { getThemePalette } from '../../store/redux/selectors/theme';
+import PhoneButton from '../../components/ui/PhoneButton';
+import Photo from '../../components/Photo/Photo';
 
-const CustomerProfileScreen = ({}) => {
+const CustomerProfileScreen = ({ }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   const theme = useSelector(getThemePalette);
 

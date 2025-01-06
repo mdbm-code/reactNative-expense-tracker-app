@@ -2,14 +2,14 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { useSelector } from 'react-redux';
 // import { selectOrder } from '../../store/redux/selectors/orders';
-import { GlobalStyles } from '../../constans/styles';
-import GridTable from '../GridTable';
+// import { GlobalStyles } from '../../constans/styles';
+import GridTable from '../../components/GridTable';
 import { selectDebitCredit } from '../../store/redux/selectors/debts';
-import FallbackText from '../FallbackText';
+import FallbackText from '../../components/FallbackText';
 import { getFormattedDate } from '../../util/date';
 import { getThemePalette } from '../../store/redux/selectors/theme';
 
-const CustomerDocDebt = () => {
+const CustomerDebtScreen = () => {
 	const obj = useSelector(selectDebitCredit);
 	const theme = useSelector(getThemePalette);
 	if (typeof obj === 'string') return <FallbackText>{obj}</FallbackText>
@@ -46,7 +46,7 @@ const CustomerDocDebt = () => {
 	)
 }
 
-export default CustomerDocDebt
+export default CustomerDebtScreen
 
 const styles = StyleSheet.create({
 	rootContainer: {

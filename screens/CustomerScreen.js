@@ -1,19 +1,20 @@
 import React, { useMemo, useLayoutEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import FallbackText from '../components/FallbackText';
 import { Ionicons } from '@expo/vector-icons';
-// import Debt from '../components/ManageOrder/Debt';
-import { useDispatch, useSelector } from 'react-redux';
-import CustomerDocOrder from '../components/CustomerScreen/CustomerDocOrder';
+
+//store
 import { setSelectedDocTab } from '../store/redux/slices/selectedsSlice';
-// import { useNavigation } from '@react-navigation/native';
-import IconButton from '../components/ui/IconButton';
-import CustomerDocDebt from '../components/CustomerScreen/CustomerDocDebt';
-// import { GlobalStyles } from '../constans/styles';
 import { getThemePalette } from '../store/redux/selectors/theme';
-import { useNavigation } from '@react-navigation/native';
-import CustomerProfileScreen from './CustomerProfileScreen';
+
+//components
+import FallbackText from '../components/FallbackText';
+import IconButton from '../components/ui/IconButton';
+import CustomerOrderScreen from './CustomerScreen/CustomerOrderScreen';
+import CustomerDebtScreen from './CustomerScreen/CustomerDebtScreen';
+import CustomerProfileScreen from './CustomerScreen/CustomerProfileScreen';
+import CustomerReturnScreen from './CustomerScreen/CustomerReturnScreen';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -46,28 +47,19 @@ const renderTabBar = (props, theme) => (
 
 const CustomerScreen = ({ route, navigation }) => {
   const layout = useWindowDimensions();
-  // const navigation = useNavigation();
 
   const dispatch = useDispatch();
   const { selectedCustomer, selectedDocTab } = useSelector(
     (state) => state.selecteds
   );
-  // console.log('selectedDocTab', selectedDocTab);
 
   const [index, setIndex] = React.useState(1);
   const theme = useSelector(getThemePalette);
 
-  const onIndexChangeHandler = (ind) => {
-    // setIndex(index);
-    dispatch(setSelectedDocTab(ind));
-  };
-
   const TaskRoute = () => <FallbackText>Спецзадачи, акции</FallbackText>;
-  const OrderRoute = () => <CustomerDocOrder />;
-
-  const DebtRoute = () => <CustomerDocDebt />;
-
-  const ReturnRoute = () => <FallbackText>Возврат товара</FallbackText>;
+  const OrderRoute = () => <CustomerOrderScreen />;
+  const DebtRoute = () => <CustomerDebtScreen />;
+  const ReturnRoute = () => <CustomerReturnScreen />;
   const ParamsRoute = () => <CustomerProfileScreen />;
 
   //useMemo`**: Этот хук используется для мемоизации значения,
@@ -130,15 +122,12 @@ const CustomerScreen = ({ route, navigation }) => {
         renderTabBar={(props) => renderTabBar(props, theme)}
         onIndexChange={(index) => {
           setIndex(index);
-          //setTabIndex(routes[index]);
-          // dispatch(setSelectedDocTab(ind));
-          // onIndexChangeHandler(index);
+          // Do something else
         }}
         initialLayout={{ width: layout.width }}
         onTabPress={({ route, preventDefault }) => {
           if (route.key === 'home') {
             preventDefault();
-
             // Do something else
           }
         }}
@@ -203,13 +192,6 @@ export default CustomerScreen;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    // backgroundColor: GlobalStyles.colors.primary800,
   },
-  // deleteContainer: {
-  //   marginTop: 16,
-  //   paddingTop: 8,
-  //   borderTopWidth: 2,
-  //   borderTopColor: GlobalStyles.colors.primary200,
-  //   alignItems: 'center',
-  // },
+
 });

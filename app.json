@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expense-tracker-app",
-    "slug": "expense-tracker-app",
+    "name": "blago-seller-app",
+    "slug": "blago-seller-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
