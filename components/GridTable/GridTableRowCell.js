@@ -3,22 +3,40 @@ import React from 'react';
 import { GlobalStyles } from '../../constans/styles';
 import InputCell from '../../components/ui/InputCell';
 
-const GridTableRowCell = ({
-  id,
-  onPress,
-  title,
-  style,
-  titleStyle,
-  inputConfig,
-  onChangeValue,
-  returnParams,
-  as,
-  flex = 1,
-  onLongPress,
-}) => {
-  let content = (
-    <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text>
-  );
+const GridTableRowCell = (props) => {
+  const {
+    onPress,
+    title,
+    style,
+    titleStyle,
+    inputConfig,
+    onChangeValue,
+    returnParams,
+    as,
+    flex = 1,
+    onLongPress,
+    prefix,
+    postfix, } = props;
+
+
+
+  let arrTitleStyle = [styles.text];
+  if (titleStyle) {
+    arrTitleStyle.push(titleStyle);
+  }
+  let titleContent = <Text style={[...arrTitleStyle]}>{title}</Text>;
+
+  if (prefix || postfix) {
+    titleContent = <View style={styles.titleContainer}>
+      {prefix && prefix}
+      <Text style={[...arrTitleStyle]}>{title}</Text>
+      {postfix && postfix}
+    </View>;
+  }
+
+  // const titleContainer = <View style={styles.titleContainer}>{prefix}{title}{postfix}</View>
+
+  let content = titleContent;
 
   if (as === 'input') {
     content = (
@@ -37,9 +55,10 @@ const GridTableRowCell = ({
         // android_ripple={true}
         onPress={() => onPress(returnParams)}
         onLongPress={() => onLongPress && onLongPress(returnParams, id)}
-        // style={({ pressed }) => pressed && styles.pressed}
+      // style={({ pressed }) => pressed && styles.pressed}
       >
-        <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text>
+        {titleContent}
+        {/* <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text> */}
       </TouchableOpacity>
     );
   }
@@ -49,7 +68,8 @@ const GridTableRowCell = ({
     rowCell.push(styles[`flex${flex}`]);
   }
 
-  return <View style={[...rowCell, style && style]}>{content}</View>;
+  return (<View style={[...rowCell, style && style]}>{content}</View>);
+
 };
 
 export default GridTableRowCell;
@@ -62,6 +82,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     justifyContent: 'center',
     minHeight: 36,
+  },
+  titleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   pressable: {
     justifyContent: 'center',

@@ -42,7 +42,6 @@ const documentsSlice = createSlice({
       }
     },
     bulkInsertUpdateDocuments: (state, action) => {
-      const { code } = action.payload;
       if (!Array.isArray(action.payload)) {
         return;
       }
@@ -51,7 +50,7 @@ const documentsSlice = createSlice({
           (order) => order.code === doc.code
         );
         if (existingOrder) {
-          Object.assign(existingOrder, action.payload);
+          Object.assign(existingOrder, doc);
         } else {
           state.catalog.push(doc);
         }

@@ -12,7 +12,7 @@ import GridTableRow from './GridTableRow';
 import GridTableHead from './GridTableHead';
 
 const GridTable = ({
-  onRefresh = () => {},
+  onRefresh = () => { },
   refreshing = false,
   rows,
   columns,
@@ -65,7 +65,23 @@ const GridTable = ({
   const renderItem = ({ item }) => {
     const cells = [];
     columns.forEach((column) => {
+
+      let prefix = null;
+      if (column?.prefix && typeof column?.prefix === 'object') {
+        if (column.prefix?.cond && typeof column.prefix.cond === 'object') {
+          const { key, ifnull, ifnot } = column.prefix.cond;
+          if (ifnull && (item[key] === undefined || item[key] === null || item[key] === '')) {
+            prefix = ifnull;
+          } else if (ifnot) {
+            prefix = ifnot;
+          }
+        }
+      }
+      if (column.hidden) return;
+
       cells.push({
+        ...column,
+        prefix,
         title: item[column.id],
         flex: column?.flex,
         titleStyle: column?.titleStyle,
@@ -74,6 +90,8 @@ const GridTable = ({
         onPress: onPressHandler,
         onChangeValue: onChangeValueHandler,
         onLongPress: onLongPressHandler,
+        // prefix: column?.prefix,
+        // postfix: column?.postfix
       });
     });
     return (

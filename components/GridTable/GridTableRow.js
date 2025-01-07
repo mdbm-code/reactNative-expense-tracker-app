@@ -14,14 +14,17 @@ const GridTableRow = ({ selected, cells }) => {
       {cells.map((cell, index) => (
         <GridTableRowCell
           key={index}
-          title={cell?.title}
-          flex={cell?.flex}
+          {...cell}
+          // title={cell?.title}
+          // flex={cell?.flex}
           titleStyle={[...titleStyle, cell?.titleStyle]}
-          as={cell?.as}
-          returnParams={cell?.returnParams}
-          onPress={cell?.onPress}
-          onChangeValue={cell?.onChangeValue}
-          onLongPress={cell?.onLongPress}
+        // as={cell?.as}
+        // returnParams={cell?.returnParams}
+        // onPress={cell?.onPress}
+        // onChangeValue={cell?.onChangeValue}
+        // onLongPress={cell?.onLongPress}
+        // prefix={cell?.prefix}
+        // postfix={cell?.postfix}
         />
       ))}
     </View>

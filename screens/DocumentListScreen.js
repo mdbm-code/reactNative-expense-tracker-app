@@ -7,8 +7,9 @@ import { getThemePalette } from '../store/redux/selectors/theme';
 import { selectDocuments } from '../store/redux/selectors/orders';
 import {
   bulkInsertUpdateDocuments,
-  insertUpdateDocument,
+  // insertUpdateDocument,
 } from '../store/redux/slices/documentsSlice';
+import { Ionicons } from '@expo/vector-icons';
 
 const DocumentListScreen = () => {
   const { orderList, setOrderList } = useState([]);
@@ -19,13 +20,14 @@ const DocumentListScreen = () => {
 
   async function getOrders() {
     const data = await fetchOrders();
-    console.log('data from server', data);
+    // console.log('data from server', data);
     dispatch(bulkInsertUpdateDocuments(data));
     // setOrderList(data);
   }
 
   useEffect(() => {
     if (refreshing) {
+      console.log('refreshing');
       getOrders();
     }
   }, [refreshing]);
@@ -36,10 +38,21 @@ const DocumentListScreen = () => {
 
   const columns = [
     {
+      id: 'id',
+      hidden: true,
+    },
+    {
       id: 'customerName',
       title: 'Покупатель',
       flex: 8,
       titleStyle: { textAlign: 'left', fontSize: 12 },
+      prefix: {
+        cond: {
+          key: 'id',
+          ifnull: <Ionicons name={'bookmark'} size={25} color={theme.warning.light} />,
+          ifnot: <Ionicons name={'bookmark'} size={25} color={theme.success.light} />
+        }
+      }
     },
     {
       id: 'date',
@@ -63,10 +76,6 @@ const DocumentListScreen = () => {
 
   function onPressHandler(data) {
     console.log(data);
-
-    // if (data?.from === 'head') {
-    //   navigation.navigate('ManageProductsScreen');
-    // }
   }
 
   const onRefresh = useCallback(() => {
@@ -79,6 +88,9 @@ const DocumentListScreen = () => {
     }, 2000);
   }, []);
 
+  // console.log('documents', documents);
+
+
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.bg.color }]}>
       <GridTable
@@ -88,8 +100,8 @@ const DocumentListScreen = () => {
         onPress={onPressHandler}
         onRefresh={onRefresh}
         refreshing={refreshing}
-        // onChangeText={onChangeText}
-        // onLongPress={onLongPress}
+      // onChangeText={onChangeText}
+      // onLongPress={onLongPress}
       />
     </View>
   );
