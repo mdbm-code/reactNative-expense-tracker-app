@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { GlobalStyles } from '../../constans/styles';
 import FallbackText from '../FallbackText';
@@ -7,6 +12,8 @@ import GridTableRow from './GridTableRow';
 import GridTableHead from './GridTableHead';
 
 const GridTable = ({
+  onRefresh = () => {},
+  refreshing = false,
   rows,
   columns,
   onPress,
@@ -77,7 +84,11 @@ const GridTable = ({
   return (
     <View style={[styles.rootContainer]}>
       <GridTableHead columns={columns} style={styles.headerContainer} />
+      {refreshing && <ActivityIndicator size='large' color='#00ff00' />}
       <KeyboardAwareFlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={rows}
         renderItem={renderItem}
         keyExtractor={(item) => item[rowId]}

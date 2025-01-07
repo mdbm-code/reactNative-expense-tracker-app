@@ -1,6 +1,15 @@
 import React, { useMemo, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  Alert,
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -15,6 +24,7 @@ import CustomerOrderScreen from './CustomerScreen/CustomerOrderScreen';
 import CustomerDebtScreen from './CustomerScreen/CustomerDebtScreen';
 import CustomerProfileScreen from './CustomerScreen/CustomerProfileScreen';
 import CustomerReturnScreen from './CustomerScreen/CustomerReturnScreen';
+import { useNavigation } from '@react-navigation/native';
 
 const routes = [
   { key: 'debt', title: 'Сверка' },
@@ -28,16 +38,16 @@ const renderTabBar = (props, theme) => (
   <TabBar
     {...props}
     indicatorStyle={{ backgroundColor: 'white' }}
-    style={{ backgroundColor: theme.secondary.light, color: 'blue' }}
+    style={{ backgroundColor: theme.secondary.light }}
     labelStyle={{
       color: 'red',
-      textAlign: 'top', // Горизонтальное центрирование текста
+      textAlign: 'center', // Горизонтальное центрирование текста
       fontSize: 12, // Убедитесь, что размер шрифта подходит
     }}
     tabStyle={{
       padding: 0,
-      height: 30,
-      justifyContent: 'flex-start',
+      height: 50,
+      justifyContent: 'center',
       alignItems: 'center',
       flex: 1, // Убедитесь, что вкладка занимает все доступное пространство
       fontSize: 12,
@@ -45,8 +55,9 @@ const renderTabBar = (props, theme) => (
   />
 );
 
-const CustomerScreen = ({ route, navigation }) => {
+const CustomerScreen = ({ route }) => {
   const layout = useWindowDimensions();
+  const navigation = useNavigation();
 
   const dispatch = useDispatch();
   const { selectedCustomer, selectedDocTab } = useSelector(
@@ -79,9 +90,20 @@ const CustomerScreen = ({ route, navigation }) => {
     []
   );
 
-  useLayoutEffect(() => {
-    // console.log('index', index);
+  const showAlert = (message) => {
+    Alert.alert('Тест', `${message}`, [
+      {
+        text: 'Отмена',
+        style: 'cancel',
+      },
+      {
+        text: 'Да',
+        onPress: () => {},
+      },
+    ]);
+  };
 
+  useLayoutEffect(() => {
     const currentRoute = routes[index].key;
 
     if (currentRoute === 'order' || currentRoute === 'return') {
@@ -96,7 +118,9 @@ const CustomerScreen = ({ route, navigation }) => {
             name='add-circle-outline'
             color={tintColor}
             size={24}
-            onPress={() => navigation.navigate('ManageProductsScreen')}
+            onPress={() => {
+              navigation.navigate('ManageProductsScreen');
+            }}
           />
         ),
       });
@@ -134,40 +158,39 @@ const CustomerScreen = ({ route, navigation }) => {
         options={{
           debt: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.bg.active }}>
+              <Text style={[styles.tabLabelText, { color: theme.bg.active }]}>
                 {labelText ?? route.name}
               </Text>
             ),
           },
           order: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.bg.active }}>
+              <Text style={[styles.tabLabelText, { color: theme.bg.active }]}>
                 {labelText ?? route.name}
               </Text>
             ),
           },
           spec: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.bg.active }}>
+              <Text style={[styles.tabLabelText, { color: theme.bg.active }]}>
                 {labelText ?? route.name}
               </Text>
             ),
           },
           return: {
             label: ({ route, labelText, focused, color }) => (
-              <Text style={{ color: theme.bg.active }}>
+              <Text style={[styles.tabLabelText, { color: theme.bg.active }]}>
                 {labelText ?? route.name}
               </Text>
             ),
           },
           params: {
-            labelText: 'ss',
-
+            labelText: '',
             icon: ({ route, focused, color, size }) => (
               <Ionicons
                 name={'information-circle-outline'}
-                size={size}
-                color={color}
+                size={36}
+                color={theme.bg.active}
               />
             ),
             // badge: ({ route }) => (
@@ -193,5 +216,5 @@ const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
   },
-
+  tabLabelText: {},
 });

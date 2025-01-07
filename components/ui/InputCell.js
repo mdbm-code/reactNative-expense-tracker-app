@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput } from 'react-native'
+import { Keyboard, StyleSheet, TextInput } from 'react-native'
 import React, { useState } from 'react'
 
 const InputCell = ({ returnParams = {}, defaultValue, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onChangeValue }) => {

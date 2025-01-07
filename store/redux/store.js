@@ -7,7 +7,7 @@ import productsReducer from './slices/productsSlice';
 import groupsReducer from './slices/groupsSlice';
 import routesReducer from './slices/routesSlice';
 import selectedsReducer from './slices/selectedsSlice';
-import ordersReducer from './slices/ordersSlice';
+import documentsReducer from './slices/documentsSlice';
 import currentOrderReducer from './slices/currentOrdersSlice';
 import themesReducer from './slices/themeSlice';
 import salesReducer from './slices/salesSlice';
@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
   groups: groupsReducer,
   routes: routesReducer,
   selecteds: selectedsReducer,
-  orders: ordersReducer,
+  documents: documentsReducer,
   currentOrders: currentOrderReducer,
   theme: themesReducer,
   sales: salesReducer,
@@ -37,7 +37,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  //blacklist: ['selecteds'], // Укажите здесь слайсы, которые не нужно сохранять
+  blacklist: ['currentOrders', 'documents'], // Укажите здесь слайсы, которые не нужно сохранять
   //whitelist: ['customers'], // Укажите здесь только те слайсы, которые нужно сохранять
 };
 

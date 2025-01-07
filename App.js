@@ -35,6 +35,8 @@ import ManageProductsScreen from './screens/ManageProductsScreen.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
 import ThemeScreen from './screens/ThemeScreen.js';
 import DaySummaryScreen from './screens/DaySummaryScreen.js';
+import DocumentListScreen from './screens/DocumentListScreen.js';
+import SettingsScreen from './screens/SettingsScreen.js';
 // import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
@@ -94,6 +96,18 @@ function CustomersOverview() {
           headerRight: null,
         }}
       />
+      <BottomTab.Screen
+        name='DocumentListScreen'
+        component={DocumentListScreen}
+        options={{
+          title: 'История',
+          tabBarLabel: 'История',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='calendar-outline' color={color} size={size} />
+          ),
+          headerRight: null,
+        }}
+      />
       {/* <BottomTab.Screen
         name='AllExpenses'
         component={AllExpenses}
@@ -118,13 +132,13 @@ function CustomersOverview() {
         }}
       />
       <BottomTab.Screen
-        name='Theme'
-        component={ThemeScreen}
+        name='SettingsScreen'
+        component={SettingsScreen}
         options={{
-          title: 'Тема',
-          tabBarLabel: 'Тема',
+          title: 'Настройки',
+          tabBarLabel: 'Настройки',
           tabBarIcon: ({ size, color }) => (
-            <Ionicons name='color-palette-outline' color={color} size={size} />
+            <Ionicons name='settings-outline' color={color} size={size} />
           ),
           headerRight: null,
         }}

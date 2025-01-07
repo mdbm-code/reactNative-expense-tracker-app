@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { DrawerLayout } from 'react-native-gesture-handler';
 // import { GlobalStyles } from '../constans/styles';
 import IconButton from '../components/ui/IconButton';
@@ -23,9 +23,8 @@ const ManageProductsScreen = ({ navigation, route }) => {
   const drawerRef = useRef(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showSearchPanel, setShowSearchPanel] = useState(false);
-  const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(
-    (state) => state.selecteds
-  );
+  const { selectedMenuLevel_1, selectedMenuLevel_2, selectedCustomer } =
+    useSelector((state) => state.selecteds);
   const products = useSelector(selectProducts);
   const theme = useSelector(getThemePalette);
 
@@ -47,8 +46,15 @@ const ManageProductsScreen = ({ navigation, route }) => {
 
   const onPressTopHandler = () => {
     dispatch(setSearchString(''));
+    setShowSearchPanel(false);
     dispatch(setUnselectMenu());
     closeDrawer();
+  };
+
+  const onPressHandler = (data) => {
+    if (data?.from === 'head') {
+      toggleDrawer();
+    }
   };
 
   // console.log('isDrawerOpen', isDrawerOpen);
@@ -101,15 +107,15 @@ const ManageProductsScreen = ({ navigation, route }) => {
     // setShowSearchPanel(false); // Закрываем панель поиска
   };
 
-
   function onChangeTextHandler(value) {
     const payload = {
-      customerCode: customerCode,
-      minSum: minSum,
+      customerCode: selectedCustomer?.code,
+      minSum: 0,
       productCode: value.code,
       base_price: value.base_price,
       price: value.price,
       qty: value.newValue,
+      default_price: value?.default_price,
     };
     // console.log('onChangeTextHandler.payload:', payload);
     dispatch(findAndUpdateOrderRow(payload));
@@ -138,6 +144,48 @@ const ManageProductsScreen = ({ navigation, route }) => {
     // }
   }
 
+  const renderContent = (
+    <View style={styles.headerContentContainer}>
+      {/* <Text style={{ color: 'white' }}>Наименование</Text> */}
+      <IconButton
+        name='search'
+        color={showSearchPanel ? theme.warning.main : theme.bg.text}
+        // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
+        size={24}
+        onPress={() => {
+          setShowSearchPanel(!showSearchPanel);
+          closeDrawer();
+        }}
+      />
+
+      <IconButton
+        name='funnel'
+        color={isDrawerOpen ? theme.warning.main : theme.bg.text}
+        // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
+        size={24}
+        onPress={toggleDrawer}
+      />
+    </View>
+  );
+
+  const columns = [
+    {
+      id: 'name',
+      title: 'Наименование',
+      content: renderContent,
+      flex: 8,
+      titleStyle: { textAlign: 'left' },
+      // onPress: () => onPress({ from: 'head', id: 'name' }),
+    },
+    {
+      id: 'base_price',
+      title: 'Б.Цена',
+      flex: 3,
+      titleStyle: { textAlign: 'right' },
+    },
+    { id: 'price', title: 'Цена', flex: 3, titleStyle: { textAlign: 'right' } },
+    { id: 'qty', title: 'Колво', flex: 2, as: 'input' },
+  ];
 
   return (
     <DrawerLayout
@@ -164,7 +212,11 @@ const ManageProductsScreen = ({ navigation, route }) => {
         )}
         {/* <Text style={styles.text}>Component ManageOrderProducts</Text> */}
 
-        <ProductsOutput onLongPress={onLongPressHandler} onChangeText={onChangeTextHandler}
+        <ProductsOutput
+          onLongPress={onLongPressHandler}
+          onChangeText={onChangeTextHandler}
+          onPress={onPressHandler}
+          columns={columns}
           rows={products}
           style={showSearchPanel && { marginTop: 30 }}
         />
@@ -181,6 +233,11 @@ const styles = StyleSheet.create({
     // backgroundColor: GlobalStyles.colors.primary800,
     justifyContent: 'center',
     // alignItems: 'center',
+  },
+  headerContentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   menuButton: {
     position: 'absolute',

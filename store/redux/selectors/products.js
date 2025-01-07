@@ -136,6 +136,7 @@ export const selectProducts = createSelector(
           return {
             ...item,
             price: customerPrice,
+            default_price: customerPrice,
             prices: {
               default_price: customerPrice,
               base_price: item.base_price,

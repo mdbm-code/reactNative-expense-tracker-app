@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { storeOrder } from '../../../util/http';
 
 // Пример асинхронной операции для получения списка клиентов с сервера
-export const fetchOrders = createAsyncThunk(
-  'orders/fetchOrders',
+export const fetchDocuments = createAsyncThunk(
+  'documents/fetchDocuments',
   async (_, thunkAPI) => {
     try {
       const response = await fetch('https://api.example.com/customers');
@@ -26,23 +27,35 @@ const initialState = {
 };
 
 // Создание слайса
-const ordersSlice = createSlice({
-  name: 'orders',
+const documentsSlice = createSlice({
+  name: 'documents',
   initialState,
   reducers: {
     // Добавление списка
-    addOrders: (state, action) => {
-      state.catalog = action.payload;
-    },
-    addOrder: (state, action) => {
-      state.catalog = [...state.catalog, { ...action.payload }];
-    },
-    updateOrder: (state, action) => {
-      const { id, changes } = action.payload;
-      const existingOrder = state.catalog.find((order) => order.id === id);
+    insertUpdateDocument: (state, action) => {
+      const { code } = action.payload;
+      const existingOrder = state.catalog.find((order) => order.code === code);
       if (existingOrder) {
-        Object.assign(existingOrder, changes);
+        Object.assign(existingOrder, action.payload);
+      } else {
+        state.catalog.push(action.payload);
       }
+    },
+    bulkInsertUpdateDocuments: (state, action) => {
+      const { code } = action.payload;
+      if (!Array.isArray(action.payload)) {
+        return;
+      }
+      action.payload.forEach((doc) => {
+        const existingOrder = state.catalog.find(
+          (order) => order.code === doc.code
+        );
+        if (existingOrder) {
+          Object.assign(existingOrder, action.payload);
+        } else {
+          state.catalog.push(doc);
+        }
+      });
     },
   },
   //- **extraReducers**: Обрабатывает действия, созданные `createAsyncThunk`.
@@ -52,14 +65,14 @@ const ordersSlice = createSlice({
   // - **rejected**: Устанавливает ошибку, если загрузка не удалась.
   extraReducers: (builder) => {
     builder
-      .addCase(fetchOrders.pending, (state) => {
+      .addCase(fetchDocuments.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchOrders.fulfilled, (state, action) => {
+      .addCase(fetchDocuments.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.catalog = action.payload;
       })
-      .addCase(fetchOrders.rejected, (state, action) => {
+      .addCase(fetchDocuments.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
@@ -67,7 +80,8 @@ const ordersSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const { addOrders, addOrder, updateOrder } = ordersSlice.actions;
+export const { insertUpdateDocument, bulkInsertUpdateDocuments } =
+  documentsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
-export default ordersSlice.reducer;
+export default documentsSlice.reducer;

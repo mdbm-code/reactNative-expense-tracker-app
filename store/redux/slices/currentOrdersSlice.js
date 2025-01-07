@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+function getNewCode(customerCode) {
+  return `${customerCode}-${Date.now()}`;
+}
+
 const recalculateTotalForCustomer = (state, customerCode, minSum) => {
   const customerRows = state.rows.filter(
     (row) => row.customerCode === customerCode
@@ -30,6 +34,7 @@ const recalculateTotalForCustomer = (state, customerCode, minSum) => {
     existingDoc.percent = percent;
   } else {
     state.docs.push({
+      code: getNewCode(customerCode),
       customerCode,
       total,
       baseTotal,
@@ -59,6 +64,7 @@ const recalculateReturnTotalForCustomer = (state, customerCode) => {
     existingDoc.totalReturn = totalReturn;
   } else {
     state.docs.push({
+      code: getNewCode(customerCode),
       customerCode,
       total: 0,
       baseTotal: 0,
@@ -118,8 +124,15 @@ const currentOrdersSlice = createSlice({
       }
     },
     findAndUpdateOrderRow: (state, action) => {
-      const { customerCode, productCode, price, base_price, qty, minSum } =
-        action.payload;
+      const {
+        customerCode,
+        productCode,
+        price,
+        base_price,
+        qty,
+        minSum,
+        default_price,
+      } = action.payload;
 
       if (customerCode && productCode && price) {
         let row = state.rows.find(
@@ -135,6 +148,7 @@ const currentOrdersSlice = createSlice({
             customerCode,
             productCode,
             base_price,
+            default_price,
             price,
             qty,
           };

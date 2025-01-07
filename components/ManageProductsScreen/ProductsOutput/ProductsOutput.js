@@ -3,37 +3,47 @@ import React from 'react';
 import { GlobalStyles } from '../../../constans/styles';
 import GridTable from '../../GridTable';
 
-
-const ProductsOutput = ({ rows, style, onLongPress, onChangeText }) => {
-
-  const columns = [
-    {
-      id: 'name',
-      title: 'Наименование',
-      flex: 8,
-      titleStyle: { textAlign: 'left' },
-    },
-    {
-      id: 'base_price',
-      title: 'Б.Цена',
-      flex: 3,
-      titleStyle: { textAlign: 'right' },
-    },
-    { id: 'price', title: 'Цена', flex: 3, titleStyle: { textAlign: 'right' } },
-    { id: 'qty', title: 'Колво', flex: 2, as: 'input' },
-  ];
-
-  function onPressHandler(event) {
-    // console.log(event);
+const ProductsOutput = ({
+  rows,
+  style,
+  onLongPress,
+  onChangeText,
+  onPress,
+  columns,
+}) => {
+  let cols = columns;
+  if (!cols) {
+    cols = [
+      {
+        id: 'name',
+        title: 'Наименование',
+        flex: 8,
+        titleStyle: { textAlign: 'left' },
+        // onPress: () => onPress({ from: 'head', id: 'name' }),
+      },
+      {
+        id: 'base_price',
+        title: 'Б.Цена',
+        flex: 3,
+        titleStyle: { textAlign: 'right' },
+      },
+      {
+        id: 'price',
+        title: 'Цена',
+        flex: 3,
+        titleStyle: { textAlign: 'right' },
+      },
+      { id: 'qty', title: 'Колво', flex: 2, as: 'input' },
+    ];
   }
 
   return (
     <View style={[styles.rootContainer, style]}>
       <GridTable
         rows={rows}
-        columns={columns}
+        columns={cols}
         rowId='code'
-        onPress={onPressHandler}
+        onPress={onPress}
         onChangeText={onChangeText}
         onLongPress={onLongPress}
       />

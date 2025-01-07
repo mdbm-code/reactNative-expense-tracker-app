@@ -1,12 +1,18 @@
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectOrder } from '../../store/redux/selectors/orders';
 import ProductsOutput from '../../components/ManageProductsScreen/ProductsOutput';
-import { deleteOrderRow, findAndUpdateOrderRow } from '../../store/redux/slices/currentOrdersSlice';
+import {
+  deleteOrderRow,
+  findAndUpdateOrderRow,
+} from '../../store/redux/slices/currentOrdersSlice';
+import { useNavigation } from '@react-navigation/native';
+import IconButton from '../../components/ui/IconButton';
 
 const CustomerOrderScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const rows = useSelector(selectOrder);
   const { code: customerCode, minSum } = useSelector(
     (state) => state.selecteds?.selectedCustomer
@@ -34,28 +40,93 @@ const CustomerOrderScreen = () => {
   }
 
   function onLongPressHandler(event) {
-    if (deletable) {
-      Alert.alert('Удалить?', `Вы хотите удалить элемент: ${event.name}?`, [
-        {
-          text: 'Отмена',
-          style: 'cancel',
+    Alert.alert('Удалить?', `Вы хотите удалить элемент: ${event.name}?`, [
+      {
+        text: 'Отмена',
+        style: 'cancel',
+      },
+      {
+        text: 'Удалить',
+        onPress: () => {
+          dispatch(deleteOrderRow({ customerCode, productCode: event?.code }));
         },
-        {
-          text: 'Удалить',
-          onPress: () => {
-            dispatch(
-              deleteOrderRow({ customerCode, productCode: event?.code })
-            );
-          },
-        },
-      ]);
-    }
+      },
+    ]);
   }
 
+  function onPressHandler(data) {
+    // if (data?.from === 'head') {
+    //   navigation.navigate('ManageProductsScreen');
+    // }
+  }
+
+  const showAlert = (message) => {
+    Alert.alert('Тест', `${message}`, [
+      {
+        text: 'Отмена',
+        style: 'cancel',
+      },
+      {
+        text: 'Да',
+        onPress: () => {},
+      },
+    ]);
+  };
+
+  const renderContent = (
+    <View style={styles.headerContentContainer}>
+      <Text style={{ color: 'white' }}>Наименование</Text>
+      <IconButton
+        name='add-circle-outline'
+        color={'white'}
+        size={24}
+        onPress={() => {
+          navigation.navigate('ManageProductsScreen');
+        }}
+      />
+    </View>
+  );
+
+  const columns = [
+    {
+      id: 'name',
+      title: 'Наименование',
+      content: renderContent,
+      flex: 8,
+      titleStyle: { textAlign: 'left', fontSize: 12 },
+      // onPress: () => onPress({ from: 'head', id: 'name' }),
+    },
+    {
+      id: 'base_price',
+      title: 'Б.Цена',
+      flex: 3,
+      titleStyle: { textAlign: 'right', fontSize: 12 },
+    },
+    {
+      id: 'price',
+      title: 'Цена',
+      flex: 3,
+      titleStyle: { textAlign: 'right', fontSize: 12 },
+    },
+    {
+      id: 'qty',
+      title: 'Колв',
+      flex: 2,
+      as: 'input',
+      titleStyle: { fontSize: 12 },
+    },
+  ];
 
   return (
     <View style={[styles.rootContainer]}>
-      <ProductsOutput rows={rows} onChangeText={onChangeTextHandler} onLongPress={onLongPressHandler} deletable />
+      <ProductsOutput
+        rows={rows}
+        onChangeText={onChangeTextHandler}
+        onLongPress={onLongPressHandler}
+        onPress={onPressHandler}
+        columns={columns}
+        deletable
+      />
     </View>
   );
 };
@@ -65,5 +136,10 @@ export default CustomerOrderScreen;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
+  },
+  headerContentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 });
