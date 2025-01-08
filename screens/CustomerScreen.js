@@ -106,33 +106,41 @@ const CustomerScreen = ({ route }) => {
   useLayoutEffect(() => {
     const currentRoute = routes[index].key;
 
-    if (currentRoute === 'order' || currentRoute === 'return') {
-      navigation.setOptions({
-        title: selectedCustomer?.name,
-        headerStyle: {
-          backgroundColor: theme.primary.main, // цвет фона
-        },
-        headerTintColor: theme.primary.contrastText,
-        headerRight: ({ tintColor }) => (
-          <IconButton
-            name='add-circle-outline'
-            color={tintColor}
-            size={24}
-            onPress={() => {
+    //   if (currentRoute === 'order' || currentRoute === 'return') {
+    navigation.setOptions({
+      title: selectedCustomer?.name,
+      headerStyle: {
+        backgroundColor: theme.primary.main, // цвет фона
+      },
+
+      headerTintColor: theme.bar.active,
+
+      headerRight: ({ tintColor }) => (
+        <IconButton
+          name='add-circle-outline'
+          color={
+            currentRoute === 'order' || currentRoute === 'return'
+              ? theme.bar.active
+              : theme.bar.color
+          }
+          size={36}
+          onPress={() => {
+            if (currentRoute === 'order' || currentRoute === 'return') {
               navigation.navigate('ManageProductsScreen');
-            }}
-          />
-        ),
-      });
-    } else {
-      navigation.setOptions({
-        headerRight: null,
-        headerStyle: {
-          backgroundColor: theme.primary.main, // цвет фона
-        },
-        headerTintColor: theme.primary.contrastText,
-      });
-    }
+            }
+          }}
+        />
+      ),
+      //     });
+      //   } else {
+      //     navigation.setOptions({
+      //       headerRight: null,
+      //       headerStyle: {
+      //         backgroundColor: theme.primary.main, // цвет фона
+      //       },
+      //       headerTintColor: theme.primary.contrastText,
+    });
+    //   }
   }, [navigation, index]);
 
   return (

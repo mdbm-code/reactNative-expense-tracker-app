@@ -5,6 +5,7 @@ import InputCell from '../../components/ui/InputCell';
 
 const GridTableRowCell = (props) => {
   const {
+    id,
     onPress,
     title,
     style,
@@ -16,9 +17,8 @@ const GridTableRowCell = (props) => {
     flex = 1,
     onLongPress,
     prefix,
-    postfix, } = props;
-
-
+    postfix,
+  } = props;
 
   let arrTitleStyle = [styles.text];
   if (titleStyle) {
@@ -27,11 +27,13 @@ const GridTableRowCell = (props) => {
   let titleContent = <Text style={[...arrTitleStyle]}>{title}</Text>;
 
   if (prefix || postfix) {
-    titleContent = <View style={styles.titleContainer}>
-      {prefix && prefix}
-      <Text style={[...arrTitleStyle]}>{title}</Text>
-      {postfix && postfix}
-    </View>;
+    titleContent = (
+      <View style={styles.titleContainer}>
+        {prefix && prefix}
+        <Text style={[...arrTitleStyle]}>{title}</Text>
+        {postfix && postfix}
+      </View>
+    );
   }
 
   // const titleContainer = <View style={styles.titleContainer}>{prefix}{title}{postfix}</View>
@@ -55,7 +57,7 @@ const GridTableRowCell = (props) => {
         // android_ripple={true}
         onPress={() => onPress(returnParams)}
         onLongPress={() => onLongPress && onLongPress(returnParams, id)}
-      // style={({ pressed }) => pressed && styles.pressed}
+        // style={({ pressed }) => pressed && styles.pressed}
       >
         {titleContent}
         {/* <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text> */}
@@ -68,8 +70,7 @@ const GridTableRowCell = (props) => {
     rowCell.push(styles[`flex${flex}`]);
   }
 
-  return (<View style={[...rowCell, style && style]}>{content}</View>);
-
+  return <View style={[...rowCell, style && style]}>{content}</View>;
 };
 
 export default GridTableRowCell;

@@ -19,16 +19,20 @@ const GridTableHead = ({ selected, style, columns }) => {
 
   return (
     <View style={[...containerStyle]}>
-      {columns.map((column, index) => (
-        <TableRowCell
-          key={index}
-          title={column?.title}
-          cellContent={column?.content}
-          flex={column?.flex}
-          titleStyle={[...titleStyle, column?.titleStyle]}
-          onPress={column?.onPress}
-        />
-      ))}
+      {columns
+        .filter((col) => !col?.hidden)
+        .map((column, index) => {
+          return (
+            <TableRowCell
+              key={index}
+              title={column?.title}
+              cellContent={column?.content}
+              flex={column?.flex}
+              titleStyle={[...titleStyle, column?.titleStyle]}
+              onPress={column?.onPress}
+            />
+          );
+        })}
     </View>
   );
 };

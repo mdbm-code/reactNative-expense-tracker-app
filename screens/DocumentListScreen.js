@@ -11,7 +11,7 @@ import {
 } from '../store/redux/slices/documentsSlice';
 import { Ionicons } from '@expo/vector-icons';
 
-const DocumentListScreen = () => {
+const DocumentListScreen = ({ navigation }) => {
   const { orderList, setOrderList } = useState([]);
   const dispatch = useDispatch();
   const theme = useSelector(getThemePalette);
@@ -49,10 +49,14 @@ const DocumentListScreen = () => {
       prefix: {
         cond: {
           key: 'id',
-          ifnull: <Ionicons name={'bookmark'} size={25} color={theme.warning.light} />,
-          ifnot: <Ionicons name={'bookmark'} size={25} color={theme.success.light} />
-        }
-      }
+          ifnull: (
+            <Ionicons name={'bookmark'} size={25} color={theme.warning.light} />
+          ),
+          ifnot: (
+            <Ionicons name={'bookmark'} size={25} color={theme.success.light} />
+          ),
+        },
+      },
     },
     {
       id: 'date',
@@ -75,7 +79,8 @@ const DocumentListScreen = () => {
   ];
 
   function onPressHandler(data) {
-    console.log(data);
+    // console.log(data);
+    navigation.navigate('DocumentScreen', { ...data });
   }
 
   const onRefresh = useCallback(() => {
@@ -90,7 +95,6 @@ const DocumentListScreen = () => {
 
   // console.log('documents', documents);
 
-
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.bg.color }]}>
       <GridTable
@@ -100,8 +104,8 @@ const DocumentListScreen = () => {
         onPress={onPressHandler}
         onRefresh={onRefresh}
         refreshing={refreshing}
-      // onChangeText={onChangeText}
-      // onLongPress={onLongPress}
+        // onChangeText={onChangeText}
+        // onLongPress={onLongPress}
       />
     </View>
   );

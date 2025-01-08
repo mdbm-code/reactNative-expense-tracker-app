@@ -20,8 +20,8 @@ import CustomersListScreen from './screens/CustomersListScreen.js';
 import IconButton from './components/ui/IconButton.js';
 
 //state
-import OrderContextProvider from './store/context/order-context.js';
-import ClientContextProvider from './store/context/client-context.js';
+// import OrderContextProvider from './store/context/order-context.js';
+// import ClientContextProvider from './store/context/client-context.js';
 // import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider, useSelector } from 'react-redux';
 import { reduxPersistor, reduxStore } from './store/redux/store.js';
@@ -29,18 +29,24 @@ import { PersistGate } from 'redux-persist/integration/react';
 // import YaMap from 'react-native-yamap';
 // import { useEffect } from 'react';
 import SynchronizationScreen from './screens/SynchronizationScreen.js';
-import CustomerScreen from './screens/CustomerScreen.js';
+// import CustomerScreen from './screens/CustomerScreen.js';
 import ManageProductsScreen from './screens/ManageProductsScreen.js';
 // import ThemeProvider from './store/context/theme-context.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
-import ThemeScreen from './screens/ThemeScreen.js';
+// import ThemeScreen from './screens/ThemeScreen.js';
 import DaySummaryScreen from './screens/DaySummaryScreen.js';
 import DocumentListScreen from './screens/DocumentListScreen.js';
 import SettingsScreen from './screens/SettingsScreen.js';
+import DocumentScreen from './screens/DocumentScreen.js';
+import CustomerDebtScreen from './screens/CustomerScreen/CustomerDebtScreen.js';
+import CustomerOrderScreen from './screens/CustomerScreen/CustomerOrderScreen.js';
+import CustomerReturnScreen from './screens/CustomerScreen/CustomerReturnScreen.js';
+import CustomerProfileScreen from './screens/CustomerScreen/CustomerProfileScreen.js';
 // import { loadColors } from './store/redux/slices/themeSlice.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
+const BottomTab2 = createBottomTabNavigator();
 
 function CustomersOverview() {
   const theme = useSelector(getThemePalette);
@@ -147,6 +153,116 @@ function CustomersOverview() {
   );
 }
 
+function WorkplaceScreen({ navigation }) {
+  const theme = useSelector(getThemePalette);
+  return (
+    <BottomTab2.Navigator
+      screenOptions={{
+        headerShown: false, // Скрыть заголовок BottomTab.Navigator
+        tabBarStyle: { backgroundColor: theme.bar.color },
+        tabBarActiveTintColor: theme.bar.active,
+        tabBarInactiveTintColor: theme.bar.text,
+      }}
+    >
+      <BottomTab2.Screen
+        name='CustomerOrderScreen'
+        options={{
+          title: 'Заявка',
+          tabBarLabel: 'Заявка',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='document-text-outline' color={color} size={size} />
+          ),
+        }}
+      >
+        {(props) => (
+          <CustomerOrderScreen {...props} stackNavigation={navigation} />
+        )}
+      </BottomTab2.Screen>
+      <BottomTab2.Screen
+        name='CustomerDebtScreen'
+        component={CustomerDebtScreen}
+        options={{
+          title: 'Сверка',
+          tabBarLabel: 'Сверка',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='pulse-outline' color={color} size={size} />
+          ),
+        }}
+      />
+      <BottomTab2.Screen
+        name='CustomerReturnScreen'
+        component={CustomerReturnScreen}
+        options={{
+          title: 'Возврат',
+          tabBarLabel: 'Возврат',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name='return-up-back-outline' color={color} size={size} />
+          ),
+          headerRight: null,
+        }}
+      />
+      <BottomTab2.Screen
+        name='CustomerProfileScreen'
+        component={CustomerProfileScreen}
+        options={{
+          title: 'Профиль',
+          tabBarLabel: 'Профиль',
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons
+              name='information-circle-outline'
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+    </BottomTab2.Navigator>
+  );
+}
+
+function AppContent() {
+  const theme = useSelector(getThemePalette);
+  return (
+    <>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name='CustomersOverview'
+            component={CustomersOverview} //маршруты дня (список клиентов)
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name='CustomerScreen'
+            component={WorkplaceScreen} //страница клиента
+            options={{
+              headerStyle: { backgroundColor: theme.bar.color },
+              headerTintColor: theme.bar.active,
+              // headerShown: false,
+              //   presentation: 'fullScreenModal',
+            }}
+          />
+          <Stack.Screen
+            name='ManageProductsScreen'
+            component={ManageProductsScreen} //подбор товаров в заявку клиента
+            // options={{
+            //   presentation: 'fullScreenModal',
+            // }}
+          />
+          <Stack.Screen
+            name='DocumentScreen'
+            component={DocumentScreen} //подбор товаров в заявку клиента
+            // options={{
+            //   presentation: 'fullScreenModal',
+            // }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <>
@@ -154,42 +270,7 @@ export default function App() {
         <StatusBar style='light' />
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>
-            <OrderContextProvider>
-              <ClientContextProvider>
-                <NavigationContainer>
-                  <Stack.Navigator
-                    screenOptions={{
-                      // headerStyle: {
-                      //   backgroundColor: GlobalStyles.colors.primary500,
-                      // },
-                      headerTintColor: 'white',
-                    }}
-                  >
-                    <Stack.Screen
-                      name='CustomersOverview'
-                      component={CustomersOverview} //маршруты дня (список клиентов)
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name='CustomerScreen'
-                      component={CustomerScreen} //страница клиента
-                      // options={{
-                      //   presentation: 'fullScreenModal',
-                      // }}
-                    />
-                    <Stack.Screen
-                      name='ManageProductsScreen'
-                      component={ManageProductsScreen} //подбор товаров в заявку клиента
-                      // options={{
-                      //   presentation: 'fullScreenModal',
-                      // }}
-                    />
-                  </Stack.Navigator>
-                </NavigationContainer>
-              </ClientContextProvider>
-            </OrderContextProvider>
+            <AppContent />
           </PersistGate>
         </Provider>
       </GestureHandlerRootView>

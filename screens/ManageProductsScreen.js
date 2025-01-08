@@ -213,7 +213,7 @@ const ManageProductsScreen = ({ navigation, route }) => {
         {/* <Text style={styles.text}>Component ManageOrderProducts</Text> */}
 
         <ProductsOutput
-          onLongPress={onLongPressHandler}
+          // onLongPress={onLongPressHandler}
           onChangeText={onChangeTextHandler}
           onPress={onPressHandler}
           columns={columns}

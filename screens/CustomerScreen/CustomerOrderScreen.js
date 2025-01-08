@@ -1,6 +1,10 @@
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+
+import ManageProductsScreen from './ManageProductsScreen'; // Другой экран
 import { selectOrder } from '../../store/redux/selectors/orders';
 import ProductsOutput from '../../components/ManageProductsScreen/ProductsOutput';
 import {
@@ -10,13 +14,33 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import IconButton from '../../components/ui/IconButton';
 
-const CustomerOrderScreen = () => {
+
+
+
+
+const CustomerOrderScreen = ({ stackNavigation }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const rows = useSelector(selectOrder);
   const { code: customerCode, minSum } = useSelector(
     (state) => state.selecteds?.selectedCustomer
   );
+
+  useLayoutEffect(() => {
+    stackNavigation.setOptions({
+      title: 'Заявка',
+      headerRight: () => (
+        <IconButton
+          name='add-circle-outline'
+          color={'white'}
+          size={30}
+          onPress={() => {
+            stackNavigation.navigate('ManageProductsScreen');
+          }}
+        />
+      ),
+    });
+  }, [stackNavigation]);
 
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
   if (!typeof customerCode === 'string')
