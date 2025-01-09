@@ -15,7 +15,7 @@ const ClientItem = ({ item, theme }) => {
   function selectCustomerHandler(data) {
     // console.log('SelectedCustomer:', item);
     dispatch(setSelectedCustomer({ ...item }));
-    navigation.navigate('CustomerScreen');
+    navigation.navigate('CustomerScreens');
   }
   // const containerStyle = [styles.container,]
   const containerStyle = [

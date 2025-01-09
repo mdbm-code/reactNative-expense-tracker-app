@@ -2,25 +2,36 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { DrawerLayout } from 'react-native-gesture-handler';
 // import { GlobalStyles } from '../constans/styles';
-import IconButton from '../components/ui/IconButton';
-import ProductMenu from '../components/ManageProductsScreen/ProductsMenu';
-import ProductsOutput from '../components/ManageProductsScreen/ProductsOutput';
-// import { useDrawerStatus } from '@react-navigation/drawer';
+// import IconButton from '../../../components/ui/IconButton';
+import ProductMenu from '../../../components/ManageProductsScreen/ProductsMenu';
+// import ProductsOutput from '../../components/ManageProductsScreen/ProductsOutput';
+// // import { useDrawerStatus } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectProducts } from '../store/redux/selectors/products';
-import { getThemePalette } from '../store/redux/selectors/theme';
-import ProductsMenuButton from '../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
-import {
-  setSearchString,
-  // setSelectedMenuLevel_2,
-  setUnselectMenu,
-} from '../store/redux/slices/selectedsSlice';
-import SearchPanel from '../components/SearchPanel';
-import { findAndUpdateOrderRow } from '../store/redux/slices/currentOrdersSlice';
+import { selectProducts } from '../../../store/redux/selectors/products';
+import { getThemePalette } from '../../../store/redux/selectors/theme';
+import IconButton from '../../../components/ui/IconButton';
+import ProductsMenuButton from '../../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
+import { setSearchString } from '../../../store/redux/slices/selectedsSlice';
+import { findAndUpdateOrderRow } from '../../../store/redux/slices/currentOrdersSlice';
+import SearchPanel from '../../../components/SearchPanel';
+import ProductsOutput from '../../../components/ManageProductsScreen/ProductsOutput';
+import { useNavigation } from '@react-navigation/native';
+import Button from '../../../components/ui/Button';
+// import { selectProducts } from '../../store/redux/selectors/products';
+// import { getThemePalette } from '../../store/redux/selectors/theme';
+// import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
+// import {
+//   setSearchString,
+//   // setSelectedMenuLevel_2,
+//   setUnselectMenu,
+// } from '../../store/redux/slices/selectedsSlice';
+// import SearchPanel from '../../components/SearchPanel';
+// import { findAndUpdateOrderRow } from '../../store/redux/slices/currentOrdersSlice';
 
-const ManageProductsScreen = ({ navigation, route }) => {
+export const CustomerManageProductsScreen = ({ route }) => {
   const dispatch = useDispatch();
   const drawerRef = useRef(null);
+  const navigation = useNavigation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showSearchPanel, setShowSearchPanel] = useState(false);
   const { selectedMenuLevel_1, selectedMenuLevel_2, selectedCustomer } =
@@ -57,6 +68,11 @@ const ManageProductsScreen = ({ navigation, route }) => {
     }
   };
 
+  function onPressFilterHandler() {
+    // setShowSearchPanel(!showSearchPanel);
+    closeDrawer();
+  }
+
   // console.log('isDrawerOpen', isDrawerOpen);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -67,7 +83,8 @@ const ManageProductsScreen = ({ navigation, route }) => {
       headerTintColor: theme.bar.active,
       headerRight: () => (
         <>
-          <IconButton
+          <Button onPress={onPressFilterHandler}>Фильтр</Button>
+          {/* <IconButton
             name='search'
             color={showSearchPanel ? theme.warning.main : theme.bg.text}
             // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
@@ -84,7 +101,7 @@ const ManageProductsScreen = ({ navigation, route }) => {
             // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
             size={24}
             onPress={toggleDrawer}
-          />
+          /> */}
         </>
       ),
     });
@@ -224,8 +241,6 @@ const ManageProductsScreen = ({ navigation, route }) => {
     </DrawerLayout>
   );
 };
-
-export default ManageProductsScreen;
 
 const styles = StyleSheet.create({
   container: {

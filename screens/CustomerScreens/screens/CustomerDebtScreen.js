@@ -3,12 +3,16 @@ import React, { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectOrder } from '../../store/redux/selectors/orders';
 // import { GlobalStyles } from '../../constans/styles';
-import GridTable from '../../components/GridTable';
-import { selectDebitCredit } from '../../store/redux/selectors/debts';
-import FallbackText from '../../components/FallbackText';
-import { getFormattedDate } from '../../util/date';
-import { getThemePalette } from '../../store/redux/selectors/theme';
+// import GridTable from '../../components/GridTable';
+// import { selectDebitCredit } from '../../store/redux/selectors/debts';
+// import FallbackText from '../../components/FallbackText';
+// import { getFormattedDate } from '../../util/date';
+import { getThemePalette } from '../../../store/redux/selectors/theme';
 import { useNavigation } from '@react-navigation/native';
+import GridTable from '../../../components/GridTable';
+import { selectDebitCredit } from '../../../store/redux/selectors/debts';
+import { getFormattedDate } from '../../../util/date';
+import FallbackText from '../../../components/FallbackText';
 
 const CustomerDebtScreen = () => {
   const navigation = useNavigation();

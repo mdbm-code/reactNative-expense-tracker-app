@@ -1,12 +1,17 @@
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getThemePalette } from '../../store/redux/selectors/theme';
-import PhoneButton from '../../components/ui/PhoneButton';
-import Photo from '../../components/Photo/Photo';
-import { storeOrder } from '../../util/http';
-import { getCurrentCustomerDoc } from '../../store/redux/selectors/orders';
-import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
+// import { getThemePalette } from '../../store/redux/selectors/theme';
+// import PhoneButton from '../../components/ui/PhoneButton';
+import Photo from '../../../components/Photo/Photo';
+// import { storeOrder } from '../../util/http';
+// import { getCurrentCustomerDoc } from '../../store/redux/selectors/orders';
+// import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
+import { getThemePalette } from '../../../store/redux/selectors/theme';
+import { getCurrentCustomerDoc } from '../../../store/redux/selectors/orders';
+import { storeOrder } from '../../../util/http';
+import { insertUpdateDocument } from '../../../store/redux/slices/documentsSlice';
+import PhoneButton from '../../../components/ui/PhoneButton';
 
 const CustomerProfileScreen = ({}) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
