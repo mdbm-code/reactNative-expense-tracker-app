@@ -1,0 +1,37 @@
+необходимые библиотеки:
+npm install react-native-modal react-native-snap-carousel react-native-image-zoom-viewer
+react-native-modal для модального окна, 
+react-native-snap-carousel для карусели
+react-native-image-zoom-viewer для масштабирования изображений.
+
+
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+import ImageCarouselModal from './ImageCarouselModal';
+
+const App = () => {
+  const images = [
+    'https://example.com/image1.jpg',
+    'https://example.com/image2.jpg',
+    'https://example.com/image3.jpg',
+  ];
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <ImageCarouselModal images={images} />
+    </SafeAreaView>
+  );
+};
+
+export default App;
+
+Пояснение
+Компонента ImageCarouselModal
+
+Использует react-native-snap-carousel для отображения карусели изображений.
+При клике на изображение вызывается функция openModal, которая открывает модальное окно и устанавливает индекс выбранного изображения.
+В модальном окне используется react-native-image-zoom-viewer для отображения и масштабирования изображения.
+Использование компоненты
+
+В основном компоненте приложения передается массив URL изображений в компоненту ImageCarouselModal.
+Не забудьте заменить URL изображений на те, которые вы хотите использовать в вашем приложении.
