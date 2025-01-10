@@ -299,8 +299,17 @@ function AppContent() {
   const theme = useSelector(getThemePalette);
   return (
     <>
-      <NavigationContainer>
+      <NavigationContainer
+        onStateChange={(state) => {
+          // const currentRoute = state.routes[state.index];
+          // console.log('NavigationContainer.onStateChange', currentRoute.name);
+        }}
+      >
         <Stack.Navigator
+          onStateChange={(state) => {
+            const currentRoute = state.routes[state.index];
+            console.log('Stack.Navigator.onStateChange', currentRoute.name);
+          }}
           screenOptions={{
             // headerShown: false, // Скрыть заголовок BottomTab.Navigator
             tabBarStyle: { backgroundColor: theme.bar.color },

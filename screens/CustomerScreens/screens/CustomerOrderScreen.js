@@ -20,6 +20,8 @@ import {
   deleteOrderRow,
   findAndUpdateOrderRow,
 } from '../../../store/redux/slices/currentOrdersSlice';
+import GridTable from '../../../components/GridTable';
+import { getThemePalette } from '../../../store/redux/selectors/theme';
 // import IconButton from '../../components/ui/IconButton';
 // import { selectOrder } from '../../../store/redux/selectors/orders';
 // import FallbackText from '../../../components/FallbackText';
@@ -28,6 +30,7 @@ import {
 const CustomerOrderScreen = ({ stackNavigation }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const theme = useSelector(getThemePalette);
   const rows = useSelector(selectOrder);
   const { code: customerCode, minSum } = useSelector(
     (state) => state.selecteds?.selectedCustomer
@@ -91,72 +94,79 @@ const CustomerOrderScreen = ({ stackNavigation }) => {
     // }
   }
 
-  const showAlert = (message) => {
-    Alert.alert('Тест', `${message}`, [
-      {
-        text: 'Отмена',
-        style: 'cancel',
-      },
-      {
-        text: 'Да',
-        onPress: () => {},
-      },
-    ]);
-  };
-
-  const renderContent = (
-    <View style={styles.headerContentContainer}>
-      <Text style={{ color: 'white' }}>Наименование</Text>
-      <IconButton
-        name='add-circle-outline'
-        color={'white'}
-        size={24}
-        onPress={() => {
-          navigation.navigate('ManageProductsScreen');
-        }}
-      />
-    </View>
-  );
+  // const renderContent = (
+  //   <View style={styles.headerContentContainer}>
+  //     <Text style={{ color: 'white' }}>Наименование</Text>
+  //     <IconButton
+  //       name='add-circle-outline'
+  //       color={'white'}
+  //       size={24}
+  //       onPress={() => {
+  //         navigation.navigate('ManageProductsScreen');
+  //       }}
+  //     />
+  //   </View>
+  // );
 
   const columns = [
     {
       id: 'name',
       title: 'Наименование',
-      content: renderContent,
+      // content: renderContent,
       flex: 8,
-      titleStyle: { textAlign: 'left', fontSize: 12 },
+      titleStyle: {
+        textAlign: 'left',
+        fontSize: 12,
+        color: theme.text.primary,
+      },
       // onPress: () => onPress({ from: 'head', id: 'name' }),
     },
     {
       id: 'base_price',
       title: 'Б.Цена',
       flex: 3,
-      titleStyle: { textAlign: 'right', fontSize: 12 },
+      titleStyle: {
+        textAlign: 'right',
+        fontSize: 12,
+        color: theme.text.primary,
+      },
     },
     {
       id: 'price',
       title: 'Цена',
       flex: 3,
-      titleStyle: { textAlign: 'right', fontSize: 12 },
+      titleStyle: {
+        textAlign: 'right',
+        fontSize: 12,
+        color: theme.text.primary,
+      },
     },
     {
       id: 'qty',
       title: 'Колв',
       flex: 2,
       as: 'input',
-      titleStyle: { fontSize: 12 },
+      titleStyle: { fontSize: 12, color: theme.text.primary },
     },
   ];
 
   return (
     <View style={[styles.rootContainer]}>
-      <ProductsOutput
+      {/* <ProductsOutput
         rows={rows}
         onChangeText={onChangeTextHandler}
         onLongPress={onLongPressHandler}
         onPress={onPressHandler}
         columns={columns}
         deletable
+      /> */}
+      <GridTable
+        rows={rows}
+        columns={columns}
+        rowId='code'
+        onPress={onPressHandler}
+        onChangeText={onChangeTextHandler}
+        onLongPress={onLongPressHandler}
       />
     </View>
   );

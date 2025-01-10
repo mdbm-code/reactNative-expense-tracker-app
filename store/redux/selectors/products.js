@@ -8,7 +8,7 @@ const getSales = (state) => state.sales.catalog;
 export const selectProducts = createSelector(
   [getSelecteds, getProducts, getCurrentOrders, getSales],
   (selecteds, productsCatalog, currentOrders, sales) => {
-    console.log('selectProducts');
+    // console.log('selectProducts');
 
     try {
       const selectedMenuLevel_2 = selecteds?.selectedMenuLevel_2;
@@ -61,7 +61,7 @@ export const selectProducts = createSelector(
           );
         } else if (selectedMenuLevel_2) {
           catalog = catalog.filter(
-            (product) => product.parentCode === selectedMenuLevel_2
+            (product) => product.parentCode === selectedMenuLevel_2?.code
           ); //выводим товары выбранной группы
         } else {
           //Если пользователь не выбрал группу при подборе товаров, то выведем ему список самых популярных товаров

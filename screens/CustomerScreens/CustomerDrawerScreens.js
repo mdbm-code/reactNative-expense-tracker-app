@@ -1,45 +1,55 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomerOrderScreen from './screens/CustomerOrderScreen';
 import CustomerDebtScreen from './screens/CustomerDebtScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import CustomerReturnScreen from './screens/CustomerReturnScreen';
 import { getThemePalette } from '../../store/redux/selectors/theme';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../components/ui/IconButton';
 import Button from '../../components/ui/Button';
+import { setSelectedDocTab } from '../../store/redux/slices/selectedsSlice';
 
 const Drawer = createDrawerNavigator();
 
 export const CustomerDrawerScreens = ({ navigation }) => {
   const theme = useSelector(getThemePalette);
+  const currentScreen = useSelector((state) => state.selecteds.selectedDocTab);
+  const dispatch = useDispatch();
   const selectedCustomer = useSelector(
     (state) => state.selecteds.selectedCustomer
   );
+  // const [currentScreen, setCurrentScreen] = useState('CustomerOrderScreen');
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: selectedCustomer?.name,
-      headerBackTitle: 'Назад',
-      //   headerRight: () => (
-      //     <IconButton
-      //       name='add-circle-outline'
-      //       color={'white'}
-      //       size={30}
-      //       onPress={() => {
-      //         stackNavigation.navigate('ManageProductsScreen');
-      //       }}
-      //     />
-      //   ),
+      headerBackTitle: '',
     });
-  }, [navigation]);
+  }, [navigation, selectedCustomer]);
+
+  function changeScreenHandler(screenName) {
+    // console.log(screenName);
+
+    dispatch(setSelectedDocTab(screenName));
+  }
 
   return (
     <Drawer.Navigator
+      initialRouteName={currentScreen ? currentScreen : 'CustomerOrderScreen'} // Устанавливаем начальный экран
       screenOptions={({ navigation }) => ({
         headerStyle: { backgroundColor: theme.bar.color },
         headerTintColor: theme.bar.active,
       })}
+      // Отслеживание изменения состояния навигации
+      // screenListeners={{
+      //   state: (e) => {
+      //     // Do something with the state
+      //     const currentRoute = e.data.state.routes[e.data.state.index];
+      //     console.log('Drawer.Navigator state changed', currentRoute);
+      //   },
+      // }}
     >
       <Drawer.Screen
         name='CustomerOrderScreen'
@@ -47,27 +57,23 @@ export const CustomerDrawerScreens = ({ navigation }) => {
         options={{
           drawerLabel: 'Заявка',
           title: 'Заявка',
-          // headerStyle: { backgroundColor: theme.bar.color },
-          // headerShown: false
           headerRight: () => (
-            // <IconButton
-            //   name='add-circle-outline'
-            //   color={'white'}
-            //   size={30}
-            //   onPress={() => {
-            //     navigation.navigate('ManageProductsScreen');
-            //   }}
-            // />
             <Button
+              style={[
+                styles.manageButton,
+                { backgroundColor: theme.success.light },
+              ]}
               onPress={() => {
                 navigation.navigate('ManageProductsScreen');
-                // navigation.navigate('CustomerManageProductsScreen');
               }}
             >
               Подбор
             </Button>
           ),
         }}
+        listeners={({ navigation }) => ({
+          focus: () => changeScreenHandler('CustomerOrderScreen'),
+        })}
       />
       <Drawer.Screen
         name='CustomerDebtScreen'
@@ -75,9 +81,10 @@ export const CustomerDrawerScreens = ({ navigation }) => {
         options={{
           drawerLabel: 'Акт-сверки',
           title: 'Акт-сверки',
-          // headerShown: false,
-          // headerStyle: { backgroundColor: theme.bar.color },
         }}
+        listeners={({ navigation }) => ({
+          focus: () => changeScreenHandler('CustomerDebtScreen'),
+        })}
       />
       <Drawer.Screen
         name='CustomerReturnScreen'
@@ -85,9 +92,24 @@ export const CustomerDrawerScreens = ({ navigation }) => {
         options={{
           drawerLabel: 'Возврат',
           title: 'Возврат',
-          // headerShown: false,
-          // headerStyle: { backgroundColor: theme.bar.color },
+          headerRight: () => (
+            <Button
+              style={[
+                styles.manageButton,
+                { backgroundColor: theme.success.light },
+              ]}
+              color={theme.success.light}
+              onPress={() => {
+                navigation.navigate('ManageProductsScreen');
+              }}
+            >
+              Подбор
+            </Button>
+          ),
         }}
+        listeners={({ navigation }) => ({
+          focus: () => changeScreenHandler('CustomerReturnScreen'),
+        })}
       />
       <Drawer.Screen
         name='CustomerProfileScreen'
@@ -95,14 +117,19 @@ export const CustomerDrawerScreens = ({ navigation }) => {
         options={{
           drawerLabel: 'Сведения',
           title: 'Сведения',
-          // headerShown: false,
-          // headerStyle: { backgroundColor: theme.bar.color },
         }}
+        listeners={({ navigation }) => ({
+          focus: () => changeScreenHandler('CustomerProfileScreen'),
+        })}
       />
     </Drawer.Navigator>
   );
 };
 
-CustomerDrawerScreens;
-
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  manageButton: {
+    borderStartStartRadius: 10,
+    borderStartEndRadius: 10,
+    paddingLeft: 10,
+  },
+});

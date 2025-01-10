@@ -73,6 +73,22 @@ export const getThemePalette = createSelector([getTheme], (theme) => {
     );
   }
 
+  try {
+    toReturn['paper'] = {
+      light: colors[primaryColor][shades[mode].paper['light']],
+      main: colors[primaryColor][shades[mode].paper['main']],
+      dark: colors[primaryColor][shades[mode].paper['dark']],
+      contrastText: palette[mode].text.primary,
+    };
+  } catch (error) {
+    console.log(
+      'toReturn[secondary]',
+      error,
+      'secondaryColor = ',
+      secondaryColor
+    );
+  }
+
   toReturn['mode'] = mode;
   toReturn['primaryColor'] = primaryColor;
   toReturn['secondaryColor'] = secondaryColor;

@@ -6,13 +6,13 @@ import {
   View,
 } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
-import { GlobalStyles } from '../../constans/styles';
+// import { GlobalStyles } from '../../constans/styles';
 import FallbackText from '../FallbackText';
 import GridTableRow from './GridTableRow';
 import GridTableHead from './GridTableHead';
 
 const GridTable = ({
-  onRefresh = () => { },
+  onRefresh = () => {},
   refreshing = false,
   rows,
   columns,
@@ -20,7 +20,6 @@ const GridTable = ({
   onChangeText,
   onLongPress,
   rowId = 'id',
-  simple,
 }) => {
   const [selectedRow, setSelectedRow] = useState('');
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
@@ -65,12 +64,14 @@ const GridTable = ({
   const renderItem = ({ item }) => {
     const cells = [];
     columns.forEach((column) => {
-
       let prefix = null;
       if (column?.prefix && typeof column?.prefix === 'object') {
         if (column.prefix?.cond && typeof column.prefix.cond === 'object') {
           const { key, ifnull, ifnot } = column.prefix.cond;
-          if (ifnull && (item[key] === undefined || item[key] === null || item[key] === '')) {
+          if (
+            ifnull &&
+            (item[key] === undefined || item[key] === null || item[key] === '')
+          ) {
             prefix = ifnull;
           } else if (ifnot) {
             prefix = ifnot;
@@ -123,6 +124,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: GlobalStyles.colors.primary400,
+    // backgroundColor: GlobalStyles.colors.primary400,
   },
 });

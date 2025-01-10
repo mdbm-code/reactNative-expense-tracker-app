@@ -11,6 +11,11 @@ export const colorShades = {
       main: 500,
       dark: 700,
     },
+    paper: {
+      light: 50,
+      main: 100,
+      dark: 200,
+    },
   },
   dark: {
     primary: {
@@ -23,8 +28,14 @@ export const colorShades = {
       main: 200,
       dark: 400,
     },
+    paper: {
+      light: 700,
+      main: 800,
+      dark: 900,
+    },
   },
 };
+
 export const colorPalettes = {
   light: {
     primary: {
