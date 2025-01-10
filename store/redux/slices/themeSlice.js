@@ -12,6 +12,7 @@ const initialState = {
   shades: { ...colorShades },
   primaryColor: 'deepPurple',
   secondaryColor: 'deepPurple',
+  version: 'v1'
 };
 
 const themeSlice = createSlice({
@@ -20,6 +21,9 @@ const themeSlice = createSlice({
   reducers: {
     setColors(state, action) {
       state.colors = action.payload;
+    },
+    setVersion(state, action) {
+      state.version = action.payload;
     },
     setShades(state, action) {
       state.shades = action.payload;
@@ -53,12 +57,14 @@ export const loadColors = () => async (dispatch) => {
     dispatch(setPalette(colorPalettes));
     dispatch(setPrimaryColor('indigo'));
     dispatch(setSecondaryColor('indigo'));
+    dispatch(setVersion('v1'));
   } catch (error) {
     console.error('Failed to load colors:', error);
   }
 };
 
 export const {
+  setVersion,
   setColors,
   toggleTheme,
   setTheme,

@@ -69,11 +69,13 @@ const SettingsDrawer = createDrawerNavigator();
 // }
 
 function SettingsDrawerNavigator({ theme, stackNavigation }) {
+  console.log(theme);
+
   return (
     <SettingsDrawer.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: theme.bar.color },
-        headerTintColor: theme.bar.active,
+        headerStyle: { backgroundColor: theme.style.nav.bg },
+        headerTintColor: theme.style.nav.text,
       })}
     >
       <SettingsDrawer.Screen
@@ -120,11 +122,13 @@ function MainScreens({ navigation }) {
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: theme.bar.color },
-        headerTintColor: theme.bar.active,
-        tabBarStyle: { backgroundColor: theme.bar.color },
-        tabBarActiveTintColor: theme.bar.active,
-        tabBarInactiveTintColor: theme.bar.text,
+        headerStyle: { backgroundColor: theme.style.nav.bg },
+        headerTintColor: theme.style.nav.text,
+        // headerStyle: { backgroundColor: theme.bar.color },
+        // headerTintColor: theme.bar.active,
+        tabBarStyle: { backgroundColor: theme.style.nav.bg },
+        tabBarActiveTintColor: theme.style.nav.activeIcon,
+        tabBarInactiveTintColor: theme.style.nav.inactiveIcon,
       })}
     >
       <BottomTab.Screen
@@ -338,16 +342,16 @@ function AppContent() {
           <Stack.Screen
             name='ManageProductsScreen'
             component={ManageProductsScreen} //подбор товаров в заявку клиента
-            // options={{
-            //   presentation: 'fullScreenModal',
-            // }}
+          // options={{
+          //   presentation: 'fullScreenModal',
+          // }}
           />
           <Stack.Screen
             name='DocumentScreen'
             component={DocumentScreen} //подбор товаров в заявку клиента
-            // options={{
-            //   presentation: 'fullScreenModal',
-            // }}
+          // options={{
+          //   presentation: 'fullScreenModal',
+          // }}
           />
         </Stack.Navigator>
       </NavigationContainer>

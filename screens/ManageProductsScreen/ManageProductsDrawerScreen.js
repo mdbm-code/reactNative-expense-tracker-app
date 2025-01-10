@@ -51,8 +51,12 @@ export const ManageProductsDrawerScreen = ({ navigation }) => {
   return (
     <Drawer.Navigator
       screenOptions={{
-        drawerType: 'slide',
-        overlayColor: 'transparent', // Прозрачный оверлей для клика снаружи
+        // drawerType: 'slide',
+        // overlayColor: 'transparent', // Прозрачный оверлей для клика снаружи
+        // drawerType: 'back', // overlay effect
+        drawerType: 'front', // front overlay
+        // drawerType: 'permanent', // всегда открытый
+        overlayColor: 'rgba(0, 0, 0, 0.5)', // цвет затемнения
       }}
       drawerContent={(props) => <GroupList {...props} theme={theme} />}
     >

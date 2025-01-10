@@ -45,7 +45,7 @@ const CustomersListScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg.color }]}>
+    <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       {/* <View style={[styles.container, { backgroundColor: palette.background.default }]}> */}
       {/* <ClientsSummary periodName={expensesPeriod} rows={rows} /> */}
       <ClientsRouter
@@ -68,6 +68,7 @@ export default CustomersListScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 6
     // backgroundColor: theme.background,
     // backgroundColor: GlobalStyles.colors.primary700,
   },

@@ -21,6 +21,6 @@ export default ClientsList;
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 36,
+    paddingBottom: 80,
   },
 });

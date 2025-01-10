@@ -37,21 +37,21 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: GlobalStyles.colors.primary100,
+    // borderBottomColor: GlobalStyles.colors.primary100,
   },
   rowCell: {
     flex: 1,
     borderWidth: 0.2,
-    borderColor: GlobalStyles.colors.primary100,
+    // borderColor: GlobalStyles.colors.primary100,
     paddingHorizontal: 4,
     justifyContent: 'center',
     minHeight: 36,
   },
   text: {
-    color: 'white',
+    // color: 'white',
   },
   selectedText: {
-    color: 'black',
+    // color: 'black',
   },
   name: {
     textAlign: 'left',
@@ -60,6 +60,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   selected: {
-    backgroundColor: GlobalStyles.colors.primary50,
+    // backgroundColor: GlobalStyles.colors.primary50,
   },
 });

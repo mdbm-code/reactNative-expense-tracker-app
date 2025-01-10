@@ -41,15 +41,19 @@ export const CustomerDrawerScreens = ({ navigation }) => {
       screenOptions={({ navigation }) => ({
         headerStyle: { backgroundColor: theme.bar.color },
         headerTintColor: theme.bar.active,
+        // drawerType: 'back', // overlay effect
+        drawerType: 'front', // front overlay
+        // drawerType: 'permanent', // всегда открытый
+        overlayColor: 'rgba(0, 0, 0, 0.5)', // цвет затемнения
       })}
-      // Отслеживание изменения состояния навигации
-      // screenListeners={{
-      //   state: (e) => {
-      //     // Do something with the state
-      //     const currentRoute = e.data.state.routes[e.data.state.index];
-      //     console.log('Drawer.Navigator state changed', currentRoute);
-      //   },
-      // }}
+    // Отслеживание изменения состояния навигации
+    // screenListeners={{
+    //   state: (e) => {
+    //     // Do something with the state
+    //     const currentRoute = e.data.state.routes[e.data.state.index];
+    //     console.log('Drawer.Navigator state changed', currentRoute);
+    //   },
+    // }}
     >
       <Drawer.Screen
         name='CustomerOrderScreen'
@@ -128,8 +132,9 @@ export const CustomerDrawerScreens = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   manageButton: {
-    borderStartStartRadius: 10,
-    borderStartEndRadius: 10,
+    borderStartStartRadius: 16,   // Закругленный угол слева
+    // borderStartEndRadius: 10,     // Закругленный угол справа
+    borderEndStartRadius: 16,     // Закругленный угол справа
     paddingLeft: 10,
   },
 });

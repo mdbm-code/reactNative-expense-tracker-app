@@ -22,15 +22,17 @@ const ClientItem = ({ item, theme }) => {
     styles.container,
     {
       backgroundColor: item?.hasOrder
-        ? theme.listItem.active
-        : theme.listItem.disabled,
+        ? theme.style.customerList.accent
+        : theme.style.customerList.bg2,
+      shadowColor: theme.style.customerList.shadow,
     },
   ];
 
   // const iconStyle = [styles.icon,];
-  const textTitle = [styles.textBase, { color: theme.primary.contrastText }];
-  const textSubtitle = [styles.textBase];
+  const textTitle = [styles.textBase, { color: theme.style.customerList.title }];
+  const textSubtitle = [styles.textBase, { color: theme.style.customerList.subtitle }];
   const iconStyle = [styles.icon];
+  const percentStyle = [...textTitle, item?.percent < 40 && { color: theme.style.customerList.dangerText }];
   // const textTitle = [styles.textBase, { color: palette.text.primary }];
   // const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
 
@@ -39,12 +41,13 @@ const ClientItem = ({ item, theme }) => {
   );
   if (item?.hasOrder) {
     const cells = [
-      { title: item?.baseTotal, flex: 3 },
-      { title: item?.total, flex: 3 },
-      { title: `${item?.percent}%`, flex: 3 },
+      { title: item?.baseTotal, flex: 3, titleStyle: textSubtitle },
+      { title: item?.total, flex: 3, titleStyle: textSubtitle },
+      { title: `${item?.percent}%`, flex: 3, titleStyle: percentStyle },
+
     ];
     secondLine = (
-      <View style={styles.secondLineContainer}>
+      <View style={[styles.secondLineContainer, item?.percent < 40 && { backgroundColor: theme.style.customerList.dangerBg }]}>
         <GridTableRow cells={cells} />
       </View>
     );
@@ -90,7 +93,7 @@ const styles = StyleSheet.create({
     elevation: 3,
 
     //for iOS
-    shadowColor: 'black',
+    // shadowColor: 'black',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
