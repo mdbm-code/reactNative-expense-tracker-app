@@ -2,11 +2,49 @@ import { StyleSheet } from 'react-native';
 import Dropdown from 'react-native-input-select';
 import { GlobalStyles } from '../../constans/styles';
 
-const ClientsRouter = ({ onSelect, value, isMultiple = false }) => {
+const ClientsRouter = ({ theme, onSelect, value, isMultiple = false }) => {
   return (
     <Dropdown
-      //   label='Маршруты'
+      // label="Маршрут"
+      // label='Маршруты'
+      dropdownContainerStyle={{
+        marginBottom: 0,
+        marginTop: 0,
+      }}
+      dropdownStyle={{
+        // borderWidth: 2, // To remove border, set borderWidth to 0
+        // borderColor: theme.style.customerRouter.border,
+        backgroundColor: theme.style.bars[2].bg,
+        // backgroundColor: theme.style.customerRouter.bg2,
+        borderRadius: 15,
+      }}
+      modalControls={{
+        modalOptionsContainerStyle: {
+          padding: 20,
+          backgroundColor: theme.style.customerRouter.bg2,
+        },
+        // modalProps: {
+        //   supportedOrientations: [
+        //     'portrait',
+        //     'portrait-upside-down',
+        //     'landscape',
+        //     'landscape-left',
+        //     'landscape-right',
+        //   ],
+        //   transparent: false,
+        // },
+      }}
+
+      // primaryColor={'green'}
+      dropdownHelperTextStyle={{
+
+      }}
+      selectedItemStyle={{ fontSize: 18, color: theme.style.customerRouter.text }}
+      // listComponentStyles={{ backgroundColor: 'blue' }}
+      // placeholderStyle={{ backgroundColor: theme.style.customerRouter.placeholder }}
+      // dropdownContainerStyle={{ backgroundColor: 'red' }}
       placeholder={value}
+      primaryColor={'#007BFF'}
       options={[
         { label: 'Понедельник', value: '_1' },
         { label: 'Вторник', value: '_2' },
@@ -18,12 +56,9 @@ const ClientsRouter = ({ onSelect, value, isMultiple = false }) => {
       ]}
       selectedValue={value}
       onValueChange={(value) => onSelect(value)}
-      primaryColor={'green'}
       isMultiple={isMultiple}
-      //   isSearchable
-      dropdownStyle={{
-        borderWidth: 2, // To remove border, set borderWidth to 0
-      }}
+    //   isSearchable
+
     //   dropdownIcon={
     //     <Image
     //       style={styles.tinyLogo}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, StyleSheet, Animated } from 'react-native';
 import IconButton from '../ui/IconButton';
 
-const SearchPanel = ({ onCancel, onSearch }) => {
+const SearchPanel = ({ onCancel, onSearch, theme }) => {
   const [searchString, setSearchString] = useState('');
   const [slideAnim] = useState(new Animated.Value(-100)); // Начальная позиция панели
 
@@ -16,6 +16,7 @@ const SearchPanel = ({ onCancel, onSearch }) => {
   }, [slideAnim]);
 
   return (
+
     <Animated.View
       style={[styles.searchPanel, { transform: [{ translateY: slideAnim }] }]}
     >
@@ -50,6 +51,7 @@ const SearchPanel = ({ onCancel, onSearch }) => {
       />
       <Button title='Поиск' onPress={() => onSearch(searchString)} /> */}
     </Animated.View>
+
   );
 };
 

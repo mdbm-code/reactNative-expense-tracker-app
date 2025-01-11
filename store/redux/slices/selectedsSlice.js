@@ -7,8 +7,10 @@ import { createSlice } from '@reduxjs/toolkit';
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
   searchString: '',
+  customerSearchString: '',
   selectedRoute: null,
   selectedCustomer: null,
+  selectedCustomerListItem: null,
   selectedOrder: null,
   selectedDocTab: 0,
   selectedTheme: 'light',
@@ -26,6 +28,12 @@ const selectedsSlice = createSlice({
   reducers: {
     setSearchString: (state, action) => {
       state.searchString = action.payload;
+    },
+    setSelectedCustomerListItem: (state, action) => {
+      state.selectedCustomerListItem = action.payload;
+    },
+    setCustomerSearchString: (state, action) => {
+      state.customerSearchString = action.payload;
     },
     setSelectedRoute: (state, action) => {
       state.selectedRoute = action.payload;
@@ -64,6 +72,8 @@ const selectedsSlice = createSlice({
 
 // Экспорт действий для использования в компонентах
 export const {
+  setSelectedCustomerListItem,
+  setCustomerSearchString,
   setSearchString,
   setSelectedRoute,
   setSelectedCustomer,

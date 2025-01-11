@@ -135,19 +135,12 @@ function MainScreens({ navigation }) {
         name='CustomersListScreen'
         component={CustomersListScreen}
         options={{
-          title: 'Мои клиенты',
+          // title: 'Мои клиенты',
           tabBarLabel: 'Клиенты',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='people-outline' color={color} size={size} />
           ),
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              name='search'
-              color={tintColor}
-              size={24}
-              onPress={() => navigation.navigate('CustomerScreen')}
-            />
-          ),
+
         }}
       />
       <BottomTab.Screen

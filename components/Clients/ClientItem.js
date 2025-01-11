@@ -1,23 +1,37 @@
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 // import { GlobalStyles } from '../../constans/styles';
 // import { getFormattedDate } from '../../util/date';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { setSelectedCustomer } from '../../store/redux/slices/selectedsSlice';
+import { setSelectedCustomer, setSelectedCustomerListItem } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
+import Tally from '../Tally';
+import { customerSortUp } from '../../store/redux/slices/routesSlice';
+
+
 // import GridTable from '../GridTable';
 
-const ClientItem = ({ item, theme }) => {
+const ClientItem = React.memo(({ item, theme, editedId }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  function onLongHandler() {
+    const id = item.id || item.code;
+    if (editedId) {
+      dispatch(setSelectedCustomerListItem(''));
+    } else {
+      dispatch(setSelectedCustomerListItem(id));
+    }
+  }
+
   function selectCustomerHandler(data) {
-    // console.log('SelectedCustomer:', item);
+    dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
     navigation.navigate('CustomerScreens');
   }
-  // const containerStyle = [styles.container,]
+
   const containerStyle = [
     styles.container,
     {
@@ -28,13 +42,10 @@ const ClientItem = ({ item, theme }) => {
     },
   ];
 
-  // const iconStyle = [styles.icon,];
   const textTitle = [styles.textBase, { color: theme.style.customerList.title }];
   const textSubtitle = [styles.textBase, { color: theme.style.customerList.subtitle }];
   const iconStyle = [styles.icon];
   const percentStyle = [...textTitle, item?.percent < 40 && { color: theme.style.customerList.dangerText }];
-  // const textTitle = [styles.textBase, { color: palette.text.primary }];
-  // const textSubtitle = [styles.textBase, { color: palette.text.disabled }];
 
   let secondLine = (
     <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
@@ -53,8 +64,13 @@ const ClientItem = ({ item, theme }) => {
     );
   }
 
+
+
+
   return (
+
     <Pressable
+      onLongPress={onLongHandler}
       onPress={selectCustomerHandler}
       style={({ pressed }) => pressed && styles.pressed}
       android_ripple={true}
@@ -64,19 +80,17 @@ const ClientItem = ({ item, theme }) => {
         <View style={styles.firstLineContainer}>
           <Text style={[...textTitle, styles.description]}>{item?.name}</Text>
           <IconButton
-            color={theme.primary.contrastText}
+            color={theme.style.customerList.warningText}
             size={24}
             viewStyle={[...iconStyle]}
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
           />
         </View>
         {secondLine}
-        {/* <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text> */}
-        {/* </View> */}
       </View>
     </Pressable>
   );
-};
+});
 
 export default ClientItem;
 
