@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'justify-between',
 		// alignItems: 'center',
+
 	},
 	tallyLeft: {
 		flex: 1,
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
 	},
 	tallyCenter: {
 		flex: 16,
+		overflow: 'hidden',
 	},
 	childrenContainer: {
 		borderBottomRightRadius: 20,

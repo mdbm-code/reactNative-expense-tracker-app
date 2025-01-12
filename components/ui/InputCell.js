@@ -1,20 +1,37 @@
 import { Keyboard, StyleSheet, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-const InputCell = ({ returnParams = {}, defaultValue, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onChangeValue }) => {
+const InputCell = ({ onChangeText, returnParams = {}, defaultValue, selectedValue, style, returnKeyType = 'done', keyboardType = 'decimal-pad', onFocus, inputConfig, onChangeValue }) => {
 	const [inputValue, setInputValue] = useState(defaultValue);
 	const [previousValue, setPreviousValue] = useState(defaultValue);
 
+	// useEffect(() => {
+	// 	if (selectedValue) {
+
+	// 		setInputValue(selectedValue);
+	// 	}
+	// }, [selectedValue]);
+
 	function onBlurHandler() {
-		if (inputValue === '') {
-			if (selectedValue) {
-				onChangeValue({ ...returnParams, newValue: selectedValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
-				setInputValue(selectedValue); // Возвращаем предыдущее значение
-			} else {
+		if (typeof onChangeText === 'function') {
+			if (inputValue === '') {
 				setInputValue(previousValue); // Возвращаем предыдущее значение
+			} else {
+				onChangeText(inputValue);
 			}
-		} else {
-			onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
+		}
+
+		if (typeof onChangeValue === 'function') {
+			if (inputValue === '') {
+				if (selectedValue) {
+					onChangeValue({ ...returnParams, newValue: selectedValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
+					setInputValue(selectedValue); // Возвращаем предыдущее значение
+				} else {
+					setInputValue(previousValue); // Возвращаем предыдущее значение
+				}
+			} else {
+				onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue }); // Отправляем сообщение наверх только если введено новое значение
+			}
 		}
 	}
 
@@ -24,25 +41,27 @@ const InputCell = ({ returnParams = {}, defaultValue, selectedValue, style, retu
 		onFocus(returnParams);
 	}
 
+	function onSubmitEditingHandler() {
+		if (typeof onChangeText === 'function') {
+			onChangeText(inputValue);
+		}
+		if (typeof onChangeValue === 'function') {
+			onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue });
+		}
+		Keyboard.dismiss();
+	}
+
 	return (
 		<TextInput
 			style={[styles.text, styles.numberText, style && style]}
 			{...inputConfig}
 			value={inputValue}
-			// onChangeText={(enteredText) => updateValueHandler(enteredText, 'qty')}
-			onChangeText={(enteredText) =>
-				setInputValue(enteredText)
-			}
-			// onFocus={() => setIsActive(true)} // Устанавливаем isActive в true при получении фокуса
+			onChangeText={(enteredText) => setInputValue(enteredText)}
 			returnKeyType={returnKeyType} //'done', 'go', 'next', 'search', 'send'
-			// onBlur={() => updateValueHandler(inputs.qty, 'qty')} // Отправляем сообщение наверх при потере фокуса
-			onSubmitEditing={() => {
-				onChangeValue({ ...returnParams, newValue: inputValue, oldValue: previousValue }); // Отправляем сообщение наверх при нажатии Enter
-				Keyboard.dismiss(); // Скрываем клавиатуру
-			}}
 			keyboardType={keyboardType}
 			onBlur={onBlurHandler}
 			onFocus={onFocusHandler}
+			onSubmitEditing={onSubmitEditingHandler}
 		/>
 	)
 }

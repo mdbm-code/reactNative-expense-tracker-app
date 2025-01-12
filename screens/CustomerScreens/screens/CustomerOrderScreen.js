@@ -32,9 +32,11 @@ const CustomerOrderScreen = ({ stackNavigation }) => {
   const navigation = useNavigation();
   const theme = useSelector(getThemePalette);
   const rows = useSelector(selectOrder);
-  const { code: customerCode, minSum } = useSelector(
+  const selectedCustomer = useSelector(
     (state) => state.selecteds?.selectedCustomer
   );
+  const customerCode = selectedCustomer?.code;
+  const minSum = selectedCustomer?.minSum;
 
   // useLayoutEffect(() => {
   //   stackNavigation.setOptions({
@@ -60,7 +62,7 @@ const CustomerOrderScreen = ({ stackNavigation }) => {
     const payload = {
       customerCode: customerCode,
       minSum: minSum,
-      productCode: value.code,
+      productCode: value?.code,
       base_price: value.base_price,
       price: value.price,
       qty: value.newValue,

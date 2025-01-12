@@ -1,42 +1,76 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { DrawerLayout } from 'react-native-gesture-handler';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+// import { DrawerLayout } from 'react-native-gesture-handler';
 // import { GlobalStyles } from '../constans/styles';
-import IconButton from '../../components/ui/IconButton';
-import ProductMenu from '../../components/ManageProductsScreen/ProductsMenu';
+// import IconButton from '../../components/ui/IconButton';
+// import ProductMenu from '../../components/ManageProductsScreen/ProductsMenu';
 import ProductsOutput from '../../components/ManageProductsScreen/ProductsOutput';
 // import { useDrawerStatus } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectProducts } from '../../store/redux/selectors/products';
+import { selectProducts, selectProductSales } from '../../store/redux/selectors/products';
 import { getThemePalette } from '../../store/redux/selectors/theme';
-import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
-import {
-  setSearchString,
-  // setSelectedMenuLevel_2,
-  setUnselectMenu,
-} from '../../store/redux/slices/selectedsSlice';
-import SearchPanel from '../../components/SearchPanel';
+// import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
+// import {
+//   setSearchString,
+//   // setSelectedMenuLevel_2,
+//   // setUnselectMenu,
+// } from '../../store/redux/slices/selectedsSlice';
+// import SearchPanel from '../../components/SearchPanel';
 import { findAndUpdateOrderRow } from '../../store/redux/slices/currentOrdersSlice';
+import GridTable from '../../components/GridTable';
+// import { Tally } from '../../components/Tally/Tally';
+import { setSelectedProduct } from '../../store/redux/slices/selectedsSlice';
+// import Button from '../../components/ui/Button';
+import InputHelper from '../../components/ManageProductsScreen/InputHelper/';
+import InputOrder from './InputOrder';
+
+
+
+const SimpleInput = () => {
+  const [inputValue, setInputValue] = useState('');
+
+  const onSubmitEditingHandler = () => {
+    console.log('onSubmitEditingHandler вызван');
+  };
+
+  return (
+    <View>
+      <TextInput
+        value={inputValue}
+        onChangeText={setInputValue}
+        returnKeyType='done' // или 'go'
+        keyboardType='default' // или 'numeric'
+        onSubmitEditing={onSubmitEditingHandler}
+        style={styles.input}
+      />
+    </View>
+  );
+};
 
 export const ManageProductsHomeScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   // const drawerRef = useRef(null);
-  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [showSearchPanel, setShowSearchPanel] = useState(false);
-  const { selectedMenuLevel_1, selectedMenuLevel_2, selectedCustomer } =
-    useSelector((state) => state.selecteds);
+  // const [showFooterFor, setShowFooterFor] = useState(null);
+  // const [showSearchPanel, setShowSearchPanel] = useState(false);
+  const { selectedCustomer, selectedProduct } = useSelector((state) => state.selecteds);
   const products = useSelector(selectProducts);
+  const productSales = useSelector(selectProductSales);
   const theme = useSelector(getThemePalette);
+  const [inputValue, setInputValue] = useState('');
+
+
+
+
 
   // const openDrawer = () => {
   //   drawerRef.current?.openDrawer();
   //   setIsDrawerOpen(true);
   // };
 
-  const closeDrawer = () => {
-    // drawerRef.current?.closeDrawer();
-    // setIsDrawerOpen(false);
-  };
+  // const closeDrawer = () => {
+  //   // drawerRef.current?.closeDrawer();
+  //   // setIsDrawerOpen(false);
+  // };
 
   // const toggleDrawer = () => {
   //   dispatch(setSearchString(''));
@@ -44,122 +78,84 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
   //   isDrawerOpen ? closeDrawer() : openDrawer();
   // };
 
-  const onPressTopHandler = () => {
-    dispatch(setSearchString(''));
-    setShowSearchPanel(false);
-    dispatch(setUnselectMenu());
-    // closeDrawer();
-  };
+  // const onPressTopHandler = () => {
+  //   dispatch(setSearchString(''));
+  //   setShowSearchPanel(false);
+  //   dispatch(setUnselectMenu());
+  //   // closeDrawer();
+  // };
 
   const onPressHandler = (data) => {
-    if (data?.from === 'head') {
-      // toggleDrawer();
+    // console.log('data', data);
+
+    if (data?.column === 'qty') {
+      dispatch(setSelectedProduct({
+        code: data?.code,
+        name: data?.name,
+        base_price: data?.base_price,
+        price: data?.price,
+        default_price: data?.default_price,
+        qty: data?.qty,
+      }));
+
+    } else if (data?.column === 'name') {
+      // {"base_price": 37.76, "code": "ТД007773", "column": "name", "default_price": 44.62, 
+      // "description": "1-5", "multiple": 8, "name": "Йогурт ANGELATO 2,5% пит.черника бут. 0,27 л.", 
+      // "parentCode": "6", "price": 44.62, 
+      // "prices": {"base_price": 37.76, "default_price": 44.62}, "qty": "", 
+      // "shortName": "Йог ANGELATO 2,5% черн. бут. 0,27 л.", "specs": [], "unit": "шт"}
+      dispatch(setSelectedProduct({
+        code: data?.code,
+        name: data?.name,
+        base_price: data?.base_price,
+        price: data?.price,
+        default_price: data?.default_price,
+        qty: data?.qty,
+      }));
+    } else if (data?.column === 'inputHelper') {
+
+
+      if (data?.code && data?.name && data?.newValue) {
+        const payload = { ...data, customerCode: selectedCustomer?.code, productCode: data?.code, qty: data?.newValue };
+        // console.log('payload', payload);
+        dispatch(findAndUpdateOrderRow(payload));
+      }
     }
   };
 
-  // console.log('isDrawerOpen', isDrawerOpen);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: selectedMenuLevel_2?.name
-        ? selectedMenuLevel_2?.name
-        : 'Популярные',
-      headerTitleStyle: { fontSize: 20 },
-      headerStyle: {
-        backgroundColor: theme.success.light,
-      },
-      headerTintColor: theme.bar.active,
-      headerRight: () => (
-        <IconButton
-          name='search'
-          color={'white'}
-          // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
-          size={24}
-          onPress={() => {
-            setShowSearchPanel(!showSearchPanel);
-            // closeDrawer();
-          }}
-        />
-      ),
-    });
-  }, [navigation, selectedMenuLevel_2, showSearchPanel]);
-
-  const renderDrawerContent = () => (
-    <View style={[styles.drawerContent, { backgroundColor: theme.bg.color }]}>
-      <ProductsMenuButton
-        title={'Популярные'}
-        selected={!selectedMenuLevel_1}
-        // iconName={selectedMenuLevel_1 === code ? 'chevron-up-outline' : 'chevron-down-outline'}
-        onPress={onPressTopHandler}
-      />
-      <ProductMenu closeDrawer={closeDrawer} />
-    </View>
-  );
-
-  const handleSearch = (searchString) => {
-    dispatch(setSearchString(searchString)); // Сохраняем поисковую строку в состоянии
-    // setShowSearchPanel(false); // Закрываем панель поиска
-  };
 
   function onChangeTextHandler(value) {
-    const payload = {
-      customerCode: selectedCustomer?.code,
-      minSum: 0,
-      productCode: value.code,
-      base_price: value.base_price,
-      price: value.price,
-      qty: value.newValue,
-      default_price: value?.default_price,
-    };
+    let payload = null;
+    if (value?.column === 'inputHelper') {
+      payload = {
+        customerCode: selectedCustomer?.code,
+        productCode: selectedProduct?.code,
+        name: selectedProduct?.name,
+        base_price: selectedProduct?.base_price,
+        price: selectedProduct?.price,
+        default_price: selectedProduct?.default_price,
+        qty: value?.newValue,
+      }
+    } else {
+      payload = {
+        customerCode: selectedCustomer?.code,
+        productCode: value?.code,
+        base_price: value?.base_price,
+        price: value?.price,
+        qty: value?.newValue,
+        default_price: value?.default_price,
+      };
+    }
+
     // console.log('onChangeTextHandler.payload:', payload);
-    dispatch(findAndUpdateOrderRow(payload));
+    if (payload) {
+      dispatch(findAndUpdateOrderRow(payload));
+    }
 
     //"base_price": 54.6, "code": "ТД000110", "description": "5-10", "id": "ТД000110", "multiple": 9, "name": "Айран БУДЬ ЗДОРОВ 0,1% 1 л.",
     // "newValue": "5", "oldValue": "", "parentCode": "29", "prices": { "price": "" }, "qty": "", "shortName": "Айран БУДЬ ЗДОРОВ 0, 1 % 1 л.",
     // "specs": [{"spec": "SO - 0 - 0 - 2817 - 0 - 0 - 1366E", "value": 53.39}, {"spec": "SO - 0 - 0 - 2817 - 0 - 0 - 1128389E", "value": 57}], "unit": "шт"}
   }
-
-  function onLongPressHandler(event) {
-    // if (deletable) {
-    //   Alert.alert('Удалить?', `Вы хотите удалить элемент: ${event.name}?`, [
-    //     {
-    //       text: 'Отмена',
-    //       style: 'cancel',
-    //     },
-    //     {
-    //       text: 'Удалить',
-    //       onPress: () => {
-    //         dispatch(
-    //           deleteOrderRow({ customerCode, productCode: event?.code })
-    //         );
-    //       },
-    //     },
-    //   ]);
-    // }
-  }
-
-  // const renderContent = (
-  //   <View style={styles.headerContentContainer}>
-  //     {/* <Text style={{ color: 'white' }}>Наименование</Text> */}
-  //     <IconButton
-  //       name='search'
-  //       color={showSearchPanel ? theme.warning.main : theme.bg.text}
-  //       // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
-  //       size={24}
-  //       onPress={() => {
-  //         setShowSearchPanel(!showSearchPanel);
-  //         closeDrawer();
-  //       }}
-  //     />
-
-  //     <IconButton
-  //       name='funnel'
-  //       color={isDrawerOpen ? theme.warning.main : theme.bg.text}
-  //       // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
-  //       size={24}
-  //       onPress={toggleDrawer}
-  //     />
-  //   </View>
-  // );
 
   const columns = [
     {
@@ -170,12 +166,12 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
       titleStyle: { textAlign: 'left', color: theme.text.primary },
       // onPress: () => onPress({ from: 'head', id: 'name' }),
     },
-    {
-      id: 'base_price',
-      title: 'Б.Цена',
-      flex: 3,
-      titleStyle: { textAlign: 'right', color: theme.text.primary },
-    },
+    // {
+    //   id: 'base_price',
+    //   title: 'Б.Цена',
+    //   flex: 3,
+    //   titleStyle: { textAlign: 'right', color: theme.text.primary },
+    // },
     {
       id: 'price',
       title: 'Цена',
@@ -186,43 +182,72 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
       id: 'qty',
       title: 'Колво',
       flex: 2,
-      as: 'input',
+      // as: 'input',
       titleStyle: { color: theme.text.primary },
+      selectedContent: {
+        component: InputOrder,
+        props: { text: 'Hello', keys: ['title', 'returnParams'] }
+      }
     },
   ];
 
-  return (
-    // <DrawerLayout
-    //   ref={drawerRef}
-    //   drawerWidth={300}
-    //   drawerPosition='left'
-    //   drawerType='front'
-    //   renderNavigationView={renderDrawerContent}
-    // >
-    <View style={[styles.container]} onTouchStart={closeDrawer}>
-      {showSearchPanel && (
-        <>
-          <SearchPanel
-            onCancel={() => {
-              dispatch(setSearchString(''));
-              setShowSearchPanel(false);
-            }}
-            onSearch={handleSearch}
-          />
-        </>
-      )}
-      {/* <Text style={styles.text}>Component ManageOrderProducts</Text> */}
 
-      <ProductsOutput
-        // onLongPress={onLongPressHandler}
-        onChangeText={onChangeTextHandler}
-        onPress={onPressHandler}
-        columns={columns}
+  let rowFooter = '';
+  if (typeof selectedProduct === 'object' && selectedProduct !== null && Array.isArray(productSales?.values) && productSales.values.length > 0) {
+    rowFooter = {
+      key: 'code',
+      condition: { eq: selectedProduct?.code },
+      content:
+        <InputHelper
+          values={productSales?.values}
+          postValue={productSales?.increased}
+          theme={theme}
+          onPress={(item) => onPressHandler({
+            column: 'inputHelper',
+            code: selectedProduct?.code,
+            name: selectedProduct?.name,
+            base_price: selectedProduct.base_price,
+            price: selectedProduct.price,
+            default_price: selectedProduct?.default_price,
+            newValue: item,
+          })}
+        // onChangeText={onChangeText}
+        // inputValue={inputValue}
+        // inputConfig={{
+        //   style: { width: 45, color: theme.text.primary, backgroundColor: 'white', padding: 4 },
+        //   defaultValue: selectedProduct?.qty,
+        //   onChangeText: (newValue) => onChangeTextHandler({ column: 'inputHelper', newValue }),
+        //   onFocus: (item) => { console.log('item', item) },
+        //   returnParams: {}
+        // }}
+        />
+    };
+  }
+  let rowHeader = '';
+  if (false) {
+    rowHeader = {
+      key: 'code',
+      condition: { eq: 0 },
+      content: 'Нет в наличии',
+    };
+  }
+
+
+  return (
+    <View style={[styles.container]}>
+      <GridTable
+        selectedValue={selectedProduct?.code}
+        seelectedKey='code'
         rows={products}
-        style={showSearchPanel && { marginTop: 30 }}
+        columns={columns}
+        rowId='code'
+        onPress={onPressHandler}
+        onChangeText={onChangeTextHandler}
+        onLongPress={() => { }}
+        rowFooter={rowFooter}
+        rowHeader={rowHeader}
       />
     </View>
-    // </DrawerLayout>
   );
 };
 
@@ -254,5 +279,27 @@ const styles = StyleSheet.create({
   drawerText: {
     color: 'white',
     fontSize: 18,
+  },
+  rowFooterButton: {
+    // backgroundColor: 'green',
+    marginHorizontal: 4,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: 'green',
+  },
+  rowFooterButtonText: {
+    fontWeight: 'bold',
+  },
+  rowFooterLastButton: {
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: 'blue',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
   },
 });

@@ -25,18 +25,19 @@ const CustomHeader = ({ navigation, theme }) => {
   const route = useRoute(); // Получаем текущий маршрут
   const title = titles[route.name]?.label;
 
-
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity
-        style={[styles.taskButton]}
+        style={[styles.leftButton]}
         onPress={() => navigation.openDrawer()} // Обработка нажатия кнопки
       >
         <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.button.dark.text }]}>Цель</Text>
       </TouchableOpacity>
-      <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.title }]} >{title}</Text>
+      <View style={styles.headerTitleContainer}>
+        <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.title }]} >{title}</Text>
+      </View>
       <TouchableOpacity
-        style={[styles.manageButton, {
+        style={[styles.rightButton, {
           backgroundColor: theme.style.drawer.header.button.main.bg,
         }]}
         onPress={() => navigation.navigate('ManageProductsScreen')} // Обработка нажатия кнопки
@@ -62,10 +63,9 @@ const CustomDrawerItem = (props) => {
 };
 
 const CustomDrawerContent = (props) => {
-  const { rows, navigation } = props;
-  const handleDrawerClose = () => {
-    console.log('handleDrawerClose');
+  const { rows, navigation, state, theme } = props;
 
+  const handleDrawerClose = () => {
     navigation.closeDrawer(); // Закрываем Drawer
   };
   return (
@@ -80,7 +80,7 @@ const CustomDrawerContent = (props) => {
       <View style={styles.drawerContentContainer} >
         <DrawerItem
           label={''}
-          labelStyle={[styles.menuItemText, { color: props.theme.style.drawer.bg }]}
+          labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
           onPress={handleDrawerClose}
           style={[styles.menuItem, {
             backgroundColor: 'transparent',
@@ -93,9 +93,9 @@ const CustomDrawerContent = (props) => {
             <CustomDrawerItem
               key={index}
               index={index}
-              state={props.state}
-              navigation={props.navigation}
-              theme={props.theme}
+              state={state}
+              navigation={navigation}
+              theme={theme}
               name={item.name}
               label={item.label}
             />
@@ -103,7 +103,7 @@ const CustomDrawerContent = (props) => {
         })}
         <DrawerItem
           label={''}
-          labelStyle={[styles.menuItemText, { color: props.theme.style.drawer.bg }]}
+          labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
           onPress={handleDrawerClose}
           style={[styles.menuItem, {
             backgroundColor: 'transparent',
@@ -158,7 +158,6 @@ export const CustomerDrawerScreens = ({ navigation }) => {
           backgroundColor: 'transparent', // Цвет фона для выезжающей панели
           // backgroundColor: theme.style.drawer.bg, // Цвет фона для выезжающей панели
           width: '70%', // Пример ширины
-          paddingLeft: 0
         },
       })}
       // Отслеживание изменения состояния навигации
@@ -260,7 +259,7 @@ const styles = StyleSheet.create({
     height: 60, // Высота заголовка
     // paddingHorizontal: 20,
   },
-  taskButton: {
+  leftButton: {
     backgroundColor: '#00509E', // Цвет фона для кнопки
     borderRadius: 15, // Закругленные углы
     paddingVertical: 10,
@@ -270,6 +269,10 @@ const styles = StyleSheet.create({
     borderEndStartRadius: 0,     // Закругленный угол справа
     paddingLeft: 10,
     minWidth: 100,
+    maxWidth: '30%'
+  },
+  headerTitleContainer: {
+    maxWidth: '55%'
   },
   headerButtonTitle: {
     // color: '#FFFFFF', // Цвет текста на кнопке
@@ -280,7 +283,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  manageButton: {
+  rightButton: {
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -288,6 +291,7 @@ const styles = StyleSheet.create({
     // borderStartEndRadius: 10,     // Закругленный угол справа
     borderEndStartRadius: 16,     // Закругленный угол справа
     paddingRight: 10,
+    maxWidth: '30%'
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину

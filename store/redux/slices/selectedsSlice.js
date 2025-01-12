@@ -14,6 +14,7 @@ const initialState = {
   selectedOrder: null,
   selectedDocTab: 0,
   selectedTheme: 'light',
+  selectedProduct: null,
   selectedManager: '95',
   selectedMenuLevel_1: null,
   selectedMenuLevel_2: null,
@@ -26,6 +27,9 @@ const selectedsSlice = createSlice({
   name: 'selecteds',
   initialState,
   reducers: {
+    setSelectedProduct: (state, action) => {
+      state.selectedProduct = action.payload;
+    },
     setSearchString: (state, action) => {
       state.searchString = action.payload;
     },
@@ -72,6 +76,7 @@ const selectedsSlice = createSlice({
 
 // Экспорт действий для использования в компонентах
 export const {
+  setSelectedProduct,
   setSelectedCustomerListItem,
   setCustomerSearchString,
   setSearchString,

@@ -13,10 +13,26 @@ const ProductsMenuButton = ({
   titleStyle,
   level = 1,
 }) => {
-  const backgroundColor = {
-    1: theme.bg.light,
-    2: 'white',
-  };
+  // const backgroundColor = {
+  //   1: theme.bg.light,
+  //   2: 'red',
+  // };
+
+
+  const containerStyles = [styles.container];
+  if (selected && level === 2) {
+    containerStyles.push(styles.selected);
+    containerStyles.push({ backgroundColor: theme.style.drawer.header.button.light.bg });
+  }
+
+
+  const titleStyles = [styles[`title${level}`]];
+  let titleColor = theme.style.text.main;
+  if (selected && level === 2) {
+    titleColor = theme.style.drawer.header.title;
+  }
+  containerStyles.push({ color: titleColor });
+
 
   return (
     <Pressable
@@ -25,15 +41,11 @@ const ProductsMenuButton = ({
       android_ripple={true}
     >
       <View
-        style={[
-          styles.container,
-          selected && styles.selected,
-          { backgroundColor: backgroundColor[level] },
-        ]}
+        style={containerStyles}
       >
         <View style={styles.firstLineContainer}>
-          <Text style={[styles.title, { color: 'black' }]}>{title}</Text>
-          {iconName && <Ionicons name={iconName} size={24} color={'black'} />}
+          <Text style={titleStyles}>{title}</Text>
+          {iconName && <Ionicons name={iconName} size={24} color={titleColor} />}
         </View>
       </View>
     </Pressable>
@@ -45,12 +57,13 @@ export default ProductsMenuButton;
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    padding: 8,
+    paddingVertical: 8,
+    paddingRight: 8,
     marginVertical: 4,
     // backgroundColor: GlobalStyles.colors.primary500,
     flexDirection: 'column',
     // justifyContent: 'space-between',
-    borderRadius: 6,
+    // borderRadius: 6,
 
     // //for Androit
     // elevation: 3,
@@ -62,7 +75,17 @@ const styles = StyleSheet.create({
     // shadowRadius: 4,
   },
   selected: {
-    // backgroundColor: GlobalStyles.colors.primary800,
+    // paddingHorizontal: 0, // Убираем горизонтальные отступы
+    // marginVertical: 8,
+    // paddingVertical: 6, // Задайте нужный вертикальный padding
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    marginLeft: 0,
+    paddingLeft: 0,
+    marginRight: 8,
+    // backgroundColor: 'blue'
   },
   firstLineContainer: {
     // flex: 1, // Позволяет тексту занимать доступное пространство
@@ -80,7 +103,12 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.75,
   },
-  title: {
+  title1: {
     // color: GlobalStyles.colors.primary50,
+    paddingLeft: 10
+  },
+  title2: {
+    // color: GlobalStyles.colors.primary50,
+    paddingLeft: 30
   },
 });

@@ -141,8 +141,8 @@ const currentOrdersSlice = createSlice({
         );
         if (row) {
           row.price = price;
-          row.qty = qty;
-          // console.log('update exiting row', row);
+          row.qty = String(qty);
+          console.log('update exiting row', row);
         } else {
           row = {
             customerCode,
@@ -150,10 +150,10 @@ const currentOrdersSlice = createSlice({
             base_price,
             default_price,
             price,
-            qty,
+            qty: String(qty),
           };
           state.rows.push(row);
-          // console.log('add new row', row);
+          console.log('add new row', row);
         }
 
         recalculateTotalForCustomer(state, customerCode, minSum);

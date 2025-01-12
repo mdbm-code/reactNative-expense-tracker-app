@@ -18,6 +18,8 @@ const GridTableRowCell = (props) => {
     onLongPress,
     prefix,
     postfix,
+    selected,
+    selectedContent
   } = props;
 
   let arrTitleStyle = [styles.text];
@@ -36,11 +38,38 @@ const GridTableRowCell = (props) => {
     );
   }
 
+  let ComponentToRender = () => { };
+  let componentProps = {};
+  if (selected && selectedContent) {
+    // console.log('selectedContent', selectedContent);
+    ComponentToRender = selectedContent['component'];
+    if (selectedContent['props']) {
+      componentProps = selectedContent['props'];
+      if (Array.isArray(selectedContent.props['keys'])) {
+        selectedContent.props.keys.forEach(propKey => {
+          componentProps[propKey] = props[propKey]
+        });
+      }
+    }
+  }
+
   // const titleContainer = <View style={styles.titleContainer}>{prefix}{title}{postfix}</View>
 
   let content = titleContent;
 
-  if (as === 'input') {
+  if (selected && selectedContent) {
+    // console.log('selectedContent', selectedContent);
+
+    // if (selectedContent['component']) {
+    //   const ComponentToRender = selectedContent['component'];
+    //   if (selectedContent['props']) {
+    //     content = <ComponentToRender {...selectedContent['props']} />;
+    //   } else {
+    //     content = <ComponentToRender />;
+    //   }
+    // }
+    content = content;
+  } else if (as === 'input') {
     content = (
       <InputCell
         style={[styles.text, styles.numberText, titleStyle && titleStyle]}
@@ -57,7 +86,7 @@ const GridTableRowCell = (props) => {
         // android_ripple={true}
         onPress={() => onPress(returnParams)}
         onLongPress={() => onLongPress && onLongPress(returnParams, id)}
-        // style={({ pressed }) => pressed && styles.pressed}
+      // style={({ pressed }) => pressed && styles.pressed}
       >
         {titleContent}
         {/* <Text style={[styles.text, titleStyle && titleStyle]}>{title}</Text> */}
@@ -70,7 +99,7 @@ const GridTableRowCell = (props) => {
     rowCell.push(styles[`flex${flex}`]);
   }
 
-  return <View style={[...rowCell, style && style]}>{content}</View>;
+  return <View style={[...rowCell, style && style]}>{selected && selectedContent ? <ComponentToRender {...componentProps} /> : content}</View>;
 };
 
 export default GridTableRowCell;

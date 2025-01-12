@@ -58,9 +58,11 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme }) => {
           renderItem={(itemData) => {
             return (
               <ProductsMenuButton
+                style={styles.menuItem}
                 theme={theme}
                 title={itemData.item.name}
                 selected={selectedMenuLevel_2?.code === itemData.item.code}
+                level={2}
                 onPress={() => onPressSublevelHandler(itemData.item)}
               />
             );
@@ -73,6 +75,7 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme }) => {
   return (
     <>
       <ProductsMenuButton
+        style={styles.menuItem}
         title={name}
         selected={selectedMenuLevel_1?.code === code}
         iconName={
@@ -82,6 +85,7 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme }) => {
         }
         onPress={() => onPressHandler(item)}
         theme={theme}
+        level={1}
       />
       {subLevelContent}
     </>
@@ -93,6 +97,6 @@ export default ProductsMenuItem;
 const styles = StyleSheet.create({
   sublevelContainer: {
     flex: 1,
-    marginLeft: 12,
+    // marginLeft: 12,
   },
 });
