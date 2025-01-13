@@ -25,6 +25,7 @@ const SearchPanel = ({ onCancel, onSearch, theme }) => {
         placeholder='Поиск...'
         value={searchString}
         onChangeText={setSearchString}
+        onSubmitEditing={() => onSearch(searchString)}
       />
       <IconButton
         viewStyle={{ margin: 0 }}

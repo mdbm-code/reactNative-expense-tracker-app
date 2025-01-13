@@ -16,6 +16,7 @@ import Table from '../../components/GridTable/v2/Table';
 import { Ionicons } from '@expo/vector-icons';
 import Tally from '../../components/Tally';
 import Slider from '@react-native-community/slider';
+import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 
 const ManageProductsTableScreen = () => {
   const dispatch = useDispatch();
@@ -61,31 +62,20 @@ const ManageProductsTableScreen = () => {
   );
 
   function onPressOptionsHandler() {
-    // setShowTableOptions(!showTableOptions);
-    // console.log(showTableOptions);
-
-    // if (showTableOptions) {
     dispatch(setTableOptions({ key: 'fontSize', value: fontSize }));
     setShowTableOptions(!showTableOptions);
-    // } else {
-    //   setShowTableOptions(showTableOptions);
-    // }
   }
 
   const HeaderOptions = () => {
-    return (
-      <View style={styles.headerOptions_RootContainer}>
-        <Text>Наименование</Text>
-        <View style={styles.headerOptions_Container}>
-          <TouchableOpacity onPress={onPressOptionsHandler}>
-            <Ionicons
-              name={'options-outline'}
-              size={24}
-              color={theme.style.text.main}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+    const icons = [
+      {
+        name: 'options-outline',
+        color: theme.style.text.main,
+        size: 36,
+        onPress: onPressOptionsHandler
+      },
+    ];
+    return (<HeaderWithIcons title={'Наименование'} rows={icons} />
     );
   };
 

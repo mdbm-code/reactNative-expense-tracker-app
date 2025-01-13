@@ -8,6 +8,7 @@ const TableRow = ({
   onEdit,
   onValueChange,
   onBlur,
+  onLongPress,
   rowStyle,
 }) => {
   return (

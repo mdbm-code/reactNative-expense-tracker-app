@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     minHeight: 36,
+    maxHeight: 40,
   },
   text: {},
   selectedText: {},

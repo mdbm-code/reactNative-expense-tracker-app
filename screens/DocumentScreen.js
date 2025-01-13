@@ -3,7 +3,7 @@ import React, { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getThemePalette } from '../store/redux/selectors/theme';
 import { getPartString } from '../util/string';
-import GridTable from '../components/GridTable';
+// import GridTable from '../../../components/GridTable';
 
 const DocumentScreen = ({ route, navigation }) => {
   const theme = useSelector(getThemePalette);

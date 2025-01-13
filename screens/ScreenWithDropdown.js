@@ -5,8 +5,21 @@ import { useSelector } from 'react-redux';
 import Tally from '../components/Tally';
 import Selector from '../components/Selector';
 
-const ScreenWithDropdown = ({ rows, value, onSelect, children, title }) => {
+const ScreenWithDropdown = ({ rows, value, onSelect, children, title, footerContent }) => {
   const theme = useSelector(getTheme);
+  const modalOptionsContainerStyle = {
+    padding: 20,
+    backgroundColor: theme.style.bars[2].bg,
+    marginBottom: 20,
+  }
+
+  const renderFooter = () => {
+    return (
+      <View style={[styles.footer, { modalOptionsContainerStyle }]}>
+        {footerContent}
+      </View>
+    );
+  };
 
   //   const rows = [
   //     { label: 'Итоги дня', value: '_1' },
@@ -34,13 +47,10 @@ const ScreenWithDropdown = ({ rows, value, onSelect, children, title }) => {
             { color: theme.style.customerRouter.text },
           ]}
           modalControls={{
-            modalOptionsContainerStyle: {
-              padding: 20,
-              backgroundColor: theme.style.bars[2].bg,
-            },
+            modalOptionsContainerStyle,
           }}
-          listComponentStyles={{}}
-          dropdownIconStyle={{}}
+          listComponentStyles={{ marginBottom: 20, marginTop: 20 }}
+          renderFooter={renderFooter}
         />
       </Tally>
       {title && <Text style={styles.infoText}>{title}</Text>}
@@ -78,4 +88,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     marginTop: 0,
   },
+  footer: {
+    minHeight: 30
+  }
 });
