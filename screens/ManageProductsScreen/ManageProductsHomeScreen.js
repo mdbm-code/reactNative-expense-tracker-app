@@ -59,32 +59,6 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
   const [inputValue, setInputValue] = useState('');
 
 
-
-
-
-  // const openDrawer = () => {
-  //   drawerRef.current?.openDrawer();
-  //   setIsDrawerOpen(true);
-  // };
-
-  // const closeDrawer = () => {
-  //   // drawerRef.current?.closeDrawer();
-  //   // setIsDrawerOpen(false);
-  // };
-
-  // const toggleDrawer = () => {
-  //   dispatch(setSearchString(''));
-  //   setShowSearchPanel(false);
-  //   isDrawerOpen ? closeDrawer() : openDrawer();
-  // };
-
-  // const onPressTopHandler = () => {
-  //   dispatch(setSearchString(''));
-  //   setShowSearchPanel(false);
-  //   dispatch(setUnselectMenu());
-  //   // closeDrawer();
-  // };
-
   const onPressHandler = (data) => {
     // console.log('data', data);
 

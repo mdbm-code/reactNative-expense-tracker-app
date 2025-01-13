@@ -1,58 +1,53 @@
 import { StyleSheet } from 'react-native';
 import Dropdown from 'react-native-input-select';
 
-const ClientsRouter = ({ theme, onSelect, value, isMultiple = false }) => {
+const Selector = ({
+  onSelect,
+  value,
+  isMultiple = false,
+  rows,
+  primaryColor = '#007BFF',
+  selectedItemStyle,
+  dropdownStyle,
+  dropdownContainerStyle,
+  modalControls,
+  listComponentStyles,
+  dropdownIconStyle,
+}) => {
   return (
     <Dropdown
+      dropdownIconStyle={dropdownIconStyle}
+      listComponentStyles={listComponentStyles}
       // label="Маршрут"
       // label='Маршруты'
-      dropdownContainerStyle={{
-        marginBottom: 0,
-        marginTop: 0,
-      }}
-      dropdownStyle={{
-        // borderWidth: 2, // To remove border, set borderWidth to 0
-        // borderColor: theme.style.customerRouter.border,
-        backgroundColor: theme.style.bars[2].bg,
-        // backgroundColor: theme.style.customerRouter.bg2,
-        borderRadius: 15,
-      }}
-      modalControls={{
-        modalOptionsContainerStyle: {
-          padding: 20,
-          backgroundColor: theme.style.customerRouter.bg2,
-        },
-        // modalProps: {
-        //   supportedOrientations: [
-        //     'portrait',
-        //     'portrait-upside-down',
-        //     'landscape',
-        //     'landscape-left',
-        //     'landscape-right',
-        //   ],
-        //   transparent: false,
-        // },
-      }}
+      dropdownContainerStyle={dropdownContainerStyle}
+      dropdownStyle={dropdownStyle}
+      //     {
+      //     // borderWidth: 2, // To remove border, set borderWidth to 0
+      //     // borderColor: theme.style.customerRouter.border,
+      //     backgroundColor: theme.style.bars[2].bg,
+      //     // backgroundColor: theme.style.customerRouter.bg2,
+      //     borderRadius: 15,
+      //   }
+      modalControls={modalControls}
       // primaryColor={'green'}
       dropdownHelperTextStyle={{}}
-      selectedItemStyle={{
-        fontSize: 18,
-        color: theme.style.customerRouter.text,
-      }}
+      selectedItemStyle={selectedItemStyle}
       // listComponentStyles={{ backgroundColor: 'blue' }}
       // placeholderStyle={{ backgroundColor: theme.style.customerRouter.placeholder }}
       // dropdownContainerStyle={{ backgroundColor: 'red' }}
       placeholder={value}
-      primaryColor={'#007BFF'}
-      options={[
-        { label: 'Понедельник', value: '_1' },
-        { label: 'Вторник', value: '_2' },
-        { label: 'Среда', value: '_3' },
-        { label: 'Четверг', value: '_4' },
-        { label: 'Пятница', value: '_5' },
-        { label: 'Суббота', value: '_6' },
-        { label: 'Воскресенье', value: '_7' },
-      ]}
+      primaryColor={primaryColor}
+      options={rows}
+      //   [
+      //     { label: 'Понедельник', value: '_1' },
+      //     { label: 'Вторник', value: '_2' },
+      //     { label: 'Среда', value: '_3' },
+      //     { label: 'Четверг', value: '_4' },
+      //     { label: 'Пятница', value: '_5' },
+      //     { label: 'Суббота', value: '_6' },
+      //     { label: 'Воскресенье', value: '_7' },
+      //   ]
       selectedValue={value}
       onValueChange={(value) => onSelect(value)}
       isMultiple={isMultiple}
@@ -139,6 +134,6 @@ const ClientsRouter = ({ theme, onSelect, value, isMultiple = false }) => {
   );
 };
 
-export default ClientsRouter;
+export default Selector;
 
 const styles = StyleSheet.create({});

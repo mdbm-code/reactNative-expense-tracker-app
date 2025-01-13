@@ -1,47 +1,43 @@
 import { StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { getTheme } from '../store/redux/selectors/theme';
+import { useSelector } from 'react-redux';
 import ScreenWithDropdown from './ScreenWithDropdown';
 
-const SettingsScreen = ({ navigation }) => {
+const DocumentsScreen = () => {
   const theme = useSelector(getTheme);
   const selecteds = useSelector((state) => state.selecteds);
-  const [selected, setSelected] = useState('_1');
+  const [selectedPeriod, setSelectedPeriod] = useState('_1');
 
   function selectHandler(value) {
-    setSelected(value);
+    setSelectedPeriod(value);
     // dispatch(setSelectedCustomerListItem(''));
     // dispatch(setSelectedRoute(value));
   }
 
-  const options = [
-    { label: 'Мой профиль', value: '_1' },
-    { label: 'Стили', value: '_2' },
-    { label: 'Параметры обмена', value: '_3' },
-    { label: 'Прочие', value: '_4' },
+  const rows = [
+    { label: 'Сегодня', value: '_1' },
+    { label: 'Вчера', value: '_2' },
+    { label: 'За 7 дней', value: '_3' },
+    { label: 'Текущий месяц', value: '_4' },
   ];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
-        rows={options}
-        value={selected}
+        rows={rows}
+        value={selectedPeriod}
         onSelect={selectHandler}
-        title={'Параметры и настройки'}
+        title={'Таблица с заявками'}
       ></ScreenWithDropdown>
     </View>
   );
 };
 
-export default SettingsScreen;
+export default DocumentsScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  rowStyle: {
-    borderBottomWidth: 1,
-    alignItems: 'center',
   },
 });

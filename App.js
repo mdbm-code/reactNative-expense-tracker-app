@@ -1,76 +1,34 @@
-// import 'react-native-gesture-handler';
-import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Импортируем GestureHandlerRootView
+import { Provider, useSelector } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-//constants
-// import { GlobalStyles } from './constans/styles';
-
-//screens
-// import ManageOrder from './screens/ManageOrder.js';
-// import AllExpenses from './screens/AllExpenses';
-// import RecentExpenses from './screens/RecentExpenses.js';
-// import ManageOrderProducts from './screens/ManageOrderProducts.js';
-import CustomersListScreen from './screens/CustomersListScreen.js';
-
-//components
-import IconButton from './components/ui/IconButton.js';
+import { Ionicons } from '@expo/vector-icons';
 
 //state
-// import OrderContextProvider from './store/context/order-context.js';
-// import ClientContextProvider from './store/context/client-context.js';
-// import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Provider, useSelector } from 'react-redux';
 import { reduxPersistor, reduxStore } from './store/redux/store.js';
-import { PersistGate } from 'redux-persist/integration/react';
-// import YaMap from 'react-native-yamap';
-// import { useEffect } from 'react';
-import SynchronizationScreen from './screens/SynchronizationScreen.js';
-// import CustomerScreen from './screens/CustomerScreen.js';
-import ManageProductsScreen from './screens/ManageProductsScreen/';
-// import ThemeProvider from './store/context/theme-context.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
-// import ThemeScreen from './screens/ThemeScreen.js';
-import DaySummaryScreen from './screens/DaySummaryScreen.js';
+
+//screens
+import CustomersListScreen from './screens/CustomersListScreen.js';
+import SynchronizationScreen from './screens/SynchronizationScreen.js';
+import ManageProductsScreen from './screens/ManageProductsScreen/';
 import DocumentListScreen from './screens/DocumentListScreen.js';
 import SettingsScreen from './screens/SettingsScreen.js';
 import DocumentScreen from './screens/DocumentScreen.js';
-// import CustomerDebtScreen from './screens/CustomerScreen/CustomerDebtScreen.js';
-// import CustomerOrderScreen from './screens/CustomerScreen/CustomerOrderScreen.js';
-// import CustomerReturnScreen from './screens/CustomerScreen/CustomerReturnScreen.js';
-// import CustomerProfileScreen from './screens/CustomerScreen/CustomerProfileScreen.js';
 import ThemeScreen from './screens/ThemeScreen.js';
 import CustomerScreens from './screens/CustomerScreens/';
-// import CustomerScreens from './screens/CustomerScreens/';
-// import { loadColors } from './store/redux/slices/themeSlice.js';
+import SummaryScreen from './screens/SummaryScreen.js';
+import DocumentsScreen from './screens/DocumentsScreen.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
-// const BottomTab2 = createBottomTabNavigator();
-// const Drawer = createDrawerNavigator();
-// const ManageProductsDrawer = createDrawerNavigator();
 const SettingsDrawer = createDrawerNavigator();
-// const CustomerStack = createNativeStackNavigator();
-
-// function ManageProductsNavigator() {
-//   return (
-//     <ManageProductsDrawer.Navigator>
-//       <ManageProductsDrawer.Screen
-//         name='ManageProductsScreen'
-//         component={ManageProductsScreen}
-//         options={{ drawerLabel: 'Workplace Home' }}
-//       />
-//       {/* Добавьте другие экраны для WorkplaceDrawer здесь */}
-//     </ManageProductsDrawer.Navigator>
-//   );
-// }
 
 function SettingsDrawerNavigator({ theme, stackNavigation }) {
-  console.log(theme);
-
   return (
     <SettingsDrawer.Navigator
       screenOptions={({ navigation }) => ({
@@ -84,8 +42,6 @@ function SettingsDrawerNavigator({ theme, stackNavigation }) {
         component={SettingsScreen}
         options={{
           drawerLabel: 'Основные',
-          // headerStyle: { backgroundColor: theme.bar.color },
-          // headerShown: false
         }}
       />
       <SettingsDrawer.Screen
@@ -93,29 +49,11 @@ function SettingsDrawerNavigator({ theme, stackNavigation }) {
         component={ThemeScreen}
         options={{
           drawerLabel: 'Цветовая схема',
-          // headerShown: false,
-          // headerStyle: { backgroundColor: theme.bar.color },
         }}
       />
-      {/* Добавьте другие экраны для SettingsDrawer здесь */}
     </SettingsDrawer.Navigator>
   );
 }
-
-// function MyDrawer() {
-//   return (
-//     <Drawer.Navigator initialRouteName='CustomerOrderScreen'>
-//       <Drawer.Screen
-//         name='CustomerOrderScreen'
-//         component={CustomerOrderScreen}
-//       />
-//       <Drawer.Screen
-//         name='ManageProductsScreen'
-//         component={ManageProductsScreen}
-//       />
-//     </Drawer.Navigator>
-//   );
-// }
 
 function MainScreens({ navigation }) {
   const theme = useSelector(getThemePalette);
@@ -140,15 +78,14 @@ function MainScreens({ navigation }) {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='people-outline' color={color} size={size} />
           ),
-
         }}
       />
       <BottomTab.Screen
-        name='DaySummary'
-        component={DaySummaryScreen}
+        name='Summary'
+        component={SummaryScreen}
         options={{
-          title: 'Итоги дня',
-          tabBarLabel: 'Итоги дня',
+          title: 'Отчеты',
+          tabBarLabel: 'Отчеты',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='flag-outline' color={color} size={size} />
           ),
@@ -156,11 +93,11 @@ function MainScreens({ navigation }) {
         }}
       />
       <BottomTab.Screen
-        name='DocumentListScreen'
-        component={DocumentListScreen}
+        name='DocumentsScreen'
+        component={DocumentsScreen}
         options={{
-          title: 'История',
-          tabBarLabel: 'История',
+          title: 'Журнал заявок',
+          tabBarLabel: 'Журнал',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='calendar-outline' color={color} size={size} />
           ),
@@ -181,116 +118,27 @@ function MainScreens({ navigation }) {
       />
       <BottomTab.Screen
         name='SettingsScreen'
-        // component={SettingsDrawerNavigator}
+        component={SettingsScreen}
         options={{
           title: 'Настройки',
           tabBarLabel: 'Настройки',
           tabBarIcon: ({ size, color }) => (
             <Ionicons name='settings-outline' color={color} size={size} />
           ),
-          // headerRight: null,
-          headerShown: false,
+          headerRight: null,
         }}
-      >
-        {(props) => (
+      />
+      {/* {(props) => (
           <SettingsDrawerNavigator
             {...props}
             stackNavigation={navigation}
             theme={theme}
           />
         )}
-      </BottomTab.Screen>
+      </BottomTab.Screen> */}
     </BottomTab.Navigator>
   );
 }
-
-// function CustomerStackNavigationScreens({ navigator }) {
-//   <CustomerStack.Navigator>
-//     <CustomerStack.Screen
-//       name='CustomerScreens'
-//       component={CustomerScreens}
-//       options={{ title: 'Customer Order' }}
-//     />
-//     <CustomerStack.Screen
-//       name='CustomerDebtScreen'
-//       component={CustomerDebtScreen}
-//       options={{ title: 'Customer Debt' }}
-//     />
-//     <CustomerStack.Screen
-//       name='ManageProductsScreen'
-//       component={ManageProductsNavigator}
-//       options={{ title: 'Customer Debt' }}
-//     />
-//   </CustomerStack.Navigator>;
-// }
-
-// function CustomerScreens({ navigation }) {
-//   const theme = useSelector(getThemePalette);
-//   return (
-//     <BottomTab2.Navigator
-//       screenOptions={{
-//         headerShown: false, // Скрыть заголовок BottomTab.Navigator
-//         tabBarStyle: { backgroundColor: theme.bar.color },
-//         tabBarActiveTintColor: theme.bar.active,
-//         tabBarInactiveTintColor: theme.bar.text,
-//       }}
-//     >
-//       <BottomTab2.Screen
-//         name='CustomerOrderScreen'
-//         options={{
-//           title: 'Заявка',
-//           tabBarLabel: 'Заявка',
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons name='document-text-outline' color={color} size={size} />
-//           ),
-//           // headerBackTitle: '',
-//         }}
-//       >
-//         {(props) => (
-//           <CustomerOrderScreen {...props} stackNavigation={navigation} />
-//         )}
-//       </BottomTab2.Screen>
-//       <BottomTab2.Screen
-//         name='CustomerDebtScreen'
-//         component={CustomerDebtScreen}
-//         options={{
-//           title: 'Сверка',
-//           tabBarLabel: 'Сверка',
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons name='pulse-outline' color={color} size={size} />
-//           ),
-//         }}
-//       />
-//       <BottomTab2.Screen
-//         name='CustomerReturnScreen'
-//         component={CustomerReturnScreen}
-//         options={{
-//           title: 'Возврат',
-//           tabBarLabel: 'Возврат',
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons name='return-up-back-outline' color={color} size={size} />
-//           ),
-//           headerRight: null,
-//         }}
-//       />
-//       <BottomTab2.Screen
-//         name='CustomerProfileScreen'
-//         component={CustomerProfileScreen}
-//         options={{
-//           title: 'Профиль',
-//           tabBarLabel: 'Профиль',
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons
-//               name='information-circle-outline'
-//               color={color}
-//               size={size}
-//             />
-//           ),
-//         }}
-//       />
-//     </BottomTab2.Navigator>
-//   );
-// }
 
 function AppContent() {
   const theme = useSelector(getThemePalette);
@@ -335,16 +183,16 @@ function AppContent() {
           <Stack.Screen
             name='ManageProductsScreen'
             component={ManageProductsScreen} //подбор товаров в заявку клиента
-          // options={{
-          //   presentation: 'fullScreenModal',
-          // }}
+            // options={{
+            //   presentation: 'fullScreenModal',
+            // }}
           />
           <Stack.Screen
             name='DocumentScreen'
             component={DocumentScreen} //подбор товаров в заявку клиента
-          // options={{
-          //   presentation: 'fullScreenModal',
-          // }}
+            // options={{
+            //   presentation: 'fullScreenModal',
+            // }}
           />
         </Stack.Navigator>
       </NavigationContainer>

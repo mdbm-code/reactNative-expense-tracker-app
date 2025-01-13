@@ -1,20 +1,26 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Keyboard } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Keyboard,
+} from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getThemePalette } from '../../store/redux/selectors/theme';
-import { ManageProductsHomeScreen } from './ManageProductsHomeScreen';
+// import { ManageProductsHomeScreen } from './ManageProductsHomeScreen';
 import ProductMenu from '../../components/ManageProductsScreen/ProductsMenu';
-import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
-import { setSearchString, setUnselectMenu } from '../../store/redux/slices/selectedsSlice';
+// import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
+import { setSearchString } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../../components/ui/IconButton';
 import SearchPanel from '../../components/SearchPanel';
+import ManageProductsTableScreen from './ManageProductsTableScreen';
 
 const Drawer = createDrawerNavigator();
 
-
 const CustomHeader = ({ navigation, theme }) => {
-  const { selectedMenuLevel_2 } = useSelector(state => state.selecteds);
+  const { selectedMenuLevel_2 } = useSelector((state) => state.selecteds);
   const dispatch = useDispatch();
   const [showSearchPanel, setShowSearchPanel] = React.useState(false);
 
@@ -23,24 +29,48 @@ const CustomHeader = ({ navigation, theme }) => {
   function handleSearch(searchString) {
     dispatch(setSearchString(searchString)); // Сохраняем поисковую строку в состоянии
     Keyboard.dismiss(); // Закрываем клавиатуру
-  };
+  }
   function handleCancelSearch() {
     dispatch(setSearchString('')); // Сохраняем поисковую строку в состоянии
     setShowSearchPanel(false);
-  };
+  }
 
-  return (<>
-    <View style={[styles.headerContainer, { backgroundColor: theme.style.drawer.header.button.light.bg }]}>
-      <TouchableOpacity
-        style={[styles.leftButton, { backgroundColor: theme.style.drawer.header.button.dark.bg }]}
-        onPress={() => navigation.openDrawer()} // Обработка нажатия кнопки
+  return (
+    <>
+      <View
+        style={[
+          styles.headerContainer,
+          { backgroundColor: theme.style.drawer.header.button.light.bg },
+        ]}
       >
-        <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.button.dark.text }]}>Фильтр</Text>
-      </TouchableOpacity>
-      <View style={styles.headerTitleContainer}>
-        <Text style={[styles.headerButtonTitle, styles.headerTitle, { color: theme.style.text.main }]} >{title}</Text>
-      </View>
-      {/* <TouchableOpacity
+        <TouchableOpacity
+          style={[
+            styles.leftButton,
+            { backgroundColor: theme.style.drawer.header.button.dark.bg },
+          ]}
+          onPress={() => navigation.openDrawer()} // Обработка нажатия кнопки
+        >
+          <Text
+            style={[
+              styles.headerButtonTitle,
+              { color: theme.style.drawer.header.button.dark.text },
+            ]}
+          >
+            Фильтр
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.headerTitleContainer}>
+          <Text
+            style={[
+              styles.headerButtonTitle,
+              styles.headerTitle,
+              { color: theme.style.text.main },
+            ]}
+          >
+            {title}
+          </Text>
+        </View>
+        {/* <TouchableOpacity
         style={[styles.manageButton, {
           backgroundColor: theme.style.drawer.header.button.light.bg,
         }]}
@@ -48,22 +78,27 @@ const CustomHeader = ({ navigation, theme }) => {
       >
         <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.button.dark.text }]}>Поиск</Text>
       </TouchableOpacity> */}
-      <View style={styles.rightButton}>
-        <IconButton
-          name='search'
-          color={'black'}
-          // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
-          size={24}
-          onPress={() => {
-            setShowSearchPanel(!showSearchPanel);
-            // closeDrawer();
-          }}
-        />
+        <View style={styles.rightButton}>
+          <IconButton
+            name='search'
+            color={'black'}
+            // color={selectedMenuLevel_1 || !selectedMenuLevel_2 ? theme.warning.main : theme.primary.contrastText}
+            size={24}
+            onPress={() => {
+              setShowSearchPanel(!showSearchPanel);
+              // closeDrawer();
+            }}
+          />
+        </View>
+        {showSearchPanel && (
+          <SearchPanel
+            onCancel={handleCancelSearch}
+            onSearch={handleSearch}
+            theme={theme}
+          />
+        )}
       </View>
-      {showSearchPanel && <SearchPanel onCancel={handleCancelSearch} onSearch={handleSearch} theme={theme} />}
-    </View>
-
-  </>
+    </>
   );
 };
 
@@ -74,7 +109,7 @@ function CustomDrawerContent(props) {
   };
 
   return (
-    <View style={[styles.drawerContent, { backgroundColor: theme.style.bg, }]}>
+    <View style={[styles.drawerContent, { backgroundColor: theme.style.bg }]}>
       <ProductMenu closeDrawer={handleDrawerClose} />
     </View>
   );
@@ -110,10 +145,12 @@ export const ManageProductsDrawerScreen = ({ navigation }) => {
           width: '70%', // Пример ширины
         },
       })}
-      drawerContent={(props) => <CustomDrawerContent {...props} theme={theme} />}
+      drawerContent={(props) => (
+        <CustomDrawerContent {...props} theme={theme} />
+      )}
     >
       <Drawer.Screen name='ManageProductsHomeScreen'>
-        {(props) => <ManageProductsHomeScreen {...props} />}
+        {(props) => <ManageProductsTableScreen {...props} />}
       </Drawer.Screen>
     </Drawer.Navigator>
   );
@@ -122,7 +159,7 @@ export const ManageProductsDrawerScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
-    marginVertical: 10
+    marginVertical: 10,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -137,18 +174,18 @@ const styles = StyleSheet.create({
     borderRadius: 15, // Закругленные углы
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderStartStartRadius: 0,   // Закругленный угол слева
-    borderStartEndRadius: 16,     // Закругленный угол справа
-    borderEndStartRadius: 0,     // Закругленный угол справа
+    borderStartStartRadius: 0, // Закругленный угол слева
+    borderStartEndRadius: 16, // Закругленный угол справа
+    borderEndStartRadius: 0, // Закругленный угол справа
     paddingLeft: 10,
     minWidth: 100,
-    maxWidth: '30%'
+    maxWidth: '30%',
   },
   rightButton: {
-    maxWidth: '15%'
+    maxWidth: '15%',
   },
   headerTitleContainer: {
-    maxWidth: '55%'
+    maxWidth: '55%',
   },
   headerButtonTitle: {
     // color: '#FFFFFF', // Цвет текста на кнопке
@@ -166,9 +203,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderStartStartRadius: 16,   // Закругленный угол слева
+    borderStartStartRadius: 16, // Закругленный угол слева
     // borderStartEndRadius: 10,     // Закругленный угол справа
-    borderEndStartRadius: 16,     // Закругленный угол справа
+    borderEndStartRadius: 16, // Закругленный угол справа
     paddingRight: 10,
   },
 });

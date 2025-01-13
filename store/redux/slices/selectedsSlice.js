@@ -18,6 +18,9 @@ const initialState = {
   selectedManager: '95',
   selectedMenuLevel_1: null,
   selectedMenuLevel_2: null,
+  tableOptions: {
+    fontSize: 12,
+  },
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
 };
@@ -27,6 +30,12 @@ const selectedsSlice = createSlice({
   name: 'selecteds',
   initialState,
   reducers: {
+    setTableOptions: (state, action) => {
+      state.tableOptions = {
+        ...state,
+        [action.payload.key]: action.payload.value,
+      };
+    },
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
     },
@@ -89,6 +98,7 @@ export const {
   setSelectedMenuLevel_1,
   setSelectedMenuLevel_2,
   setUnselectMenu,
+  setTableOptions,
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store

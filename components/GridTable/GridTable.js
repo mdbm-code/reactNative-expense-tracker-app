@@ -12,7 +12,7 @@ import GridTableRow from './GridTableRow';
 import GridTableHead from './GridTableHead';
 
 const GridTable = ({
-  onRefresh = () => { },
+  onRefresh = () => {},
   refreshing = false,
   rows,
   columns,
@@ -24,6 +24,8 @@ const GridTable = ({
   rowHeader = null,
   selectedValue = null,
   seelectedKey = 'id',
+  headerViewStyle,
+  headerTitleStyle,
 }) => {
   const [selectedRow, setSelectedRow] = useState('');
   // const flatListRef = useRef(null); // Реф для управления скроллом
@@ -82,17 +84,26 @@ const GridTable = ({
   // ]
 
   const renderItem = ({ item, index }) => {
-
-    let footerContent = <></>
-    if (rowFooter && rowFooter['key'] && rowFooter['condition'] && rowFooter['content']) {
+    let footerContent = <></>;
+    if (
+      rowFooter &&
+      rowFooter['key'] &&
+      rowFooter['condition'] &&
+      rowFooter['content']
+    ) {
       if (rowFooter.condition['eq']) {
         if (rowFooter.condition.eq === item[rowFooter.key]) {
           footerContent = rowFooter.content;
         }
       }
     }
-    let headerContent = <></>
-    if (rowHeader && rowHeader['key'] && rowHeader['condition'] && rowHeader['content']) {
+    let headerContent = <></>;
+    if (
+      rowHeader &&
+      rowHeader['key'] &&
+      rowHeader['condition'] &&
+      rowHeader['content']
+    ) {
       if (rowHeader.condition['eq']) {
         if (rowHeader.condition.eq === item[rowHeader.key]) {
           headerContent = rowHeader.content;
@@ -109,8 +120,11 @@ const GridTable = ({
           if (!key) {
             prefix = null;
           } else {
-            if (ifnull &&
-              (item[key] === undefined || item[key] === null || item[key] === '')
+            if (
+              ifnull &&
+              (item[key] === undefined ||
+                item[key] === null ||
+                item[key] === '')
             ) {
               prefix = ifnull;
             } else if (ifnot) {
@@ -138,13 +152,27 @@ const GridTable = ({
       });
     });
     return (
-      <GridTableRow cells={cells} selected={selectedValue ? selectedValue === item[rowId] : selectedRow === item[rowId]} footerContent={footerContent} headerContent={headerContent} />
+      <GridTableRow
+        cells={cells}
+        selected={
+          selectedValue
+            ? selectedValue === item[rowId]
+            : selectedRow === item[rowId]
+        }
+        footerContent={footerContent}
+        headerContent={headerContent}
+      />
     );
   };
 
   return (
     <View style={[styles.rootContainer]}>
-      <GridTableHead columns={columns} style={styles.headerContainer} />
+      <GridTableHead
+        columns={columns}
+        style={styles.headerContainer}
+        headerViewStyle={headerViewStyle}
+        headerTitleStyle={headerTitleStyle}
+      />
       {refreshing && <ActivityIndicator size='large' color='#00ff00' />}
       <KeyboardAwareFlatList
         // ref={flatListRef} // Реф для управления скроллом
