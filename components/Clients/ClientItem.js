@@ -4,12 +4,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 // import { getFormattedDate } from '../../util/date';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { setSelectedCustomer, setSelectedCustomerListItem } from '../../store/redux/slices/selectedsSlice';
+import {
+  setSelectedCustomer,
+  setSelectedCustomerListItem,
+} from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
 import Tally from '../Tally';
 import { customerSortUp } from '../../store/redux/slices/routesSlice';
-
 
 // import GridTable from '../GridTable';
 
@@ -29,7 +31,8 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   function selectCustomerHandler(data) {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
-    navigation.navigate('CustomerScreens');
+    // navigation.navigate('CustomerScreens');
+    navigation.navigate('CustomerPromoScreen');
   }
 
   const containerStyle = [
@@ -42,10 +45,19 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
     },
   ];
 
-  const textTitle = [styles.textBase, { color: theme.style.customerList.title }];
-  const textSubtitle = [styles.textBase, { color: theme.style.customerList.subtitle }];
+  const textTitle = [
+    styles.textBase,
+    { color: theme.style.customerList.title },
+  ];
+  const textSubtitle = [
+    styles.textBase,
+    { color: theme.style.customerList.subtitle },
+  ];
   const iconStyle = [styles.icon];
-  const percentStyle = [...textTitle, item?.percent < 40 && { color: theme.style.customerList.dangerText }];
+  const percentStyle = [
+    ...textTitle,
+    item?.percent < 40 && { color: theme.style.customerList.dangerText },
+  ];
 
   let secondLine = (
     <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
@@ -55,20 +67,22 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
       { title: item?.baseTotal, flex: 3, titleStyle: textSubtitle },
       { title: item?.total, flex: 3, titleStyle: textSubtitle },
       { title: `${item?.percent}%`, flex: 3, titleStyle: percentStyle },
-
     ];
     secondLine = (
-      <View style={[styles.secondLineContainer, item?.percent < 40 && { backgroundColor: theme.style.customerList.dangerBg }]}>
+      <View
+        style={[
+          styles.secondLineContainer,
+          item?.percent < 40 && {
+            backgroundColor: theme.style.customerList.dangerBg,
+          },
+        ]}
+      >
         <GridTableRow cells={cells} />
       </View>
     );
   }
 
-
-
-
   return (
-
     <Pressable
       onLongPress={onLongHandler}
       onPress={selectCustomerHandler}

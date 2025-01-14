@@ -23,6 +23,7 @@ import ThemeScreen from './screens/ThemeScreen.js';
 import CustomerScreens from './screens/CustomerScreens/';
 import SummaryScreen from './screens/SummaryScreen.js';
 import DocumentsScreen from './screens/DocumentsScreen.js';
+import CustomerPromoScreen from './screens/CustomerScreens/screens/CustomerPromoScreen.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -179,6 +180,18 @@ function AppContent() {
               // headerBackTitle: '',
               // headerBackTitleVisible: false,
             }}
+          />
+          <Stack.Screen
+            name='CustomerPromoScreen'
+            component={CustomerPromoScreen} //страница клиента
+            options={
+              {
+                // headerStyle: { backgroundColor: theme.bar.color },
+                // headerTintColor: theme.bar.active,
+                // headerBackTitle: '',
+                // headerBackTitleVisible: false,
+              }
+            }
           />
           <Stack.Screen
             name='ManageProductsScreen'

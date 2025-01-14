@@ -13,6 +13,7 @@ const initialState = {
   selectedCustomerListItem: null,
   selectedOrder: null,
   selectedDocTab: 0,
+  selectedCustomerScreen: null,
   selectedTheme: 'light',
   selectedProduct: null,
   selectedManager: '95',
@@ -53,6 +54,9 @@ const selectedsSlice = createSlice({
     },
     setSelectedCustomer: (state, action) => {
       state.selectedCustomer = action.payload;
+    },
+    setSelectedCustomerScreen: (state, action) => {
+      state.selectedCustomerScreen = action.payload;
     },
     // Добавление списка
     setSelectedOrder: (state, action) => {
@@ -99,6 +103,7 @@ export const {
   setSelectedMenuLevel_2,
   setUnselectMenu,
   setTableOptions,
+  setSelectedCustomerScreen,
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store

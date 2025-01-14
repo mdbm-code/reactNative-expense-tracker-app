@@ -7,7 +7,10 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import ProductsOutput from '../../components/ManageProductsScreen/ProductsOutput';
 // import { useDrawerStatus } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectProducts, selectProductSales } from '../../store/redux/selectors/products';
+import {
+  selectProducts,
+  selectProductSales,
+} from '../../store/redux/selectors/products';
 import { getThemePalette } from '../../store/redux/selectors/theme';
 // import ProductsMenuButton from '../../components/ManageProductsScreen/ProductsMenu/ProductsMenuButton';
 // import {
@@ -24,79 +27,62 @@ import { setSelectedProduct } from '../../store/redux/slices/selectedsSlice';
 import InputHelper from '../../components/ManageProductsScreen/InputHelper/';
 import InputOrder from './InputOrder';
 
-
-
-const SimpleInput = () => {
-  const [inputValue, setInputValue] = useState('');
-
-  const onSubmitEditingHandler = () => {
-    console.log('onSubmitEditingHandler вызван');
-  };
-
-  return (
-    <View>
-      <TextInput
-        value={inputValue}
-        onChangeText={setInputValue}
-        returnKeyType='done' // или 'go'
-        keyboardType='default' // или 'numeric'
-        onSubmitEditing={onSubmitEditingHandler}
-        style={styles.input}
-      />
-    </View>
-  );
-};
-
 export const ManageProductsHomeScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   // const drawerRef = useRef(null);
   // const [showFooterFor, setShowFooterFor] = useState(null);
   // const [showSearchPanel, setShowSearchPanel] = useState(false);
-  const { selectedCustomer, selectedProduct } = useSelector((state) => state.selecteds);
+  const { selectedCustomer, selectedProduct } = useSelector(
+    (state) => state.selecteds
+  );
   const products = useSelector(selectProducts);
   const productSales = useSelector(selectProductSales);
   const theme = useSelector(getThemePalette);
-  const [inputValue, setInputValue] = useState('');
-
+  // const [inputValue, setInputValue] = useState('');
 
   const onPressHandler = (data) => {
     // console.log('data', data);
 
     if (data?.column === 'qty') {
-      dispatch(setSelectedProduct({
-        code: data?.code,
-        name: data?.name,
-        base_price: data?.base_price,
-        price: data?.price,
-        default_price: data?.default_price,
-        qty: data?.qty,
-      }));
-
+      dispatch(
+        setSelectedProduct({
+          code: data?.code,
+          name: data?.name,
+          base_price: data?.base_price,
+          price: data?.price,
+          default_price: data?.default_price,
+          qty: data?.qty,
+        })
+      );
     } else if (data?.column === 'name') {
-      // {"base_price": 37.76, "code": "ТД007773", "column": "name", "default_price": 44.62, 
-      // "description": "1-5", "multiple": 8, "name": "Йогурт ANGELATO 2,5% пит.черника бут. 0,27 л.", 
-      // "parentCode": "6", "price": 44.62, 
-      // "prices": {"base_price": 37.76, "default_price": 44.62}, "qty": "", 
+      // {"base_price": 37.76, "code": "ТД007773", "column": "name", "default_price": 44.62,
+      // "description": "1-5", "multiple": 8, "name": "Йогурт ANGELATO 2,5% пит.черника бут. 0,27 л.",
+      // "parentCode": "6", "price": 44.62,
+      // "prices": {"base_price": 37.76, "default_price": 44.62}, "qty": "",
       // "shortName": "Йог ANGELATO 2,5% черн. бут. 0,27 л.", "specs": [], "unit": "шт"}
-      dispatch(setSelectedProduct({
-        code: data?.code,
-        name: data?.name,
-        base_price: data?.base_price,
-        price: data?.price,
-        default_price: data?.default_price,
-        qty: data?.qty,
-      }));
+      dispatch(
+        setSelectedProduct({
+          code: data?.code,
+          name: data?.name,
+          base_price: data?.base_price,
+          price: data?.price,
+          default_price: data?.default_price,
+          qty: data?.qty,
+        })
+      );
     } else if (data?.column === 'inputHelper') {
-
-
       if (data?.code && data?.name && data?.newValue) {
-        const payload = { ...data, customerCode: selectedCustomer?.code, productCode: data?.code, qty: data?.newValue };
+        const payload = {
+          ...data,
+          customerCode: selectedCustomer?.code,
+          productCode: data?.code,
+          qty: data?.newValue,
+        };
         // console.log('payload', payload);
         dispatch(findAndUpdateOrderRow(payload));
       }
     }
   };
-
 
   function onChangeTextHandler(value) {
     let payload = null;
@@ -109,7 +95,7 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
         price: selectedProduct?.price,
         default_price: selectedProduct?.default_price,
         qty: value?.newValue,
-      }
+      };
     } else {
       payload = {
         customerCode: selectedCustomer?.code,
@@ -160,52 +146,51 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
       titleStyle: { color: theme.text.primary },
       selectedContent: {
         component: InputOrder,
-        props: { text: 'Hello', keys: ['title', 'returnParams'] }
-      }
+        props: { text: 'Hello', keys: ['title', 'returnParams'] },
+      },
     },
   ];
 
-
   let rowFooter = '';
-  if (typeof selectedProduct === 'object' && selectedProduct !== null && Array.isArray(productSales?.values) && productSales.values.length > 0) {
+  if (
+    typeof selectedProduct === 'object' &&
+    selectedProduct !== null &&
+    Array.isArray(productSales?.values) &&
+    productSales.values.length > 0
+  ) {
     rowFooter = {
       key: 'code',
       condition: { eq: selectedProduct?.code },
-      content:
+      content: (
         <InputHelper
           values={productSales?.values}
           postValue={productSales?.increased}
           theme={theme}
-          onPress={(item) => onPressHandler({
-            column: 'inputHelper',
-            code: selectedProduct?.code,
-            name: selectedProduct?.name,
-            base_price: selectedProduct.base_price,
-            price: selectedProduct.price,
-            default_price: selectedProduct?.default_price,
-            newValue: item,
-          })}
-        // onChangeText={onChangeText}
-        // inputValue={inputValue}
-        // inputConfig={{
-        //   style: { width: 45, color: theme.text.primary, backgroundColor: 'white', padding: 4 },
-        //   defaultValue: selectedProduct?.qty,
-        //   onChangeText: (newValue) => onChangeTextHandler({ column: 'inputHelper', newValue }),
-        //   onFocus: (item) => { console.log('item', item) },
-        //   returnParams: {}
-        // }}
+          onPress={(item) =>
+            onPressHandler({
+              column: 'inputHelper',
+              code: selectedProduct?.code,
+              name: selectedProduct?.name,
+              base_price: selectedProduct.base_price,
+              price: selectedProduct.price,
+              default_price: selectedProduct?.default_price,
+              newValue: item,
+            })
+          }
+          // onChangeText={onChangeText}
+          // inputValue={inputValue}
+          // inputConfig={{
+          //   style: { width: 45, color: theme.text.primary, backgroundColor: 'white', padding: 4 },
+          //   defaultValue: selectedProduct?.qty,
+          //   onChangeText: (newValue) => onChangeTextHandler({ column: 'inputHelper', newValue }),
+          //   onFocus: (item) => { console.log('item', item) },
+          //   returnParams: {}
+          // }}
         />
+      ),
     };
   }
   let rowHeader = '';
-  if (false) {
-    rowHeader = {
-      key: 'code',
-      condition: { eq: 0 },
-      content: 'Нет в наличии',
-    };
-  }
-
 
   return (
     <View style={[styles.container]}>
@@ -217,7 +202,7 @@ export const ManageProductsHomeScreen = ({ navigation, route }) => {
         rowId='code'
         onPress={onPressHandler}
         onChangeText={onChangeTextHandler}
-        onLongPress={() => { }}
+        onLongPress={() => {}}
         rowFooter={rowFooter}
         rowHeader={rowHeader}
       />

@@ -1,6 +1,11 @@
 import React, { useLayoutEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import CustomerOrderScreen from './screens/CustomerOrderScreen';
 import CustomerDebtScreen from './screens/CustomerDebtScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
@@ -9,55 +14,109 @@ import { getThemePalette } from '../../store/redux/selectors/theme';
 import { useDispatch, useSelector } from 'react-redux';
 import IconButton from '../../components/ui/IconButton';
 import Button from '../../components/ui/Button';
-import { setSelectedDocTab } from '../../store/redux/slices/selectedsSlice';
+import {
+  setSelectedCustomerScreen,
+  setSelectedDocTab,
+} from '../../store/redux/slices/selectedsSlice';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 const Drawer = createDrawerNavigator();
 const titles = {
-  'CustomerOrderScreen': { label: 'Заявка' },
-  'CustomerDebtScreen': { label: 'Акт-сверки' },
-  'CustomerReturnScreen': { label: 'Возврат' },
-  'CustomerProfileScreen': { label: 'Сведения' },
-}
+  CustomerOrderScreen: { label: 'Заявка' },
+  CustomerDebtScreen: { label: 'Акт-сверки' },
+  CustomerReturnScreen: { label: 'Возврат' },
+  CustomerProfileScreen: { label: 'Сведения' },
+};
 
 const CustomHeader = ({ navigation, theme }) => {
   const route = useRoute(); // Получаем текущий маршрут
   const title = titles[route.name]?.label;
 
   return (
-    <View style={styles.headerContainer}>
+    <View
+      style={[
+        styles.headerContainer,
+        { backgroundColor: titles[route.name]?.backgroundColor },
+      ]}
+    >
       <TouchableOpacity
         style={[styles.leftButton]}
         onPress={() => navigation.openDrawer()} // Обработка нажатия кнопки
       >
-        <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.button.dark.text }]}>Цель</Text>
+        <Text
+          style={[
+            styles.headerButtonTitle,
+            { color: theme.style.drawer.header.button.dark.text },
+          ]}
+        >
+          Цель
+        </Text>
       </TouchableOpacity>
       <View style={styles.headerTitleContainer}>
-        <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.title }]} >{title}</Text>
+        <Text
+          style={[
+            styles.headerButtonTitle,
+            { color: theme.style.drawer.header.title },
+          ]}
+        >
+          {title}
+        </Text>
       </View>
       <TouchableOpacity
-        style={[styles.rightButton, {
-          backgroundColor: theme.style.drawer.header.button.main.bg,
-        }]}
+        style={[
+          styles.rightButton,
+          {
+            backgroundColor: theme.style.drawer.header.button.main.bg,
+          },
+        ]}
         onPress={() => navigation.navigate('ManageProductsScreen')} // Обработка нажатия кнопки
       >
-        <Text style={[styles.headerButtonTitle, { color: theme.style.drawer.header.button.main.text }]}>Подбор</Text>
+        <Text
+          style={[
+            styles.headerButtonTitle,
+            { color: theme.style.drawer.header.button.main.text },
+          ]}
+        >
+          Подбор
+        </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const CustomDrawerItem = (props) => {
-  const { state, index, navigation, theme, name, label } = props;
+  const { state, index, navigation, theme, name, label, onSelect } = props;
+
+  const titleStyle = {};
+
   return (
     <DrawerItem
       label={label}
-      labelStyle={[styles.menuItemText, { color: theme.style.drawer.listItem[index === state.index ? 'titleActive' : 'title'], }]}
-      onPress={() => navigation.navigate(name)}
-      style={[styles.menuItem, {
-        backgroundColor: theme.style.drawer.listItem[index === state.index ? 'bgActive' : 'bg'],
-      }]}
+      labelStyle={[
+        styles.menuItemText,
+        {
+          color:
+            theme.style.drawer.listItem[
+              index === state.index ? 'titleActive' : 'title'
+            ],
+        },
+      ]}
+      onPress={() => {
+        if (typeof onSelect === 'function') {
+          onSelect(name);
+        }
+        navigation.navigate(name);
+      }}
+      style={[
+        styles.menuItem,
+        {
+          backgroundColor:
+            theme.style.drawer.listItem[
+              index === state.index ? 'bgActive' : 'bg'
+            ],
+        },
+      ]}
     />
   );
 };
@@ -69,57 +128,65 @@ const CustomDrawerContent = (props) => {
     navigation.closeDrawer(); // Закрываем Drawer
   };
   return (
-
-    <DrawerContentScrollView {...props}
+    <DrawerContentScrollView
+      {...props}
       style={[
         styles.drawerContent,
         // { backgroundColor: props.theme.style.drawer.bg }
       ]}
-      contentContainerStyle={styles.contentContainerStyle}// Устанавливаем стили контента
+      contentContainerStyle={styles.contentContainerStyle} // Устанавливаем стили контента
     >
-      <View style={styles.drawerContentContainer} >
+      <View style={styles.drawerContentContainer}>
         <DrawerItem
           label={''}
           labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
           onPress={handleDrawerClose}
-          style={[styles.menuItem, {
-            backgroundColor: 'transparent',
-            height: '40',
-            marginBottom: 0
-          }]}
+          style={[
+            styles.menuItem,
+            {
+              backgroundColor: 'transparent',
+              height: '40',
+              marginBottom: 0,
+            },
+          ]}
         />
-        {rows && rows.map((item, index) => {
-          return (
-            <CustomDrawerItem
-              key={index}
-              index={index}
-              state={state}
-              navigation={navigation}
-              theme={theme}
-              name={item.name}
-              label={item.label}
-            />
-          );
-        })}
+        {rows &&
+          rows.map((item, index) => {
+            return (
+              <CustomDrawerItem
+                key={index}
+                index={index}
+                state={state}
+                navigation={navigation}
+                theme={theme}
+                name={item.name}
+                label={item.label}
+                onSelect={item?.onSelect}
+              />
+            );
+          })}
         <DrawerItem
           label={''}
           labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
           onPress={handleDrawerClose}
-          style={[styles.menuItem, {
-            backgroundColor: 'transparent',
-            height: '100%'
-          }]}
+          style={[
+            styles.menuItem,
+            {
+              backgroundColor: 'transparent',
+              height: '100%',
+            },
+          ]}
         />
       </View>
     </DrawerContentScrollView>
-
   );
 };
 
-
 export const CustomerDrawerScreens = ({ navigation }) => {
   const theme = useSelector(getThemePalette);
-  const currentScreen = useSelector((state) => state.selecteds.selectedDocTab);
+  const currentScreen = useSelector(
+    (state) => state.selecteds.selectedCustomerScreen
+  );
   const dispatch = useDispatch();
   const selectedCustomer = useSelector(
     (state) => state.selecteds.selectedCustomer
@@ -131,9 +198,15 @@ export const CustomerDrawerScreens = ({ navigation }) => {
       headerStyle: { backgroundColor: theme.style.bar },
       headerTintColor: theme.style.nav.text,
       headerBackTitle: '',
-      headerBackVisible: true,  // Показать кнопку "Назад"
+      headerBackVisible: true, // Показать кнопку "Назад"
       headerBackTitle: '', // Установка текста кнопки "Назад" на пустое значение
-      headerBackImage: () => <Ionicons name={'chevron-back-outline'} size={24} color={theme.style.text.main} />, // ваш компонент иконки
+      headerBackImage: () => (
+        <Ionicons
+          name={'chevron-back-outline'}
+          size={24}
+          color={theme.style.text.main}
+        />
+      ), // ваш компонент иконки
     });
   }, [navigation, selectedCustomer]);
 
@@ -141,7 +214,17 @@ export const CustomerDrawerScreens = ({ navigation }) => {
     dispatch(setSelectedDocTab(screenName));
   }
 
-  const rows = Object.keys(titles).map((key) => ({ name: key, label: titles[key].label }));
+  function onSelectScreenHandler(name) {
+    console.log(name);
+
+    dispatch(setSelectedCustomerScreen(name));
+  }
+
+  const rows = Object.keys(titles).map((key) => ({
+    name: key,
+    label: titles[key].label,
+    onSelect: (name) => onSelectScreenHandler(name),
+  }));
 
   return (
     <Drawer.Navigator
@@ -168,7 +251,9 @@ export const CustomerDrawerScreens = ({ navigation }) => {
       //     console.log('Drawer.Navigator state changed', currentRoute);
       //   },
       // }}
-      drawerContent={(props) => <CustomDrawerContent {...props} theme={theme} rows={rows} />}
+      drawerContent={(props) => (
+        <CustomDrawerContent {...props} theme={theme} rows={rows} />
+      )}
     >
       <Drawer.Screen
         name='CustomerOrderScreen'
@@ -216,20 +301,20 @@ export const CustomerDrawerScreens = ({ navigation }) => {
         options={{
           drawerLabel: 'Возврат',
           title: 'Возврат',
-          headerRight: () => (
-            <Button
-              style={[
-                styles.manageButton,
-                { backgroundColor: theme.success.light },
-              ]}
-              color={theme.success.light}
-              onPress={() => {
-                navigation.navigate('ManageProductsScreen');
-              }}
-            >
-              Подбор
-            </Button>
-          ),
+          // headerRight: () => (
+          //   <Button
+          //     style={[
+          //       styles.manageButton,
+          //       { backgroundColor: theme.success.light },
+          //     ]}
+          //     color={theme.success.light}
+          //     onPress={() => {
+          //       navigation.navigate('ManageProductsScreen');
+          //     }}
+          //   >
+          //     Подбор
+          //   </Button>
+          // ),
         }}
         listeners={({ navigation }) => ({
           focus: () => changeScreenHandler('CustomerReturnScreen'),
@@ -255,7 +340,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#A3C4D7', // Цвет фона заголовка
+    // backgroundColor: '#A3C4D7', // Цвет фона заголовка
     height: 60, // Высота заголовка
     // paddingHorizontal: 20,
   },
@@ -264,15 +349,15 @@ const styles = StyleSheet.create({
     borderRadius: 15, // Закругленные углы
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderStartStartRadius: 0,   // Закругленный угол слева
-    borderStartEndRadius: 16,     // Закругленный угол справа
-    borderEndStartRadius: 0,     // Закругленный угол справа
+    borderStartStartRadius: 0, // Закругленный угол слева
+    borderStartEndRadius: 16, // Закругленный угол справа
+    borderEndStartRadius: 0, // Закругленный угол справа
     paddingLeft: 10,
     minWidth: 100,
-    maxWidth: '30%'
+    maxWidth: '30%',
   },
   headerTitleContainer: {
-    maxWidth: '55%'
+    maxWidth: '55%',
   },
   headerButtonTitle: {
     // color: '#FFFFFF', // Цвет текста на кнопке
@@ -287,11 +372,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderStartStartRadius: 16,   // Закругленный угол слева
+    borderStartStartRadius: 16, // Закругленный угол слева
     // borderStartEndRadius: 10,     // Закругленный угол справа
-    borderEndStartRadius: 16,     // Закругленный угол справа
+    borderEndStartRadius: 16, // Закругленный угол справа
     paddingRight: 10,
-    maxWidth: '30%'
+    maxWidth: '30%',
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину
