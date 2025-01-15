@@ -1,25 +1,11 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-// import CustomerOrderScreen from './screens/CustomerOrderScreen';
-// import CustomerDebtScreen from './screens/CustomerDebtScreen';
-// import CustomerProfileScreen from './screens/CustomerProfileScreen';
-// import CustomerReturnScreen from './screens/CustomerReturnScreen';
-// import { getThemePalette } from '../../store/redux/selectors/theme';
-// import { useDispatch, useSelector } from 'react-redux';
-// // import IconButton from '../../../components/ui/IconButton';
-// import Button from '../../components/ui/Button';
-// import {
-//   setSelectedCustomerScreen,
-//   setSelectedDocTab,
-// } from '../../store/redux/slices/selectedsSlice';
-// import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-// import IconButton from '../components/ui/IconButton';
 const Drawer = createDrawerNavigator();
 
 const ScreenWithDrawer = ({
@@ -28,6 +14,7 @@ const ScreenWithDrawer = ({
   onChangeScreen,
   screenOptions,
   headerParts,
+  customDrawerContent
 }) => {
   const [currentScreen, setCurrentScreen] = useState({
     name: '',
@@ -38,7 +25,7 @@ const ScreenWithDrawer = ({
   function changeScreenHandler(value) {
     setCurrentScreen((prevState) => ({ ...prevState, ...value }));
     if (typeof onChangeScreen === 'function') {
-      onChangeScreen(screenName);
+      onChangeScreen(value);
     }
   }
 
@@ -51,10 +38,11 @@ const ScreenWithDrawer = ({
     openDrawer,
     iconName,
     size,
+    style
   }) => {
     return (
       <TouchableOpacity
-        style={[styles[`${position}Button`]]}
+        style={[styles[`${position}Button`], style]}
         onPress={() => {
           if (openDrawer) {
             navigation.openDrawer();
@@ -96,23 +84,18 @@ const ScreenWithDrawer = ({
         ]}
       >
         {Array.isArray(headerParts) &&
-          headerParts.map((part) => {
+          headerParts.map((part, index) => {
             if (part?.type === 'button') {
               return (
                 <HeaderPart
-                  title={part?.title}
-                  color={part?.color}
-                  onPress={part?.onPress}
-                  position={part?.position}
+                  key={index}
                   navigation={navigation}
-                  openDrawer={part?.openDrawer}
-                  iconName={part?.iconName}
-                  size={part?.size || 24}
+                  {...part}
                 />
               );
             } else if (part?.type === 'title') {
               return (
-                <View style={styles.headerTitleContainer}>
+                <View key={index} style={styles.headerTitleContainer}>
                   <Text
                     style={[styles.headerButtonTitle, { color: part?.color }]}
                   >
@@ -129,15 +112,17 @@ const ScreenWithDrawer = ({
   const CustomDrawerItem = (props) => {
     const { state, index, navigation, theme, name, label, onSelect } = props;
 
+    console.log('CustomDrawerItem label', typeof label, label);
+
     return (
       <DrawerItem
-        label={label || 'ыыы'}
+        label={label}
         labelStyle={[
           styles.menuItemText,
           {
             color:
               theme.style.drawer.listItem[
-                index === state.index ? 'titleActive' : 'title'
+              index === state.index ? 'titleActive' : 'title'
               ],
           },
         ]}
@@ -152,7 +137,7 @@ const ScreenWithDrawer = ({
           {
             backgroundColor:
               theme.style.drawer.listItem[
-                index === state.index ? 'bgActive' : 'bg'
+              index === state.index ? 'bgActive' : 'bg'
               ],
           },
         ]}
@@ -160,7 +145,7 @@ const ScreenWithDrawer = ({
     );
   };
 
-  const CustomDrawerContent = (props) => {
+  const DeafultDrawerContent = (props) => {
     const { rows, navigation, state, theme } = props;
 
     const handleDrawerClose = () => {
@@ -180,7 +165,7 @@ const ScreenWithDrawer = ({
       >
         <View style={styles.drawerContentContainer}>
           <DrawerItem
-            label={''}
+            label={'-'}
             labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
             onPress={handleDrawerClose}
             style={[
@@ -202,12 +187,13 @@ const ScreenWithDrawer = ({
                   navigation={navigation}
                   theme={theme}
                   name={item?.name}
-                  label={item?.title}
+                  label={item?.drawer?.title || 'title'}
                   onSelect={item?.onSelect}
                 />
               );
             })}
           <DrawerItem
+            label={'-'}
             labelStyle={[styles.menuItemText, { color: theme.style.drawer.bg }]}
             onPress={handleDrawerClose}
             style={[
@@ -231,7 +217,7 @@ const ScreenWithDrawer = ({
           <CustomHeader
             navigation={navigation}
             theme={theme}
-            headerPart={headerParts}
+            headerParts={headerParts}
           />
         ),
         drawerType: screenOptions?.drawerType || 'front', //'back','permanent' // front overlay
@@ -241,9 +227,16 @@ const ScreenWithDrawer = ({
           width: '70%', // Пример ширины
         },
       })}
-      drawerContent={(props) => (
-        <CustomDrawerContent {...props} theme={theme} rows={screens} />
-      )}
+      drawerContent={(props) => {
+        console.log(typeof customDrawerContent);
+
+        if (typeof customDrawerContent === 'function') {
+          const CustomDrawerContent = customDrawerContent;
+          return <CustomDrawerContent {...props} theme={theme} rows={screens} />
+        } else {
+          return <DeafultDrawerContent {...props} theme={theme} rows={screens} />
+        }
+      }}
     >
       {Array.isArray(screens) &&
         screens.map((screen, index) => {
@@ -254,15 +247,15 @@ const ScreenWithDrawer = ({
               name={screen?.name}
               component={screen.component}
               options={{
-                drawerLabel: screen?.drawerLabel,
-                title: screen?.title,
+                drawerLabel: screen?.drawer?.label,
+                title: screen?.header?.title,
                 headerRight: screen?.headerRight,
               }}
               listeners={({ navigation }) => ({
                 focus: () =>
                   changeScreenHandler({
                     name: screen?.name,
-                    title: screen?.title,
+                    title: screen?.header?.title,
                     backgroundColor: screen?.header?.backgroundColor,
                   }),
               })}
@@ -310,15 +303,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  rightButton: {
+  rightButton2: {
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderStartStartRadius: 16, // Закругленный угол слева
-    // borderStartEndRadius: 10,     // Закругленный угол справа
     borderEndStartRadius: 16, // Закругленный угол справа
     paddingRight: 10,
     maxWidth: '30%',
+    minWidth: 100,
+  },
+  rightButton: {
+    fontSize: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderTopLeftRadius: 16, // Закругленный верхний левый угол
+    borderBottomLeftRadius: 16, // Закругленный нижний левый угол
+    paddingRight: 10,
+    maxWidth: '30%',
+    minWidth: 100,
+  },
+  leftButton: {
+    fontSize: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderTopRightRadius: 16, // Закругленный верхний левый угол
+    borderBottomRightRadius: 16, // Закругленный нижний левый угол
+    paddingRight: 10,
+    maxWidth: '30%',
+    minWidth: 100,
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину

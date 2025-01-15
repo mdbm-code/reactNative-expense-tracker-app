@@ -8,7 +8,7 @@ import CustomerDebtScreen from './CustomerDebtScreen';
 import CustomerReturnScreen from './CustomerReturnScreen';
 import CustomerProfileScreen from './CustomerProfileScreen';
 
-const CustomerPromoScreen = ({}) => {
+const CustomerPromoScreen = ({ }) => {
   // const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
@@ -16,60 +16,75 @@ const CustomerPromoScreen = ({}) => {
   const headerParts = [
     {
       title: 'left',
-      color: 'purple',
+      color: 'yellow',
       position: 'left',
       openDrawer: true,
       type: 'button',
+      style: {
+        backgroundColor: 'blue',
+      }
     },
     {
-      title: 'right',
-      color: 'purple',
+      title: 'center',
+      color: 'orange',
       type: 'title',
     },
     {
       title: 'right',
-      color: 'purple',
+      color: 'red',
       position: 'right',
       openDrawer: true,
       type: 'button',
+      style: {
+        backgroundColor: 'blue'
+      }
     },
+
   ];
 
   const screens = [
     {
       name: 'CustomerOrderScreen',
       component: CustomerOrderScreen,
-      drawerLabel: 'Заявка',
-      title: 'Заявка',
+      drawer: {
+        label: 'Заявка',
+      },
       header: {
         backgroundColor: 'green',
+        title: 'Заявка'
       },
     },
     {
       name: 'CustomerDebtScreen',
       component: CustomerDebtScreen,
-      drawerLabel: 'Акт-сверки',
-      title: 'Акт-сверки',
+      drawer: {
+        label: 'Акт-сверки',
+      },
       header: {
         backgroundColor: 'blue',
+        title: 'Акт-сверки'
       },
     },
     {
       name: 'CustomerReturnScreen',
       component: CustomerReturnScreen,
-      drawerLabel: 'Возврат',
-      title: 'Возврат',
+      drawer: {
+        label: 'Возврат',
+      },
       header: {
         backgroundColor: 'pink',
+        title: 'Возврат'
       },
     },
     {
       name: 'CustomerProfileScreen',
       component: CustomerProfileScreen,
-      drawerLabel: 'Сведения',
-      title: 'Сведения',
+      drawer: {
+        label: 'Сведения',
+      },
       header: {
         backgroundColor: 'yellow',
+        title: 'Сведения'
       },
     },
   ];
@@ -87,6 +102,8 @@ const CustomerPromoScreen = ({}) => {
     console.log(value);
   }
 
+  const customDrawerContent = <Text>Custom</Text>;
+
   return (
     <ScreenWithDrawer
       screens={screens}
@@ -94,6 +111,7 @@ const CustomerPromoScreen = ({}) => {
       onChangeScreen={changeScreenHandler}
       screenOptions={screenOptions}
       headerParts={headerParts}
+      customDrawerContent={customDrawerContent}
     />
   );
 };
