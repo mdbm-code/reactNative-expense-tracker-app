@@ -172,7 +172,7 @@ const ManageProductsTableScreen = () => {
       selectedId={selectedProduct?.code}
       selectedRowFooter={selectedRowFooter}
       onLongPress={() => {
-        console.log('long press');
+        // console.log('long press');
       }}
       headerViewStyle={{ backgroundColor: 'red' }}
       headerTitleStyle={{ color: 'blue' }}

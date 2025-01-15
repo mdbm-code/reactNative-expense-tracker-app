@@ -12,26 +12,30 @@ const ProductsMenuButton = ({
   selected,
   titleStyle,
   level = 1,
+  selectedStyle
 }) => {
-  // const backgroundColor = {
-  //   1: theme.bg.light,
-  //   2: 'red',
-  // };
-
 
   const containerStyles = [styles.container];
   if (selected && level === 2) {
     containerStyles.push(styles.selected);
-    containerStyles.push({ backgroundColor: theme.style.drawer.header.button.light.bg });
+    if (selectedStyle?.backgroundColor) {
+      containerStyles.push({ backgroundColor: selectedStyle?.backgroundColor });
+    }
+
   }
 
-
-  const titleStyles = [styles[`title${level}`]];
-  let titleColor = theme.style.text.main;
+  const _titleStyles = [styles[`title${level}`]];
+  let iconColor = theme.style.text.main;
   if (selected && level === 2) {
-    titleColor = theme.style.drawer.header.title;
+    iconColor = theme.style.drawer.header.title;
+    if (selectedStyle?.color) {
+      iconColor = selectedStyle?.color;
+      _titleStyles.push({ color: selectedStyle?.color });
+    }
+    if (selectedStyle?.fontWeight) {
+      _titleStyles.push({ fontWeight: selectedStyle?.fontWeight });
+    }
   }
-  containerStyles.push({ color: titleColor });
 
 
   return (
@@ -44,8 +48,8 @@ const ProductsMenuButton = ({
         style={containerStyles}
       >
         <View style={styles.firstLineContainer}>
-          <Text style={titleStyles}>{title}</Text>
-          {iconName && <Ionicons name={iconName} size={24} color={titleColor} />}
+          <Text style={_titleStyles}>{title}</Text>
+          {iconName && <Ionicons name={iconName} size={18} color={iconColor} />}
         </View>
       </View>
     </Pressable>

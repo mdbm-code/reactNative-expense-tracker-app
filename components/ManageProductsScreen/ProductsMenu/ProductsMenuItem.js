@@ -7,12 +7,14 @@ import {
 } from '../../../store/redux/slices/selectedsSlice';
 import ProductsMenuButton from './ProductsMenuButton';
 
-const ProductsMenuItem = ({ item, rows, closeDrawer, theme }) => {
+const ProductsMenuItem = ({ item, rows, closeDrawer, theme, selectedStyle }) => {
   const { name, code } = item;
   const dispatch = useDispatch();
   const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(
     (state) => state.selecteds
   );
+
+
 
   function onPressHandler(value) {
     // {"children": [{"code": "285", "name": "колбаса", "parent": "00001", "sort": 1}, {"code": "38", "name": "Консервы", "parent": "00001", "sort": 2}],
@@ -58,6 +60,7 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme }) => {
           renderItem={(itemData) => {
             return (
               <ProductsMenuButton
+                selectedStyle={selectedStyle}
                 style={styles.menuItem}
                 theme={theme}
                 title={itemData.item.name}

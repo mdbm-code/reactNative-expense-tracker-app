@@ -110,7 +110,7 @@ function CustomDrawerContent(props) {
 
   return (
     <View style={[styles.drawerContent, { backgroundColor: theme.style.bg }]}>
-      <ProductMenu closeDrawer={handleDrawerClose} />
+      <ProductMenu closeDrawer={handleDrawerClose} drawerNavigation={navigation} />
     </View>
   );
 }

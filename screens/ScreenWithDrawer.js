@@ -61,9 +61,37 @@ const ScreenWithDrawer = ({
     );
   };
 
+  const CustomHeaderIconButton = ({
+    color,
+    onPress,
+    position,
+    navigation,
+    openDrawer,
+    iconName,
+    size,
+    style,
+  }) => {
+    return (
+      <TouchableOpacity
+        style={[styles[`${position}Icon`], style]}
+        onPress={() => {
+          if (openDrawer) {
+            navigation.openDrawer();
+          } else if (typeof onPress === 'function') {
+            onPress();
+          }
+        }}
+      >
+        <Ionicons name={iconName} size={size || 24} color={color} />
+      </TouchableOpacity>
+    );
+  };
+
   const CustomHeaderItem = ({ item, navigation }) => {
     if (item?.type === 'button') {
       return <CustomHeaderButton navigation={navigation} {...item} />;
+    } else if (item?.type === 'icon') {
+      return <CustomHeaderIconButton navigation={navigation} {...item} />;
     } else if (item?.type === 'title') {
       return (
         <Text
@@ -148,7 +176,7 @@ const ScreenWithDrawer = ({
           {
             color:
               theme.style.drawer.listItem[
-                index === state.index ? 'titleActive' : 'title'
+              index === state.index ? 'titleActive' : 'title'
               ],
           },
         ]}
@@ -164,8 +192,8 @@ const ScreenWithDrawer = ({
             backgroundColor: labelBackground
               ? labelBackground
               : theme.style.drawer.listItem[
-                  index === state.index ? 'bgActive' : 'bg'
-                ],
+              index === state.index ? 'bgActive' : 'bg'
+              ],
           },
         ]}
       />
@@ -258,26 +286,30 @@ const ScreenWithDrawer = ({
       drawerContent={(props) => {
         // 1. Вариант: customDrawerContent был передан так {ИмяКомпоненты}
         if (customDrawerContent) {
-          const CustomDrawer = customDrawerContent;
-          return <CustomDrawer {...props} theme={theme} rows={screens} />;
+          const CustomDrawerContent = customDrawerContent;
+          return <CustomDrawerContent {...props}
+            selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+            theme={theme} rows={screens} closeDrawer={props?.navigation?.closeDrawer} />;
         }
 
         // 2. Вариант: children были переданы так <ИмяКомпоненты />
         if (children) {
           return React.cloneElement(children, {
             ...props,
+            closeDrawer: props?.navigation?.closeDrawer,
+            selectedStyle: screenOptions?.drawerStyle?.label?.selected,
             theme,
             rows: screens,
           }); // Передаем props в дочерний элемент
         }
 
         //3. вариант если без children
-        return <DeafultDrawerContent {...props} theme={theme} rows={screens} />;
+        return <DeafultDrawerContent selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+          {...props} theme={theme} rows={screens} />;
       }}
     >
       {Array.isArray(screens) &&
         screens.map((screen, index) => {
-          //   const Component = screen.component;
           return (
             <Drawer.Screen
               key={index}
@@ -298,7 +330,6 @@ const ScreenWithDrawer = ({
                   }),
               })}
             >
-              {/* <Component /> */}
             </Drawer.Screen>
           );
         })}
@@ -323,15 +354,18 @@ const styles = StyleSheet.create({
   },
   headerLeftItems: {
     flex: 1,
-    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
   },
   headerCenterItems: {
     flex: 1.5,
-    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   headerRightItems: {
     flex: 1,
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
   },
   rightButton: {
     borderTopLeftRadius: 16, // Закругленный верхний левый угол
@@ -340,6 +374,12 @@ const styles = StyleSheet.create({
   leftButton: {
     borderTopRightRadius: 16, // Закругленный верхний левый угол
     borderBottomRightRadius: 16, // Закругленный нижний левый угол
+  },
+  rightIcon: {
+    margin: 8
+  },
+  leftIcon: {
+    margin: 8
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину

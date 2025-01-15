@@ -32,7 +32,7 @@ const Table = ({
   };
 
   function changeValueHandler(returnParams) {
-    console.log(returnParams);
+    // console.log(returnParams);
 
     // console.log('Table.changeValueHandler() : ', returnParams);
     //cell: keyName, value: selectedValue, old: previousValue

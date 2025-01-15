@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-// import { GlobalStyles } from '../../constans/styles';
-// import { getFormattedDate } from '../../util/date';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import {
@@ -10,10 +8,7 @@ import {
 } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
-import Tally from '../Tally';
-import { customerSortUp } from '../../store/redux/slices/routesSlice';
 
-// import GridTable from '../GridTable';
 
 const ClientItem = React.memo(({ item, theme, editedId }) => {
   const navigation = useNavigation();
@@ -31,9 +26,7 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   function selectCustomerHandler(data) {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
-    // navigation.navigate('CustomerScreens');
     navigation.navigate('CustomerScreensDrawer');
-    // navigation.navigate('CustomerPromoScreen');
   }
 
   const containerStyle = [

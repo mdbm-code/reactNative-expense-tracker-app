@@ -43,7 +43,7 @@ const SettingsScreen = ({ navigation }) => {
   }
 
   function pressOnHeadHandler(columnId) {
-    console.log(columnId);
+    // console.log(columnId);
   }
 
   const toggleDrawer = () => {
@@ -130,7 +130,7 @@ const SettingsScreen = ({ navigation }) => {
       selectedId={selectedProduct?.code}
       selectedRowFooter={selectedRowFooter}
       onLongPress={() => {
-        console.log('long press');
+        // console.log('long press');
       }}
       headerViewStyle={{ backgroundColor: 'red' }}
       headerTitleStyle={{ color: 'blue' }}

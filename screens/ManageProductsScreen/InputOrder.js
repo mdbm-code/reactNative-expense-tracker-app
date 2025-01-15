@@ -15,7 +15,7 @@ const InputOrder = (props) => {
 	const { style } = props;
 
 	function onBlurHandler() {
-		console.log('onBlurHandler', inputValue);
+		// console.log('onBlurHandler', inputValue);
 
 		const payload = {
 			customerCode: selectedCustomer?.code,
@@ -38,7 +38,7 @@ const InputOrder = (props) => {
 
 
 	const onSubmitEditingHandler = () => {
-		console.log('onSubmitEditingHandler вызван');
+		// console.log('onSubmitEditingHandler вызван');
 	};
 
 	// function onSubmitEditingHandler() {

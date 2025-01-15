@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
 // import ManageProductsTableScreen from './ManageProductsTableScreen';
-import ManageReturnProductsTableScreen from './ManageReturnProductsTableScreen';
+import CustomerReturnManageScreen from '../contentScreen/CustomerReturnManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
-const ManageReturnProductsDrawer = ({ navigation }) => {
+const CustomerReturnManageDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
+  console.log('/screens/drawerScreen/CustomerReturnManageDrawer');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,8 +55,8 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
 
   const screens = [
     {
-      name: 'ManageReturnProductsTableScreen',
-      component: ManageReturnProductsTableScreen,
+      name: 'CustomerReturnManageScreen',
+      component: CustomerReturnManageScreen,
       drawer: {
         label: 'Заявка',
       },
@@ -71,8 +72,15 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
     drawerType: 'front',
     overlayColor: 'rgba(0, 0, 0, 0.5)',
     drawerStyle: {
-      backgroundColor: theme.style.error.light, // Цвет фона для выезжающей панели
+      backgroundColor: theme.style.drawer.bg, // Цвет фона для выезжающей панели
       width: '70%', // Пример ширины
+      label: {
+        selected: {
+          color: theme.style.text.main,
+          fontWeight: 'bold',
+          backgroundColor: theme.style.error.light
+        }
+      }
     },
   };
 
@@ -94,6 +102,6 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
   );
 };
 
-export default ManageReturnProductsDrawer;
+export default CustomerReturnManageDrawer;
 
 const styles = StyleSheet.create({});

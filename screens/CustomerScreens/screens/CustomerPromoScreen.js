@@ -99,7 +99,7 @@ const CustomerPromoScreen = ({ }) => {
   };
 
   function changeScreenHandler(value) {
-    console.log(value);
+    // console.log(value);
   }
 
   const customDrawerContent = <Text>Custom</Text>;

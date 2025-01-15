@@ -94,7 +94,7 @@ const OrderRow = ({
   }
 
   function onBlurQtyInputHandler() {
-    console.log('onBlurQtyInputHandler', inputs);
+    // console.log('onBlurQtyInputHandler', inputs);
 
     if (inputs.qty === '') {
       if (inputs.selectedQty) {

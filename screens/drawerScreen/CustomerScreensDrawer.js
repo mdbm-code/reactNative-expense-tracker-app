@@ -3,15 +3,17 @@ import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
-import CustomerOrderScreen from './screens/CustomerOrderScreen';
-import CustomerDebtScreen from './screens/CustomerDebtScreen';
-import CustomerReturnScreen from './screens/CustomerReturnScreen';
-import CustomerProfileScreen from './screens/CustomerProfileScreen';
+import CustomerOrderScreen from '../contentScreen/CustomerOrderScreen';
+import CustomerDebtScreen from '../contentScreen/CustomerDebtScreen';
+import CustomerReturnScreen from '../contentScreen/CustomerReturnScreen';
+import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
+
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
+  console.log('/screens/drawerScreen/CustomerScreensDrawer/');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,7 +29,7 @@ const CustomerScreensDrawer = ({ navigation }) => {
           size={24}
           color={theme.style.text.main}
         />
-      ), // ваш компонент иконки
+      ),
     });
   }, [navigation, selectedCustomer]);
 
@@ -69,7 +71,7 @@ const CustomerScreensDrawer = ({ navigation }) => {
       onPress: () => navigation.navigate('CustomerReturnManageDrawer'),
       type: 'button',
       style: {
-        backgroundColor: theme.style.error.dark,
+        backgroundColor: theme.style.error.main,
         color: theme.style.drawer.header.button.dark.text,
       },
     },
@@ -139,8 +141,6 @@ const CustomerScreensDrawer = ({ navigation }) => {
   function changeScreenHandler(value) {
     // console.log(value);
   }
-
-  const customDrawerContent = <Text>Custom</Text>;
 
   return (
     <ScreenWithDrawer

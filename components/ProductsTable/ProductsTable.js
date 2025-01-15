@@ -232,7 +232,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
       selectedId={selectedProduct?.code}
       selectedRowFooter={selectedRowFooter}
       onLongPress={() => {
-        console.log('long press');
+        // console.log('long press');
       }}
       headerViewStyle={{ backgroundColor: 'red' }}
       headerTitleStyle={{ color: 'blue' }}

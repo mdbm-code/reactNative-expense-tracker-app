@@ -23,9 +23,9 @@ import { getThemePalette } from '../store/redux/selectors/theme';
 
 const CustomTextInput = ({
   initialValue,
-  onBlur = () => {},
-  onSubmitEditing = () => {},
-  onValueChange = () => {},
+  onBlur = () => { },
+  onSubmitEditing = () => { },
+  onValueChange = () => { },
   theme,
 }) => {
   const [value, setValue] = useState(initialValue);
@@ -55,7 +55,7 @@ const CustomTextInput = ({
       onSubmitEditing={handleSubmitEditing} // Сохраняем значение при нажатии "Done"
       returnKeyType='done' // Устанавливаем тип клавиши "Done"
       keyboardType='decimal-pad' // Устанавливаем тип клавиатуры numeric
-      // autoFocus // Автоматически устанавливаем фокус
+    // autoFocus // Автоматически устанавливаем фокус
     />
   );
 };
@@ -99,7 +99,7 @@ const SettingsScreen = ({ navigation }) => {
   const [ignoreInput, setIgnoreInput] = useState(true); // Состояние для игнорирования ввода
 
   const handleSubmitEditing = (product, newValue, from) => {
-    console.log('newValue', newValue, 'from', from, 'ignoreInput', ignoreInput);
+    // console.log('newValue', newValue, 'from', from, 'ignoreInput', ignoreInput);
 
     const payload = {
       ...product,

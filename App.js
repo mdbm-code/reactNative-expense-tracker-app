@@ -13,10 +13,10 @@ import { reduxPersistor, reduxStore } from './store/redux/store.js';
 import { getThemePalette } from './store/redux/selectors/theme.js';
 
 //screens
-import CustomersListScreen from './screens/CustomersListScreen.js';
+import CustomersListScreen from './screens/rootScreens/CustomersListScreen';
 import SynchronizationScreen from './screens/SynchronizationScreen.js';
 import ManageProductsScreen from './screens/ManageProductsScreen/';
-import DocumentListScreen from './screens/DocumentListScreen.js';
+// import DocumentListScreen from './screens/DocumentListScreen.js';
 import SettingsScreen from './screens/SettingsScreen.js';
 import DocumentScreen from './screens/DocumentScreen.js';
 import ThemeScreen from './screens/ThemeScreen.js';
@@ -24,8 +24,11 @@ import CustomerScreens from './screens/CustomerScreens/';
 import SummaryScreen from './screens/SummaryScreen.js';
 import DocumentsScreen from './screens/DocumentsScreen.js';
 import CustomerPromoScreen from './screens/CustomerScreens/screens/CustomerPromoScreen.js';
-import CustomerScreensDrawer from './screens/CustomerScreens/CustomerScreensDrawer.js';
+import CustomerScreensDrawer from './screens/drawerScreen/CustomerScreensDrawer.js';
 import ManageReturnProductsDrawer from './screens/ManageProductsScreen/ManageReturnProductsDrawer.js';
+import ManageOrderProductsDrawer from './screens/ManageProductsScreen/ManageOrderProductsDrawer.js';
+import CustomerOrderManageDrawer from './screens/drawerScreen/CustomerOrderManageDrawer.js';
+import CustomerReturnManageDrawer from './screens/drawerScreen/CustomerReturnManageDrawer.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -131,14 +134,6 @@ function MainScreens({ navigation }) {
           headerRight: null,
         }}
       />
-      {/* {(props) => (
-          <SettingsDrawerNavigator
-            {...props}
-            stackNavigation={navigation}
-            theme={theme}
-          />
-        )}
-      </BottomTab.Screen> */}
     </BottomTab.Navigator>
   );
 }
@@ -156,7 +151,7 @@ function AppContent() {
         <Stack.Navigator
           onStateChange={(state) => {
             const currentRoute = state.routes[state.index];
-            console.log('Stack.Navigator.onStateChange', currentRoute.name);
+            // console.log('Stack.Navigator.onStateChange', currentRoute.name);
           }}
           screenOptions={{
             // headerShown: false, // Скрыть заголовок BottomTab.Navigator
@@ -173,7 +168,7 @@ function AppContent() {
               headerShown: false,
             }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name='CustomerScreens'
             component={CustomerScreens} //страница клиента
             options={{
@@ -182,7 +177,7 @@ function AppContent() {
               // headerBackTitle: '',
               // headerBackTitleVisible: false,
             }}
-          />
+          /> */}
           <Stack.Screen
             name='CustomerScreensDrawer'
             component={CustomerScreensDrawer} //страница клиента
@@ -200,11 +195,23 @@ function AppContent() {
             component={ManageReturnProductsDrawer} //подбор товаров на возврат
           />
           <Stack.Screen
+            name='ManageOrderProductsDrawer'
+            component={ManageOrderProductsDrawer} //подбор товаров на возврат
+          />
+          <Stack.Screen
+            name='CustomerOrderManageDrawer'
+            component={CustomerOrderManageDrawer} //!подбор товаров на продажу
+          />
+          <Stack.Screen
+            name='CustomerReturnManageDrawer'
+            component={CustomerReturnManageDrawer} //!подбор товаров на возврат
+          />
+          <Stack.Screen
             name='DocumentScreen'
             component={DocumentScreen} //подбор товаров в заявку клиента
-            // options={{
-            //   presentation: 'fullScreenModal',
-            // }}
+          // options={{
+          //   presentation: 'fullScreenModal',
+          // }}
           />
         </Stack.Navigator>
       </NavigationContainer>

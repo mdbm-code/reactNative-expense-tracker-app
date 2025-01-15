@@ -8,16 +8,25 @@ import { getThemePalette } from '../../../store/redux/selectors/theme';
 import ProductsMenuButton from './ProductsMenuButton';
 import { setUnselectMenu } from '../../../store/redux/slices/selectedsSlice';
 
-const ProductsMenu = ({ closeDrawer }) => {
+const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
   const dispatch = useDispatch();
   const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(state => state.selecteds)
   const groups = useSelector(selectGroups);
   const theme = useSelector(getThemePalette);
 
+  // console.log('drawerNavigation', typeof drawerNavigation?.closeDrawer);
+
+
+
 
   function onPressHandler(payload) {
     dispatch(setUnselectMenu());
-    closeDrawer();
+
+    if (typeof navigation?.closeDrawer === 'function') {
+      navigation.closeDrawer();
+    } else if (typeof closeDrawer === 'function') {
+      closeDrawer();
+    }
   }
 
   if (typeof groups === 'string') {
@@ -26,6 +35,8 @@ const ProductsMenu = ({ closeDrawer }) => {
   return (
     <View style={[styles.container]}>
       <ProductsMenuButton
+        // iconName={'star-outline'}
+        selectedStyle={selectedStyle}
         title={'Популярные'}
         theme={theme}
         selected={!selectedMenuLevel_1 && !selectedMenuLevel_2}
@@ -38,6 +49,7 @@ const ProductsMenu = ({ closeDrawer }) => {
         keyExtractor={(item) => item.code}
         renderItem={(itemData) => (
           <ProductsMenuItem
+            selectedStyle={selectedStyle}
             item={itemData.item}
             rows={groups}
             closeDrawer={closeDrawer}

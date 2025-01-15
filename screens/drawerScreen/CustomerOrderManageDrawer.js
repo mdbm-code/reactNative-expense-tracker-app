@@ -3,18 +3,18 @@ import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
-// import ManageProductsTableScreen from './ManageProductsTableScreen';
-import ManageReturnProductsTableScreen from './ManageReturnProductsTableScreen';
+import CustomerOrderManageScreen from '../contentScreen/CustomerOrderManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
-const ManageReturnProductsDrawer = ({ navigation }) => {
+const CustomerOrderManageDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
+  console.log('/screens/drawerScreen/CustomerOrderManageDrawer');
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `(Возврат) ${selectedCustomer?.name}`,
+      title: `${selectedCustomer?.name}`,
       headerStyle: { backgroundColor: theme.style.bar },
       headerTintColor: theme.style.nav.text,
       headerBackTitle: '',
@@ -38,7 +38,7 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
       openDrawer: true,
       type: 'button',
       style: {
-        backgroundColor: theme.style.error.main,
+        backgroundColor: theme.style.drawer.header.button.dark.bg,
         color: theme.style.drawer.header.button.dark.text,
       },
     },
@@ -50,19 +50,37 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
         color: theme.style.drawer.header.button.dark.text,
       },
     },
+    3: {
+      title: 'Фильтр',
+      iconName: 'search-outline',
+      color: theme.style.drawer.listItem.title,
+      position: 'left',
+      openDrawer: true,
+      type: 'icon',
+      size: 30,
+    },
+    4: {
+      title: 'Фильтр',
+      iconName: 'search-outline',
+      color: theme.style.drawer.listItem.title,
+      position: 'left',
+      openDrawer: true,
+      type: 'icon',
+      size: 30,
+    },
   };
 
   const screens = [
     {
-      name: 'ManageReturnProductsTableScreen',
-      component: ManageReturnProductsTableScreen,
+      name: 'CustomerOrderManageScreen',
+      component: CustomerOrderManageScreen,
       drawer: {
-        label: 'Заявка',
+        label: 'Подбор',
       },
       header: {
-        style: { backgroundColor: theme.style.error.light },
-        title: 'Заявка',
-        items: [headerItems[1], headerItems[2]],
+        style: { backgroundColor: theme.style.drawer.header.button.light.bg },
+        title: 'Подбор',
+        items: [headerItems[1], headerItems[2], headerItems[3]],
       },
     },
   ];
@@ -71,8 +89,15 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
     drawerType: 'front',
     overlayColor: 'rgba(0, 0, 0, 0.5)',
     drawerStyle: {
-      backgroundColor: theme.style.error.light, // Цвет фона для выезжающей панели
+      backgroundColor: theme.style.drawer.bg, // Цвет фона для выезжающей панели
       width: '70%', // Пример ширины
+      label: {
+        selected: {
+          color: theme.style.text.main,
+          fontWeight: 'bold',
+          backgroundColor: theme.style.drawer.header.button.light.bg
+        }
+      }
     },
   };
 
@@ -94,6 +119,6 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
   );
 };
 
-export default ManageReturnProductsDrawer;
+export default CustomerOrderManageDrawer;
 
 const styles = StyleSheet.create({});

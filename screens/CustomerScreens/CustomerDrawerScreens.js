@@ -98,7 +98,7 @@ const CustomDrawerItem = (props) => {
         {
           color:
             theme.style.drawer.listItem[
-              index === state.index ? 'titleActive' : 'title'
+            index === state.index ? 'titleActive' : 'title'
             ],
         },
       ]}
@@ -113,7 +113,7 @@ const CustomDrawerItem = (props) => {
         {
           backgroundColor:
             theme.style.drawer.listItem[
-              index === state.index ? 'bgActive' : 'bg'
+            index === state.index ? 'bgActive' : 'bg'
             ],
         },
       ]}
@@ -215,7 +215,7 @@ export const CustomerDrawerScreens = ({ navigation }) => {
   }
 
   function onSelectScreenHandler(name) {
-    console.log(name);
+    //console.log(name);
 
     dispatch(setSelectedCustomerScreen(name));
   }

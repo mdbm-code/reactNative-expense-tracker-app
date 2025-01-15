@@ -3,18 +3,18 @@ import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
-// import ManageProductsTableScreen from './ManageProductsTableScreen';
+import ManageProductsTableScreen from './ManageProductsTableScreen';
 import ManageReturnProductsTableScreen from './ManageReturnProductsTableScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
-const ManageReturnProductsDrawer = ({ navigation }) => {
+const ManageOrderProductsDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `(Возврат) ${selectedCustomer?.name}`,
+      title: `${selectedCustomer?.name}`,
       headerStyle: { backgroundColor: theme.style.bar },
       headerTintColor: theme.style.nav.text,
       headerBackTitle: '',
@@ -38,7 +38,7 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
       openDrawer: true,
       type: 'button',
       style: {
-        backgroundColor: theme.style.error.main,
+        backgroundColor: theme.style.drawer.header.button.dark.bg,
         color: theme.style.drawer.header.button.dark.text,
       },
     },
@@ -50,19 +50,31 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
         color: theme.style.drawer.header.button.dark.text,
       },
     },
+    3: {
+      title: 'Фильтр',
+      iconName: 'search-outline',
+      color: theme.style.nav.text,
+      position: 'left',
+      openDrawer: true,
+      type: 'button',
+      // style: {
+      //   backgroundColor: theme.style.drawer.header.button.dark.bg,
+      //   color: theme.style.drawer.header.button.dark.text,
+      // },
+    },
   };
 
   const screens = [
     {
-      name: 'ManageReturnProductsTableScreen',
-      component: ManageReturnProductsTableScreen,
+      name: 'ManageProductsTableScreen',
+      component: ManageProductsTableScreen,
       drawer: {
-        label: 'Заявка',
+        label: 'Подбор',
       },
       header: {
-        style: { backgroundColor: theme.style.error.light },
-        title: 'Заявка',
-        items: [headerItems[1], headerItems[2]],
+        style: { backgroundColor: theme.style.drawer.header.button.light.bg },
+        title: 'Подбор',
+        items: [headerItems[1], headerItems[2], , headerItems[3]],
       },
     },
   ];
@@ -94,6 +106,6 @@ const ManageReturnProductsDrawer = ({ navigation }) => {
   );
 };
 
-export default ManageReturnProductsDrawer;
+export default ManageOrderProductsDrawer;
 
 const styles = StyleSheet.create({});

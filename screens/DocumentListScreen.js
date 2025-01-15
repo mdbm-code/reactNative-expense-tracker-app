@@ -27,7 +27,7 @@ const DocumentListScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (refreshing) {
-      console.log('refreshing');
+      // console.log('refreshing');
       getOrders();
     }
   }, [refreshing]);
@@ -104,8 +104,8 @@ const DocumentListScreen = ({ navigation }) => {
         onPress={onPressHandler}
         onRefresh={onRefresh}
         refreshing={refreshing}
-        // onChangeText={onChangeText}
-        // onLongPress={onLongPress}
+      // onChangeText={onChangeText}
+      // onLongPress={onLongPress}
       />
     </View>
   );

@@ -19,7 +19,7 @@ function GroupList({ rootNavigation }) {
             // Закрыть Drawer при выборе группы
             rootNavigation.closeDrawer();
             // Дополнительная логика при выборе группы
-            console.log(`Selected ${group}`);
+            // console.log(`Selected ${group}`);
           }}
         >
           <Text style={{ marginVertical: 10 }}>{group}</Text>

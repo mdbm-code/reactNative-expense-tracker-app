@@ -138,11 +138,11 @@ const ManageOrder = ({ route, navigation }) => {
   }
 
   function pressCellHandler(payload) {
-    console.log(payload);
+    // console.log(payload);
   }
 
   function updateTableValueHandler(payload) {
-    console.log(payload);
+    // console.log(payload);
   }
 
   return (

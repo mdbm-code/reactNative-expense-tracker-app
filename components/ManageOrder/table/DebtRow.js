@@ -16,7 +16,7 @@ const DebtRow = ({ isHeader, style, rowData, onPress, isActive }) => {
     textCell.push(styles.headerText);
   }
 
-  console.log(rowData.date);
+  // console.log(rowData.date);
 
   return (
     <>
