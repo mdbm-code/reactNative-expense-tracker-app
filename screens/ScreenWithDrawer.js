@@ -14,7 +14,8 @@ const ScreenWithDrawer = ({
   onChangeScreen,
   screenOptions,
   headerParts,
-  customDrawerContent
+  customDrawerContent,
+  children,
 }) => {
   const [currentScreen, setCurrentScreen] = useState({
     name: '',
@@ -29,7 +30,7 @@ const ScreenWithDrawer = ({
     }
   }
 
-  const HeaderPart = ({
+  const CustomHeaderButton = ({
     title,
     color,
     onPress,
@@ -38,7 +39,7 @@ const ScreenWithDrawer = ({
     openDrawer,
     iconName,
     size,
-    style
+    style,
   }) => {
     return (
       <TouchableOpacity
@@ -52,30 +53,56 @@ const ScreenWithDrawer = ({
         }}
       >
         {iconName ? (
-          <Ionicons
-            name={iconName}
-            size={size || 24}
-            color={color || 'black'}
-          />
+          <Ionicons name={iconName} size={size || 24} color={color} />
         ) : (
-          <Text
-            style={[
-              styles.headerButtonTitle,
-              {
-                color: color
-                  ? color
-                  : theme.style.drawer.header.button.dark.text,
-              },
-            ]}
-          >
-            {title}
-          </Text>
+          <Text style={[styles.headerText, { color: color }]}>{title}</Text>
         )}
       </TouchableOpacity>
     );
   };
 
+  const CustomHeaderItem = ({ item, navigation }) => {
+    if (item?.type === 'button') {
+      return <CustomHeaderButton navigation={navigation} {...item} />;
+    } else if (item?.type === 'title') {
+      return (
+        <Text
+          style={[styles.headerText, { color: item?.color }]}
+          numberOfLines={1}
+          ellipsizeMode='clip'
+        >
+          {currentScreen?.title}
+        </Text>
+      );
+    } else if (item?.type === 'text') {
+      return (
+        <Text
+          style={[styles.headerText, { color: item?.color }]}
+          numberOfLines={1}
+          ellipsizeMode='clip'
+        >
+          {item?.title}
+        </Text>
+      );
+    }
+  };
+
   const CustomHeader = ({ navigation, headerParts }) => {
+    let items = [];
+    if (Array.isArray(currentScreen?.items) && currentScreen.items.length > 0) {
+      items = currentScreen?.items;
+    }
+    if (
+      items.length === 0 &&
+      Array.isArray(headerParts) &&
+      headerParts.length > 0
+    ) {
+      items = headerParts;
+    }
+    let leftItems = items.filter((item) => item.position === 'left');
+    let centerItems = items.filter((item) => item.position === 'center');
+    let rightItems = items.filter((item) => item.position === 'right');
+
     return (
       <View
         style={[
@@ -83,37 +110,36 @@ const ScreenWithDrawer = ({
           { backgroundColor: currentScreen?.backgroundColor },
         ]}
       >
-        {Array.isArray(headerParts) &&
-          headerParts.map((part, index) => {
-            if (part?.type === 'button') {
-              return (
-                <HeaderPart
-                  key={index}
-                  navigation={navigation}
-                  {...part}
-                />
-              );
-            } else if (part?.type === 'title') {
-              return (
-                <View key={index} style={styles.headerTitleContainer}>
-                  <Text
-                    style={[styles.headerButtonTitle, { color: part?.color }]}
-                  >
-                    {part?.title}
-                  </Text>
-                </View>
-              );
-            }
-          })}
+        <View style={styles.headerLeftItems}>
+          {leftItems.map((item, index) => (
+            <CustomHeaderItem key={index} item={item} navigation={navigation} />
+          ))}
+        </View>
+        <View style={styles.headerCenterItems}>
+          {centerItems.map((item, index) => (
+            <CustomHeaderItem key={index} item={item} navigation={navigation} />
+          ))}
+        </View>
+        <View style={styles.headerRightItems}>
+          {rightItems.map((item, index) => (
+            <CustomHeaderItem key={index} item={item} navigation={navigation} />
+          ))}
+        </View>
       </View>
     );
   };
 
   const CustomDrawerItem = (props) => {
-    const { state, index, navigation, theme, name, label, onSelect } = props;
-
-    console.log('CustomDrawerItem label', typeof label, label);
-
+    const {
+      state,
+      index,
+      navigation,
+      theme,
+      name,
+      label,
+      onSelect,
+      labelBackground,
+    } = props;
     return (
       <DrawerItem
         label={label}
@@ -122,7 +148,7 @@ const ScreenWithDrawer = ({
           {
             color:
               theme.style.drawer.listItem[
-              index === state.index ? 'titleActive' : 'title'
+                index === state.index ? 'titleActive' : 'title'
               ],
           },
         ]}
@@ -135,10 +161,11 @@ const ScreenWithDrawer = ({
         style={[
           styles.menuItem,
           {
-            backgroundColor:
-              theme.style.drawer.listItem[
-              index === state.index ? 'bgActive' : 'bg'
-              ],
+            backgroundColor: labelBackground
+              ? labelBackground
+              : theme.style.drawer.listItem[
+                  index === state.index ? 'bgActive' : 'bg'
+                ],
           },
         ]}
       />
@@ -152,7 +179,7 @@ const ScreenWithDrawer = ({
       navigation.closeDrawer(); // Закрываем Drawer
     };
 
-    console.log('CustomDrawerContent rows', rows);
+    // console.log('CustomDrawerContent rows', rows);
 
     return (
       <DrawerContentScrollView
@@ -187,7 +214,8 @@ const ScreenWithDrawer = ({
                   navigation={navigation}
                   theme={theme}
                   name={item?.name}
-                  label={item?.drawer?.title || 'title'}
+                  label={item?.drawer?.label || `Option-${index + 1}`}
+                  labelBackground={item?.drawer?.style?.backgroundColor}
                   onSelect={item?.onSelect}
                 />
               );
@@ -228,14 +256,23 @@ const ScreenWithDrawer = ({
         },
       })}
       drawerContent={(props) => {
-        console.log(typeof customDrawerContent);
-
-        if (typeof customDrawerContent === 'function') {
-          const CustomDrawerContent = customDrawerContent;
-          return <CustomDrawerContent {...props} theme={theme} rows={screens} />
-        } else {
-          return <DeafultDrawerContent {...props} theme={theme} rows={screens} />
+        // 1. Вариант: customDrawerContent был передан так {ИмяКомпоненты}
+        if (customDrawerContent) {
+          const CustomDrawer = customDrawerContent;
+          return <CustomDrawer {...props} theme={theme} rows={screens} />;
         }
+
+        // 2. Вариант: children были переданы так <ИмяКомпоненты />
+        if (children) {
+          return React.cloneElement(children, {
+            ...props,
+            theme,
+            rows: screens,
+          }); // Передаем props в дочерний элемент
+        }
+
+        //3. вариант если без children
+        return <DeafultDrawerContent {...props} theme={theme} rows={screens} />;
       }}
     >
       {Array.isArray(screens) &&
@@ -256,7 +293,8 @@ const ScreenWithDrawer = ({
                   changeScreenHandler({
                     name: screen?.name,
                     title: screen?.header?.title,
-                    backgroundColor: screen?.header?.backgroundColor,
+                    backgroundColor: screen?.header?.style?.backgroundColor,
+                    items: screen?.header?.items,
                   }),
               })}
             >
@@ -272,92 +310,55 @@ export default ScreenWithDrawer;
 
 const styles = StyleSheet.create({
   headerContainer: {
+    // flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: '#A3C4D7', // Цвет фона заголовка
     height: 60, // Высота заголовка
-    // paddingHorizontal: 20,
   },
-  leftButton: {
-    backgroundColor: '#00509E', // Цвет фона для кнопки
-    borderRadius: 15, // Закругленные углы
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderStartStartRadius: 0, // Закругленный угол слева
-    borderStartEndRadius: 16, // Закругленный угол справа
-    borderEndStartRadius: 0, // Закругленный угол справа
-    paddingLeft: 10,
-    minWidth: 100,
-    maxWidth: '30%',
-  },
-  headerTitleContainer: {
-    maxWidth: '55%',
-  },
-  headerButtonTitle: {
-    // color: '#FFFFFF', // Цвет текста на кнопке
+  headerText: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     fontSize: 16,
   },
-  screen: {
+  headerLeftItems: {
     flex: 1,
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  headerCenterItems: {
+    flex: 1.5,
     alignItems: 'center',
   },
-  rightButton2: {
-    fontSize: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderStartStartRadius: 16, // Закругленный угол слева
-    borderEndStartRadius: 16, // Закругленный угол справа
-    paddingRight: 10,
-    maxWidth: '30%',
-    minWidth: 100,
+  headerRightItems: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   rightButton: {
-    fontSize: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     borderTopLeftRadius: 16, // Закругленный верхний левый угол
     borderBottomLeftRadius: 16, // Закругленный нижний левый угол
-    paddingRight: 10,
-    maxWidth: '30%',
-    minWidth: 100,
   },
   leftButton: {
-    fontSize: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     borderTopRightRadius: 16, // Закругленный верхний левый угол
     borderBottomRightRadius: 16, // Закругленный нижний левый угол
-    paddingRight: 10,
-    maxWidth: '30%',
-    minWidth: 100,
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину
     paddingHorizontal: 0, // Убираем отступы по горизонтали
     paddingLeft: 0, // Убираем отступ слева
-    // backgroundColor: 'red', // Здесь можете оставить только для проверки
     paddingTop: 0, // Убираем отступ сверху
-    // paddingBottom: 0, // Убираем отступ снизу
     paddingStart: 0, // Убираем стартовый отступ (слева)
-    // paddingEnd: 0, // Убираем концевой отступ (справа)
-    // backgroundColor: 'transparent'
   },
   drawerContent: {
     flex: 1,
     padding: 0, // Убедитесь, что здесь нет padding
     margin: 0, // Убедитесь, что здесь нет margin
     paddingHorizontal: 0, // Убираем отступы
-    // backgroundColor: '#A3C4D7', // Цвет фона для выезжающей панели
     padding: 0, // Убираем все отступы
     marginHorizontal: 0,
-    // backgroundColor: 'transparent'
   },
   drawerContentContainer: {
     paddingVertical: 0, // Убираем вертикальные отступы
     margin: 0, // Убедитесь, что здесь нет ненужных отступов
-    // marginTop: 10
   },
   menuItem: {
     paddingHorizontal: 0, // Убираем горизонтальные отступы

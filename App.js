@@ -24,6 +24,8 @@ import CustomerScreens from './screens/CustomerScreens/';
 import SummaryScreen from './screens/SummaryScreen.js';
 import DocumentsScreen from './screens/DocumentsScreen.js';
 import CustomerPromoScreen from './screens/CustomerScreens/screens/CustomerPromoScreen.js';
+import CustomerScreensDrawer from './screens/CustomerScreens/CustomerScreensDrawer.js';
+import ManageReturnProductsDrawer from './screens/ManageProductsScreen/ManageReturnProductsDrawer.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -182,23 +184,20 @@ function AppContent() {
             }}
           />
           <Stack.Screen
+            name='CustomerScreensDrawer'
+            component={CustomerScreensDrawer} //страница клиента
+          />
+          <Stack.Screen
             name='CustomerPromoScreen'
             component={CustomerPromoScreen} //страница клиента
-            options={
-              {
-                // headerStyle: { backgroundColor: theme.bar.color },
-                // headerTintColor: theme.bar.active,
-                // headerBackTitle: '',
-                // headerBackTitleVisible: false,
-              }
-            }
           />
           <Stack.Screen
             name='ManageProductsScreen'
             component={ManageProductsScreen} //подбор товаров в заявку клиента
-            // options={{
-            //   presentation: 'fullScreenModal',
-            // }}
+          />
+          <Stack.Screen
+            name='ManageReturnProductsDrawer'
+            component={ManageReturnProductsDrawer} //подбор товаров на возврат
           />
           <Stack.Screen
             name='DocumentScreen'

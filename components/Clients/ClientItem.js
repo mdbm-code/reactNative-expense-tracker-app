@@ -32,7 +32,8 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
     // navigation.navigate('CustomerScreens');
-    navigation.navigate('CustomerPromoScreen');
+    navigation.navigate('CustomerScreensDrawer');
+    // navigation.navigate('CustomerPromoScreen');
   }
 
   const containerStyle = [
