@@ -15,12 +15,15 @@ const CustomerReturnManageScreen = () => {
   if (!typeof customerCode === 'string')
     return <FallbackText>{'Покупатель не выбран'}</FallbackText>;
 
+  console.log('/screens/contentScreen/CustomerReturnManageScreen');
+
   return (
     <View style={[styles.rootContainer]}>
       <ProductsTable
+        searchable
         rows={rows}
         goal={'return'}
-        headerColor={theme.style.error.light}
+        headerColor={theme.style.customerList.dangerBg}
         theme={theme}
       />
     </View>

@@ -1,8 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, Animated } from 'react-native';
+import React, { useState } from 'react';
 
 export const Tally = ({ children, color, bg, position }) => {
-  const tallyContainer = [styles.tallyContainer, { backgroundColor: color }];
+  // const [slideAnim] = useState(new Animated.Value(-20)); // Начальная позиция панели
+  // // Анимация появления панели
+  // React.useEffect(() => {
+  //   Animated.timing(slideAnim, {
+  //     toValue: 0,
+  //     duration: 300,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [slideAnim]);
+
+  const tallyContainer = [
+    styles.tallyContainer,
+    { backgroundColor: color },
+    // { transform: [{ translateY: slideAnim }] },
+  ];
   const tallyCenter = [styles.tallyCenter, { backgroundColor: bg }];
   const tallyLeft = [styles.tallyLeft, { backgroundColor: bg }];
   const tallyRight = [styles.tallyRight, { backgroundColor: bg }];

@@ -9,16 +9,26 @@ const recalculateTotalForCustomer = (state, customerCode, minSum) => {
     (row) => row.customerCode === customerCode
   );
   let total = 0;
+  let totalRet = 0;
   let baseTotal = 0;
+  let baseTotalRet = 0;
+
   customerRows.forEach((row) => {
     if (row?.qty && +row.qty > 0) {
       total += row.price * +row.qty;
       baseTotal += row.base_price * +row.qty;
     }
+    if (row?.ret && +row.ret > 0) {
+      totalRet += row.price * +row.ret;
+      baseTotalRet += row.base_price * +row.ret;
+    }
   });
   // Округление до двух знаков после запятой
   total = Math.round(total * 100) / 100;
   baseTotal = Math.round(baseTotal * 100) / 100;
+
+  totalRet = Math.round(totalRet * 100) / 100;
+  baseTotalRet = Math.round(baseTotalRet * 100) / 100;
 
   let percent = 0;
   if (baseTotal > 0) {
@@ -32,6 +42,9 @@ const recalculateTotalForCustomer = (state, customerCode, minSum) => {
     existingDoc.total = total;
     existingDoc.baseTotal = baseTotal;
     existingDoc.percent = percent;
+
+    existingDoc.totalRet = totalRet;
+    existingDoc.baseTotalRet = baseTotalRet;
   } else {
     state.docs.push({
       code: getNewCode(customerCode),
@@ -40,7 +53,8 @@ const recalculateTotalForCustomer = (state, customerCode, minSum) => {
       baseTotal,
       percent,
       minSum,
-      totalReturn: 0,
+      totalRet,
+      baseTotalRet,
     });
   }
 };
@@ -55,7 +69,7 @@ const recalculateReturnTotalForCustomer = (state, customerCode) => {
     }
   });
   // Округление до двух знаков после запятой
-  totalReturn = Math.round(total * 100) / 100;
+  totalReturn = Math.round(totalReturn * 100) / 100;
 
   const existingDoc = state.docs.find(
     (doc) => doc.customerCode === customerCode
@@ -130,19 +144,22 @@ const currentOrdersSlice = createSlice({
         price,
         base_price,
         qty,
+        ret,
         minSum,
         default_price,
+        goal,
       } = action.payload;
 
-      if (customerCode && productCode && price) {
+      if (customerCode && productCode && ['order', 'return'].includes(goal)) {
         let row = state.rows.find(
           (row) =>
             row.customerCode === customerCode && row.productCode === productCode
         );
+
         if (row) {
           row.price = price;
-          row.qty = String(qty);
-          // console.log('update exiting row', row);
+          if (!isNaN(qty)) row.qty = qty;
+          if (!isNaN(ret)) row.ret = ret;
         } else {
           row = {
             customerCode,
@@ -150,7 +167,8 @@ const currentOrdersSlice = createSlice({
             base_price,
             default_price,
             price,
-            qty: String(qty),
+            qty: qty,
+            ret: ret,
           };
           state.rows.push(row);
           // console.log('add new row', row);
@@ -160,30 +178,28 @@ const currentOrdersSlice = createSlice({
       }
     },
     findAndUpdateReturnRow: (state, action) => {
-      const { customerCode, productCode, price, qty } = action.payload;
-
-      if (customerCode && productCode && price) {
-        let row = state.returnRows.find(
-          (row) =>
-            row.customerCode === customerCode && row.productCode === productCode
-        );
-        if (row) {
-          row.price = price;
-          row.qty = qty;
-          // console.log('update exiting row', row);
-        } else {
-          row = {
-            customerCode,
-            productCode,
-            price,
-            qty,
-          };
-          state.returnRows.push(row);
-          // console.log('add new row', row);
-        }
-
-        recalculateReturnTotalForCustomer(state, customerCode);
-      }
+      // const { customerCode, productCode, price, qty } = action.payload;
+      // if (customerCode && productCode && price) {
+      //   let row = state.returnRows.find(
+      //     (row) =>
+      //       row.customerCode === customerCode && row.productCode === productCode
+      //   );
+      //   if (row) {
+      //     row.price = price;
+      //     row.qty = qty;
+      //     // console.log('update exiting row', row);
+      //   } else {
+      //     row = {
+      //       customerCode,
+      //       productCode,
+      //       price,
+      //       qty,
+      //     };
+      //     state.returnRows.push(row);
+      //     // console.log('add new row', row);
+      //   }
+      //   recalculateReturnTotalForCustomer(state, customerCode);
+      // }
     },
     recalculateCustomerOrder: (state, action) => {
       const { customerCode } = action.payload;

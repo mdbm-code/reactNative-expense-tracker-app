@@ -12,24 +12,24 @@ const ProductsMenuButton = ({
   selected,
   titleStyle,
   level = 1,
-  selectedStyle
+  selectedStyle,
 }) => {
-
   const containerStyles = [styles.container];
   if (selected && level === 2) {
     containerStyles.push(styles.selected);
     if (selectedStyle?.backgroundColor) {
       containerStyles.push({ backgroundColor: selectedStyle?.backgroundColor });
     }
-
   }
 
-  const _titleStyles = [styles[`title${level}`]];
-  let iconColor = theme.style.text.main;
+  const _titleStyles = [
+    styles[`title${level}`],
+    { color: theme.style.customerList.title },
+  ];
+  let iconColor = theme.style.customerList.title;
   if (selected && level === 2) {
-    iconColor = theme.style.drawer.header.title;
     if (selectedStyle?.color) {
-      iconColor = selectedStyle?.color;
+      iconColor = theme.style.customerList.title;
       _titleStyles.push({ color: selectedStyle?.color });
     }
     if (selectedStyle?.fontWeight) {
@@ -37,16 +37,13 @@ const ProductsMenuButton = ({
     }
   }
 
-
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => pressed && styles.pressed}
       android_ripple={true}
     >
-      <View
-        style={containerStyles}
-      >
+      <View style={containerStyles}>
         <View style={styles.firstLineContainer}>
           <Text style={_titleStyles}>{title}</Text>
           {iconName && <Ionicons name={iconName} size={18} color={iconColor} />}
@@ -109,10 +106,10 @@ const styles = StyleSheet.create({
   },
   title1: {
     // color: GlobalStyles.colors.primary50,
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   title2: {
     // color: GlobalStyles.colors.primary50,
-    paddingLeft: 30
+    paddingLeft: 30,
   },
 });

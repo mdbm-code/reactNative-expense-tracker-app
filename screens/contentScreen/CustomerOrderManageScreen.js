@@ -20,6 +20,7 @@ const CustomerOrderManageScreen = () => {
   return (
     <View style={[styles.rootContainer]}>
       <ProductsTable
+        searchable
         rows={rows}
         goal={'order'}
         headerColor={theme.style.drawer.header.button.light.bg}

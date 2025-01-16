@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProductSales } from '../../store/redux/selectors/products';
 import {
+  setSearchString,
   setSelectedProduct,
   setTableOptions,
 } from '../../store/redux/slices/selectedsSlice';
@@ -17,36 +18,44 @@ import Tally from '../../components/Tally';
 // import Slider from '@react-native-community/slider';
 import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 import Button from '../ui/Button';
+import SearchPanel from '../SearchPanel';
 
-const ProductsTable = ({ rows, goal, headerColor, theme }) => {
+const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
   const dispatch = useDispatch();
-  const [showTableOptions, setShowTableOptions] = useState(false);
-  const { selectedCustomer, selectedProduct, tableOptions } = useSelector(
-    (state) => state.selecteds
-  );
+  const [showTableOptions, setShowTableOptions] = useState('');
+  const { selectedCustomer, selectedProduct, tableOptions, searchString } =
+    useSelector((state) => state.selecteds);
   const [fontSize, setFontsize] = useState(tableOptions?.fontSize || 12);
-  const productSales = useSelector(selectProductSales);
+  const productSales = useSelector(selectProductSales); //история продаж
+  const [enteredSearchText, setEnteredSearchText] = useState('');
 
-  const handleSubmitEditing = (product, newValue, from) => {
+  // useEffect(() => {
+  //   if (!searchString && enteredSearchText) {
+  //     setEnteredSearchText('');
+  //     setShowTableOptions('');
+  //   }
+  // }, [searchString, enteredSearchText]);
+
+  const handleSubmitEditing = (product, newValue) => {
     const payload = {
       ...product,
       customerCode: selectedCustomer?.code,
       productCode: product.code,
-      qty: newValue || '',
+      qty: goal === 'order' ? newValue : undefined,
+      ret: goal === 'return' ? newValue : undefined,
+      goal,
     };
 
-    if (goal === 'order') {
-      dispatch(findAndUpdateOrderRow(payload));
-    } else if (goal === 'return') {
-      dispatch(findAndUpdateReturnRow(payload));
-    } else if (goal === 'promo') {
+    if (goal === 'promo') {
     } else {
-      console.log('Не указана цель подбора');
+      dispatch(findAndUpdateOrderRow(payload));
     }
     dispatch(setSelectedProduct(null));
   };
 
   function pressOnItemHandler(returnParams) {
+    setShowTableOptions(null);
+
     // console.log('returnParams', returnParams);
     if (returnParams?.item?.code === selectedProduct?.code) {
       dispatch(setSelectedProduct(null));
@@ -69,9 +78,16 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
     );
   }
 
-  function onPressOptionsHandler() {
-    dispatch(setTableOptions({ key: 'fontSize', value: fontSize }));
-    setShowTableOptions(!showTableOptions);
+  function onPressOptionsHandler(id) {
+    dispatch(setSelectedProduct(null));
+    if (id === 'style') {
+      dispatch(setTableOptions({ key: 'fontSize', value: fontSize }));
+    }
+    if (showTableOptions === id) {
+      setShowTableOptions(null);
+    } else {
+      setShowTableOptions(id);
+    }
   }
 
   const HeaderOptions = () => {
@@ -79,15 +95,38 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
       {
         name: 'options-outline',
         color: theme.style.text.main,
-        size: 36,
-        onPress: onPressOptionsHandler,
+        size: 24,
+        onPress: () => onPressOptionsHandler('style'),
       },
     ];
-    return <HeaderWithIcons title={'Наименование'} rows={icons} />;
+    if (searchable) {
+      icons.push({
+        name: 'search-outline',
+        color: theme.style.text.main,
+        size: 24,
+        onPress: () => onPressOptionsHandler('search'),
+      });
+    }
+    return (
+      <HeaderWithIcons
+        titleStyle={{ color: theme.style.customerList.title }}
+        title={'Наименование'}
+        rows={icons}
+      />
+    );
   };
 
   const onChangeSlider = (value) => {
     setFontsize(value);
+  };
+
+  const onSearchHandler = () => {
+    dispatch(setSearchString(enteredSearchText));
+  };
+  const onSearchCancelHandler = () => {
+    setShowTableOptions(null);
+    dispatch(setSearchString(''));
+    setEnteredSearchText('');
   };
 
   const ButtonRow = (props) => {
@@ -136,21 +175,27 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
   };
 
   const headerFooter = (
-    <Tally
-      position='down'
-      bg={theme.style?.bg}
-      color={theme.style?.bars[2]?.bg}
-    >
-      <ButtonRow
-        selectedStyle={styles.slider}
-        minimumValue={10}
-        maximumValue={16}
-        step={1}
-        value={parseFloat(fontSize) || 10}
-        onValueChange={onChangeSlider}
-        minimumTrackTintColor='#FFFFFF'
-        maximumTrackTintColor='#000000'
-      />
+    <Tally position='down' bg={theme.style?.bg} color={headerColor}>
+      {showTableOptions === 'style' && (
+        <ButtonRow
+          selectedStyle={styles.slider}
+          minimumValue={10}
+          maximumValue={16}
+          step={1}
+          value={parseFloat(fontSize) || 10}
+          onValueChange={onChangeSlider}
+          minimumTrackTintColor='#FFFFFF'
+          maximumTrackTintColor='#000000'
+        />
+      )}
+      {showTableOptions === 'search' && (
+        <SearchPanel
+          value={enteredSearchText}
+          onCancel={onSearchCancelHandler}
+          onSearch={onSearchHandler}
+          onChangeText={(enteredText) => setEnteredSearchText(enteredText)}
+        />
+      )}
     </Tally>
   );
 
@@ -161,11 +206,11 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
       flex: 9,
       titleStyle: {
         textAlign: 'left',
-        color: theme.style?.text?.main,
+        color: theme.style.customerList.title,
         fontSize: fontSize,
         paddingLeft: 6,
       },
-      viewStyle: { padding: 2 },
+      viewStyle: { padding: 2, backgroundColor: theme.style.customerList.bg2 },
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -179,10 +224,15 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
       flex: 3,
       titleStyle: {
         textAlign: 'center',
-        color: theme.style?.text?.main,
+        color: theme.style.customerList.title,
         width: '100%',
       },
-      viewStyle: { borderLeftWidth: 1, borderRightWidth: 1, padding: 2 },
+      viewStyle: {
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        padding: 2,
+        backgroundColor: theme.style.customerList.bg2,
+      },
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -196,9 +246,10 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
       title: 'Кол.',
       flex: 2,
       as: 'input',
+      autoFocus: goal === 'return',
       titleStyle: {
         textAlign: 'center',
-        color: theme.style?.text?.main,
+        color: theme.style.customerList.title,
         width: '100%',
       },
       inputStyle: {
@@ -210,7 +261,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
         border: 1,
         height: '100%',
       },
-      viewStyle: { padding: 2 },
+      viewStyle: { padding: 2, backgroundColor: theme.style.customerList.bg2 },
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -220,29 +271,35 @@ const ProductsTable = ({ rows, goal, headerColor, theme }) => {
   ];
 
   return (
-    <Table
-      headerFooter={showTableOptions && headerFooter}
-      rowStyle={styles.rowStyle}
-      columns={columns}
-      rows={rows}
-      keyId='code'
-      theme={theme}
-      onPress={(returnParams) => pressOnItemHandler(returnParams)}
-      onChangeText={handleSubmitEditing}
-      selectedId={selectedProduct?.code}
-      selectedRowFooter={selectedRowFooter}
-      onLongPress={() => {
-        // console.log('long press');
-      }}
-      headerViewStyle={{ backgroundColor: 'red' }}
-      headerTitleStyle={{ color: 'blue' }}
-    />
+    <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
+      <Table
+        headerFooter={!!showTableOptions && headerFooter}
+        rowStyle={styles.rowStyle}
+        columns={columns}
+        rows={rows}
+        keyId='code'
+        theme={theme}
+        onPress={(returnParams) => pressOnItemHandler(returnParams)}
+        onChangeText={handleSubmitEditing}
+        selectedId={selectedProduct?.code}
+        selectedRowFooter={selectedRowFooter}
+        onLongPress={() => {
+          // console.log('long press');
+        }}
+        // headerViewStyle={{ backgroundColor: 'red' }}
+        // headerTitleStyle={{ color: 'blue' }}
+      />
+    </View>
   );
 };
 
 export default ProductsTable;
 
 const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+    paddingBottom: 6,
+  },
   container: {
     flex: 1,
   },
@@ -263,7 +320,7 @@ const styles = StyleSheet.create({
   },
   slider: {
     flex: 1,
-    margin: 18,
+    margin: 10,
   },
   buttonRowTitle: {},
 });

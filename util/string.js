@@ -5,3 +5,8 @@ export function getPartString(string, separator, left) {
   }
   return string.slice(separatorIndex + 1);
 }
+
+export const breakLongWord = (word = '') => {
+  const maxLength = 10; // Максимальная длина части слова
+  return word.match(new RegExp(`.{1,${maxLength}}`, 'g')).join('\n');
+};

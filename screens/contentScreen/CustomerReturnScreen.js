@@ -40,7 +40,7 @@ const CustomerReturnScreen = () => {
         rows={rows}
         goal={'return'}
         onLongPress={onLongPressHandler}
-        headerColor={theme.style.error.light}
+        headerColor={theme.style.customerList.dangerBg}
         theme={theme}
       />
     </View>

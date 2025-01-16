@@ -11,6 +11,7 @@ import documentsReducer from './slices/documentsSlice';
 import currentOrderReducer from './slices/currentOrdersSlice';
 import themesReducer from './slices/themeSlice';
 import salesReducer from './slices/salesSlice';
+import { apiSlice } from './api/apiSlices';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
@@ -51,18 +52,24 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 // Настройка store
 const reduxStore = configureStore({
   reducer: persistedReducer,
-  //getDefaultMiddleware -  Это функция, предоставляемая Redux Toolkit,
-  // которая позволяет  настраивать middleware по умолчанию.
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       immutableCheck: false, // Отключаем проверку неизменности
       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
-      // serializableCheck: {
-      //   // Игнорируем действия redux-persist
-      //   ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-      // },
     }),
 });
+
+// const reduxStore = configureStore({
+//   reducer: {
+//     [apiSlice.reducerPath]: apiSlice.reducer, // Добавляем редюсер из apiSlice
+//     persisted: persistedReducer, // Ваш Redux редюсер
+//   },
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware({
+//       immutableCheck: false, // Отключаем проверку неизменности
+//       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
+//     }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
+// });
 //serializableCheck**: Это опция, которая позволяет вам игнорировать проверку
 // сериализуемости для определенных действий.
 // В данном случае мы игнорируем действия `persist/PERSIST` и `persist/REHYDRATE`,

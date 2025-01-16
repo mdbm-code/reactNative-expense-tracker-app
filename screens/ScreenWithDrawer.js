@@ -6,9 +6,19 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+
+import { useDispatch } from 'react-redux';
+import { setSelectedScreen } from '../store/redux/slices/selectedsSlice';
 const Drawer = createDrawerNavigator();
+// Функция для разбития длинных слов
+
+const breakLongWord = (word) => {
+  // const maxLength = 18; // Максимальная длина части слова
+  // return word.match(new RegExp(`.{1,${maxLength}}`, 'g')).join('\n');
+};
 
 const ScreenWithDrawer = ({
+  drawerTitle,
   screens,
   theme,
   onChangeScreen,
@@ -23,7 +33,16 @@ const ScreenWithDrawer = ({
     backgroundColor: '',
   });
 
+  const dispath = useDispatch();
+
   function changeScreenHandler(value) {
+    dispath(
+      setSelectedScreen({
+        name: value?.name,
+        title: value?.title,
+        backgroundColor: value?.backgroundColor,
+      })
+    );
     setCurrentScreen((prevState) => ({ ...prevState, ...value }));
     if (typeof onChangeScreen === 'function') {
       onChangeScreen(value);
@@ -95,27 +114,35 @@ const ScreenWithDrawer = ({
     } else if (item?.type === 'title') {
       return (
         <Text
-          style={[styles.headerText, { color: item?.color }]}
-          numberOfLines={1}
-          ellipsizeMode='clip'
+          style={[
+            styles.headerText,
+            styles.headerTitle,
+            { color: item?.color },
+          ]}
+          // numberOfLines={1}
+          // ellipsizeMode='clip'
         >
-          {currentScreen?.title}
+          {drawerTitle ? drawerTitle : currentScreen?.title}
         </Text>
       );
     } else if (item?.type === 'text') {
       return (
         <Text
-          style={[styles.headerText, { color: item?.color }]}
-          numberOfLines={1}
-          ellipsizeMode='clip'
+          style={[
+            styles.headerText,
+            styles.headerTitle,
+            { color: item?.color },
+          ]}
+          // numberOfLines={1}
+          // ellipsizeMode='clip'
         >
-          {item?.title}
+          {breakLongWord(drawerTitle ? drawerTitle : currentScreen?.title)}
         </Text>
       );
     }
   };
 
-  const CustomHeader = ({ navigation, headerParts }) => {
+  const CustomHeader = ({ navigation, headerParts, headerStyle }) => {
     let items = [];
     if (Array.isArray(currentScreen?.items) && currentScreen.items.length > 0) {
       items = currentScreen?.items;
@@ -138,17 +165,34 @@ const ScreenWithDrawer = ({
           { backgroundColor: currentScreen?.backgroundColor },
         ]}
       >
-        <View style={styles.headerLeftItems}>
+        <View
+          style={[
+            styles.headerLeftItems,
+            headerStyle?.left?.flex && styles[`flex${headerStyle?.left?.flex}`],
+          ]}
+        >
           {leftItems.map((item, index) => (
             <CustomHeaderItem key={index} item={item} navigation={navigation} />
           ))}
         </View>
-        <View style={styles.headerCenterItems}>
+        <View
+          style={[
+            styles.headerCenterItems,
+            headerStyle?.center?.flex &&
+              styles[`flex${headerStyle?.center?.flex}`],
+          ]}
+        >
           {centerItems.map((item, index) => (
             <CustomHeaderItem key={index} item={item} navigation={navigation} />
           ))}
         </View>
-        <View style={styles.headerRightItems}>
+        <View
+          style={[
+            styles.headerRightItems,
+            headerStyle?.right?.flex &&
+              styles[`flex${headerStyle?.right?.flex}`],
+          ]}
+        >
           {rightItems.map((item, index) => (
             <CustomHeaderItem key={index} item={item} navigation={navigation} />
           ))}
@@ -167,19 +211,27 @@ const ScreenWithDrawer = ({
       label,
       onSelect,
       labelBackground,
+      labelSelectedColor,
     } = props;
+
+    let labelStyle = [styles.menuItemText];
+    if (labelSelectedColor && index === state.index) {
+      labelStyle.push({ color: labelSelectedColor });
+    } else {
+      labelStyle.push({
+        color:
+          theme.style.drawer.listItem[
+            index === state.index ? 'titleActive' : 'title'
+          ],
+      });
+    }
+    console.log('labelStyle', label, labelStyle);
+
+    styles.menuItemText;
     return (
       <DrawerItem
         label={label}
-        labelStyle={[
-          styles.menuItemText,
-          {
-            color:
-              theme.style.drawer.listItem[
-              index === state.index ? 'titleActive' : 'title'
-              ],
-          },
-        ]}
+        labelStyle={labelStyle}
         onPress={() => {
           if (typeof onSelect === 'function') {
             onSelect(name);
@@ -192,8 +244,8 @@ const ScreenWithDrawer = ({
             backgroundColor: labelBackground
               ? labelBackground
               : theme.style.drawer.listItem[
-              index === state.index ? 'bgActive' : 'bg'
-              ],
+                  index === state.index ? 'bgActive' : 'bg'
+                ],
           },
         ]}
       />
@@ -244,6 +296,7 @@ const ScreenWithDrawer = ({
                   name={item?.name}
                   label={item?.drawer?.label || `Option-${index + 1}`}
                   labelBackground={item?.drawer?.style?.backgroundColor}
+                  labelSelectedColor={item?.drawer?.style?.labelSelectedColor}
                   onSelect={item?.onSelect}
                 />
               );
@@ -274,6 +327,7 @@ const ScreenWithDrawer = ({
             navigation={navigation}
             theme={theme}
             headerParts={headerParts}
+            headerStyle={screenOptions?.headerStyle}
           />
         ),
         drawerType: screenOptions?.drawerType || 'front', //'back','permanent' // front overlay
@@ -287,9 +341,15 @@ const ScreenWithDrawer = ({
         // 1. Вариант: customDrawerContent был передан так {ИмяКомпоненты}
         if (customDrawerContent) {
           const CustomDrawerContent = customDrawerContent;
-          return <CustomDrawerContent {...props}
-            selectedStyle={screenOptions?.drawerStyle?.label?.selected}
-            theme={theme} rows={screens} closeDrawer={props?.navigation?.closeDrawer} />;
+          return (
+            <CustomDrawerContent
+              {...props}
+              selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+              theme={theme}
+              rows={screens}
+              closeDrawer={props?.navigation?.closeDrawer}
+            />
+          );
         }
 
         // 2. Вариант: children были переданы так <ИмяКомпоненты />
@@ -304,8 +364,14 @@ const ScreenWithDrawer = ({
         }
 
         //3. вариант если без children
-        return <DeafultDrawerContent selectedStyle={screenOptions?.drawerStyle?.label?.selected}
-          {...props} theme={theme} rows={screens} />;
+        return (
+          <DeafultDrawerContent
+            selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+            {...props}
+            theme={theme}
+            rows={screens}
+          />
+        );
       }}
     >
       {Array.isArray(screens) &&
@@ -329,8 +395,7 @@ const ScreenWithDrawer = ({
                     items: screen?.header?.items,
                   }),
               })}
-            >
-            </Drawer.Screen>
+            ></Drawer.Screen>
           );
         })}
     </Drawer.Navigator>
@@ -352,6 +417,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
   },
+  headerTitle: {
+    width: '100%', // Полная ширина контейнера
+    // Переход на новую строку
+    whiteSpace: 'pre-wrap', // не используется в React Native, оставлено для понимания
+    overflow: 'hidden',
+    flexWrap: 'wrap',
+    textAlign: 'center',
+  },
   headerLeftItems: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -361,6 +434,7 @@ const styles = StyleSheet.create({
     flex: 1.5,
     justifyContent: 'center',
     flexDirection: 'row',
+    textAlign: 'center',
   },
   headerRightItems: {
     flex: 1,
@@ -376,10 +450,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 16, // Закругленный нижний левый угол
   },
   rightIcon: {
-    margin: 8
+    margin: 8,
   },
   leftIcon: {
-    margin: 8
+    margin: 8,
   },
   contentContainerStyle: {
     flexGrow: 1, // Это помогает контейнеру занимать всю доступную ширину
@@ -414,4 +488,16 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
   },
+  flex1: { flex: 1 },
+  flex2: { flex: 2 },
+  flex3: { flex: 3 },
+  flex4: { flex: 4 },
+  flex5: { flex: 5 },
+  flex6: { flex: 6 },
+  flex7: { flex: 7 },
+  flex8: { flex: 8 },
+  flex9: { flex: 9 },
+  flex10: { flex: 10 },
+  flex11: { flex: 11 },
+  flex12: { flex: 12 },
 });

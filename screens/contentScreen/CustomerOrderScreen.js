@@ -15,9 +15,7 @@ const CustomerOrderScreen = () => {
   const theme = useSelector(getTheme);
   const rows = useSelector(selectOrder);
 
-
   console.log('/screens/contentScreen/CustomerOrderScreen/');
-
 
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
   if (!typeof customerCode === 'string')

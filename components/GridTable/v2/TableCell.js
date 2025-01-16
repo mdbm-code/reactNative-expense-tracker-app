@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useState } from 'react';
 
 const CustomTextInput = ({
+  autoFocus,
   inputStyle,
   initialValue,
   onBlur = () => {},
@@ -26,8 +27,11 @@ const CustomTextInput = ({
     onValueChange(text);
   };
 
+  // console.log('autofocus', autofocus, 'value', value);
+
   return (
     <TextInput
+      autoFocus={autoFocus}
       style={inputStyle}
       value={value}
       onChangeText={handleChangeText} // Обновляем внутреннее состояние
@@ -41,6 +45,7 @@ const CustomTextInput = ({
 };
 
 const TableCell = ({
+  autoFocus,
   as,
   onSubmitEditing,
   onBlur,
@@ -61,9 +66,9 @@ const TableCell = ({
   }
 
   if (as === 'input') {
-    // console.log('input view style', cellStyle);
     return (
       <CustomTextInput
+        autoFocus={autoFocus}
         inputStyle={inputStyle}
         initialValue={children}
         onValueChange={onValueChange}

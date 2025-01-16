@@ -6,21 +6,30 @@ import { selectGroups } from '../../../store/redux/selectors/groups';
 import FallbackText from '../../FallbackText';
 import { getThemePalette } from '../../../store/redux/selectors/theme';
 import ProductsMenuButton from './ProductsMenuButton';
-import { setUnselectMenu } from '../../../store/redux/slices/selectedsSlice';
+import {
+  setSelectedProductMenu,
+  setUnselectMenu,
+} from '../../../store/redux/slices/selectedsSlice';
 
 const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
   const dispatch = useDispatch();
-  const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(state => state.selecteds)
+  const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(
+    (state) => state.selecteds
+  );
   const groups = useSelector(selectGroups);
   const theme = useSelector(getThemePalette);
 
   // console.log('drawerNavigation', typeof drawerNavigation?.closeDrawer);
 
-
-
-
   function onPressHandler(payload) {
     dispatch(setUnselectMenu());
+    dispatch(
+      setSelectedProductMenu({
+        title: payload?.name,
+        level: payload?.level,
+        code: payload?.code,
+      })
+    );
 
     if (typeof navigation?.closeDrawer === 'function') {
       navigation.closeDrawer();
@@ -42,7 +51,13 @@ const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
         selected={!selectedMenuLevel_1 && !selectedMenuLevel_2}
         level={!selectedMenuLevel_1 && !selectedMenuLevel_2 ? 2 : 1}
         // iconName={selectedMenuLevel_1 === code ? 'chevron-up-outline' : 'chevron-down-outline'}
-        onPress={onPressHandler}
+        onPress={() =>
+          onPressHandler({
+            name: 'Популярные',
+            level: 0,
+            code: '0',
+          })
+        }
       />
       <FlatList
         data={groups}

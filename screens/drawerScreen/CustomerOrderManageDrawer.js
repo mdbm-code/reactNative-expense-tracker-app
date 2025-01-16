@@ -7,7 +7,9 @@ import CustomerOrderManageScreen from '../contentScreen/CustomerOrderManageScree
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
 const CustomerOrderManageDrawer = ({ navigation }) => {
-  const { selectedCustomer } = useSelector((state) => state.selecteds);
+  const { selectedCustomer, selectedProductMenu, searchString } = useSelector(
+    (state) => state.selecteds
+  );
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
   console.log('/screens/drawerScreen/CustomerOrderManageDrawer');
@@ -59,15 +61,6 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
       type: 'icon',
       size: 30,
     },
-    4: {
-      title: 'Фильтр',
-      iconName: 'search-outline',
-      color: theme.style.drawer.listItem.title,
-      position: 'left',
-      openDrawer: true,
-      type: 'icon',
-      size: 30,
-    },
   };
 
   const screens = [
@@ -80,7 +73,7 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
       header: {
         style: { backgroundColor: theme.style.drawer.header.button.light.bg },
         title: 'Подбор',
-        items: [headerItems[1], headerItems[2], headerItems[3]],
+        items: [headerItems[1], headerItems[2]],
       },
     },
   ];
@@ -95,9 +88,20 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
         selected: {
           color: theme.style.text.main,
           fontWeight: 'bold',
-          backgroundColor: theme.style.drawer.header.button.light.bg
-        }
-      }
+          backgroundColor: theme.style.drawer.header.button.light.bg,
+        },
+      },
+    },
+    headerStyle: {
+      left: {
+        flex: 1,
+      },
+      center: {
+        flex: 4,
+      },
+      right: {
+        flex: 2,
+      },
     },
   };
 
@@ -105,17 +109,15 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
     // console.log(value);
   }
 
-
   return (
     <ScreenWithDrawer
+      drawerTitle={searchString ? searchString : selectedProductMenu?.title}
       screens={screens}
       theme={theme}
       onChangeScreen={changeScreenHandler}
       screenOptions={screenOptions}
       customDrawerContent={ProductsMenu}
-    >
-
-    </ScreenWithDrawer>
+    ></ScreenWithDrawer>
   );
 };
 

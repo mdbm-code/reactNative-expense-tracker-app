@@ -24,6 +24,7 @@ const TableRow = ({
               ]}
             >
               <TableCell
+                autoFocus={cell?.autoFocus}
                 selected={isEditing}
                 flex={cell?.flex}
                 titleStyle={cell?.titleStyle}

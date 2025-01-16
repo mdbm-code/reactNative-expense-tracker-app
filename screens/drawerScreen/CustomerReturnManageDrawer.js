@@ -8,7 +8,9 @@ import CustomerReturnManageScreen from '../contentScreen/CustomerReturnManageScr
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
 const CustomerReturnManageDrawer = ({ navigation }) => {
-  const { selectedCustomer } = useSelector((state) => state.selecteds);
+  const { selectedCustomer, selectedProductMenu, searchString } = useSelector(
+    (state) => state.selecteds
+  );
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
   console.log('/screens/drawerScreen/CustomerReturnManageDrawer');
@@ -51,6 +53,15 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
         color: theme.style.drawer.header.button.dark.text,
       },
     },
+    3: {
+      title: 'Фильтр',
+      iconName: 'search-outline',
+      color: theme.style.drawer.listItem.title,
+      position: 'left',
+      openDrawer: true,
+      type: 'icon',
+      size: 30,
+    },
   };
 
   const screens = [
@@ -58,11 +69,11 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
       name: 'CustomerReturnManageScreen',
       component: CustomerReturnManageScreen,
       drawer: {
-        label: 'Заявка',
+        label: 'Возврат',
       },
       header: {
-        style: { backgroundColor: theme.style.error.light },
-        title: 'Заявка',
+        style: { backgroundColor: theme.style.customerList.dangerBg },
+        title: 'Возврат',
         items: [headerItems[1], headerItems[2]],
       },
     },
@@ -78,9 +89,20 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
         selected: {
           color: theme.style.text.main,
           fontWeight: 'bold',
-          backgroundColor: theme.style.error.light
-        }
-      }
+          backgroundColor: theme.style.error.light,
+        },
+      },
+    },
+    headerStyle: {
+      left: {
+        flex: 1,
+      },
+      center: {
+        flex: 4,
+      },
+      right: {
+        flex: 2,
+      },
     },
   };
 
@@ -88,17 +110,21 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
     // console.log(value);
   }
 
-
   return (
     <ScreenWithDrawer
+      drawerTitle={
+        searchString
+          ? searchString
+          : selectedProductMenu?.title
+          ? selectedProductMenu?.title
+          : 'Популярные'
+      }
       screens={screens}
       theme={theme}
       onChangeScreen={changeScreenHandler}
       screenOptions={screenOptions}
       customDrawerContent={ProductsMenu}
-    >
-
-    </ScreenWithDrawer>
+    ></ScreenWithDrawer>
   );
 };
 

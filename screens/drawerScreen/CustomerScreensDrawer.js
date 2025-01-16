@@ -7,13 +7,13 @@ import CustomerOrderScreen from '../contentScreen/CustomerOrderScreen';
 import CustomerDebtScreen from '../contentScreen/CustomerDebtScreen';
 import CustomerReturnScreen from '../contentScreen/CustomerReturnScreen';
 import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
-
+import _log from 'react-dev-log';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
-  console.log('/screens/drawerScreen/CustomerScreensDrawer/');
+  _log('/screens/drawerScreen/CustomerScreensDrawer/');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -107,11 +107,14 @@ const CustomerScreensDrawer = ({ navigation }) => {
       component: CustomerReturnScreen,
       drawer: {
         label: 'Возврат',
-        style: { backgroundColor: theme.style.error.light },
+        style: {
+          backgroundColor: theme.style.customerList.dangerBg,
+          labelSelectedColor: theme.style.text.main,
+        },
       },
       header: {
-        style: { backgroundColor: theme.style.error.light },
         title: 'Возврат',
+        style: { backgroundColor: theme.style.customerList.dangerBg },
         items: [headerItems[1], headerItems[2], headerItems[4]],
       },
     },

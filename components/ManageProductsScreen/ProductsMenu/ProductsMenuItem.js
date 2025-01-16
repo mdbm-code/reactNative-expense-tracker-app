@@ -2,21 +2,33 @@ import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  setSearchString,
   setSelectedMenuLevel_1,
   setSelectedMenuLevel_2,
+  setSelectedProductMenu,
 } from '../../../store/redux/slices/selectedsSlice';
 import ProductsMenuButton from './ProductsMenuButton';
 
-const ProductsMenuItem = ({ item, rows, closeDrawer, theme, selectedStyle }) => {
+const ProductsMenuItem = ({
+  item,
+  rows,
+  closeDrawer,
+  theme,
+  selectedStyle,
+}) => {
   const { name, code } = item;
   const dispatch = useDispatch();
-  const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(
-    (state) => state.selecteds
-  );
-
-
+  const { selectedMenuLevel_1, selectedMenuLevel_2, searchString } =
+    useSelector((state) => state.selecteds);
 
   function onPressHandler(value) {
+    dispatch(
+      setSelectedProductMenu({
+        title: value?.name,
+        level: value?.level,
+        code: value?.code,
+      })
+    );
     // {"children": [{"code": "285", "name": "колбаса", "parent": "00001", "sort": 1}, {"code": "38", "name": "Консервы", "parent": "00001", "sort": 2}],
     // "code": "00001", "name": "Мясоконсервная продукция", "parent": "", "sort": 4}
 
@@ -31,6 +43,17 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme, selectedStyle }) => 
   }
 
   function onPressSublevelHandler(value) {
+    if (searchString) {
+      dispatch(setSearchString(''));
+    }
+
+    dispatch(
+      setSelectedProductMenu({
+        title: value?.name,
+        level: value?.level,
+        code: value?.code,
+      })
+    );
     // {"code": "48", "name": "ЧакЧак", "parent": "конди", "sort": 2}
     dispatch(setSelectedMenuLevel_2(value));
     closeDrawer();
@@ -66,7 +89,13 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme, selectedStyle }) => 
                 title={itemData.item.name}
                 selected={selectedMenuLevel_2?.code === itemData.item.code}
                 level={2}
-                onPress={() => onPressSublevelHandler(itemData.item)}
+                onPress={() =>
+                  onPressSublevelHandler({
+                    name: itemData.item?.name,
+                    level: 2,
+                    code: itemData.item?.code,
+                  })
+                }
               />
             );
           }}
@@ -86,7 +115,13 @@ const ProductsMenuItem = ({ item, rows, closeDrawer, theme, selectedStyle }) => 
             ? 'chevron-up-outline'
             : 'chevron-down-outline'
         }
-        onPress={() => onPressHandler(item)}
+        onPress={() =>
+          onPressHandler({
+            name: item?.name,
+            level: 1,
+            code: item?.code,
+          })
+        }
         theme={theme}
         level={1}
       />

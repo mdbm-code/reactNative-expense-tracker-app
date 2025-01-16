@@ -6,8 +6,14 @@ import { createSlice } from '@reduxjs/toolkit';
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  selectedProductMenu: {
+    title: '',
+    level: '',
+    code: '',
+  },
   searchString: '',
   customerSearchString: '',
+  selectedScreen: null,
   selectedRoute: null,
   selectedCustomer: null,
   selectedCustomerListItem: null,
@@ -37,8 +43,24 @@ const selectedsSlice = createSlice({
         [action.payload.key]: action.payload.value,
       };
     },
+    setSelectedScreen: (state, action) => {
+      state.searchString = '';
+      state.selectedProduct = null;
+      if (action.payload?.key) {
+        state.selectedScreen = {
+          ...state,
+          [action.payload.key]: action.payload?.value,
+        };
+      } else {
+        state.selectedScreen = action.payload;
+      }
+    },
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
+    },
+    setSelectedProductMenu: (state, action) => {
+      state.searchString = '';
+      state.selectedProductMenu = action.payload;
     },
     setSearchString: (state, action) => {
       state.searchString = action.payload;
@@ -89,6 +111,7 @@ const selectedsSlice = createSlice({
 
 // Экспорт действий для использования в компонентах
 export const {
+  setSelectedScreen,
   setSelectedProduct,
   setSelectedCustomerListItem,
   setCustomerSearchString,
@@ -99,6 +122,7 @@ export const {
   setSelectedDocTab,
   setSelectedTheme,
   setSelectedManager,
+  setSelectedProductMenu,
   setSelectedMenuLevel_1,
   setSelectedMenuLevel_2,
   setUnselectMenu,

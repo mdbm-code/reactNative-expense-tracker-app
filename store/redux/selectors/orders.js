@@ -8,7 +8,7 @@ const getCurrentReturns = (state) => state.currentOrders.returnRows;
 const getCurrentDocs = (state) => state.currentOrders.docs;
 const getDocuments = (state) => state.documents.catalog;
 
-export const selectOrder = createSelector(
+export const selectOrderWithTop = createSelector(
   [getProducts, getSelectedCustomer, getCurrentOrders],
   (productsCatalog, selectedCustomer, currentOrders) => {
     if (!selectedCustomer) return 'Покупатель не выбран';
@@ -20,6 +20,47 @@ export const selectOrder = createSelector(
       if (Array.isArray(currentOrders) && currentOrders.length > 0) {
         const rows = currentOrders.filter(
           (row) => row.customerCode === selectedCustomer.code
+        );
+
+        if (rows && Array.isArray(rows) && rows.length > 0)
+          rows.forEach((row) => {
+            rowData[row.productCode] = { qty: row.qty, price: row.price };
+            productsCodes.push(row.productCode);
+          });
+      }
+
+      const toReturn = productsCatalog
+        .filter((product) => productsCodes.includes(product.code))
+        .map((product) => ({
+          code: product.code,
+          name: product.name,
+          unit: product.unit,
+          qty: rowData[product.code]?.qty,
+          price: rowData[product.code]?.price,
+          base_price: product?.base_price,
+        }));
+
+      return toReturn;
+    }
+    return 'Товары не загружены';
+  }
+);
+
+export const selectOrder = createSelector(
+  [getProducts, getSelectedCustomer, getCurrentOrders],
+  (productsCatalog, selectedCustomer, currentOrders) => {
+    if (!selectedCustomer) return 'Покупатель не выбран';
+
+    if (Array.isArray(productsCatalog) && productsCatalog.length > 0) {
+      rowData = {};
+      let productsCodes = [];
+
+      if (Array.isArray(currentOrders) && currentOrders.length > 0) {
+        const rows = currentOrders.filter(
+          (row) =>
+            row.customerCode === selectedCustomer.code &&
+            !isNaN(row?.qty) &&
+            Number(row?.qty) > 0
         );
 
         if (rows && Array.isArray(rows) && rows.length > 0)
@@ -126,24 +167,30 @@ export const getCurrentCustomerDoc = createSelector(
 );
 
 export const selectReturns = createSelector(
-  [getProducts, getSelectedCustomer, getCurrentReturns],
-  (productsCatalog, selectedCustomer, currentReturns) => {
+  [getProducts, getSelectedCustomer, getCurrentOrders],
+  (productsCatalog, selectedCustomer, currentOrders) => {
     if (!selectedCustomer) return 'Покупатель не выбран';
+
+    console.log(
+      '/store/redux/selectors/orders.js currentOrders',
+      currentOrders
+    );
 
     if (Array.isArray(productsCatalog) && productsCatalog.length > 0) {
       rowData = {};
       let productsCodes = [];
 
-      if (Array.isArray(currentReturns) && currentReturns.length > 0) {
-        const rows = currentReturns.filter(
-          (row) => row.customerCode === selectedCustomer.code
+      if (Array.isArray(currentOrders) && currentOrders.length > 0) {
+        const rows = currentOrders.filter(
+          (row) =>
+            row.customerCode === selectedCustomer.code &&
+            !isNaN(row?.ret) &&
+            Number(row?.ret) > 0
         );
-
-        if (rows && Array.isArray(rows) && rows.length > 0)
-          rows.forEach((row) => {
-            rowData[row.productCode] = { qty: row.qty, price: row.price };
-            productsCodes.push(row.productCode);
-          });
+        rows.forEach((row) => {
+          rowData[row.productCode] = { qty: row.ret, price: row.price };
+          productsCodes.push(row.productCode);
+        });
       }
 
       const toReturn = productsCatalog

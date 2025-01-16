@@ -5,10 +5,7 @@ const getProducts = (state) => state.products.catalog;
 const getCurrentOrders = (state) => state.currentOrders.rows;
 const getSales = (state) => state.sales.catalog;
 
-
-
 function exponentialSmoothing(data, alpha) {
-
   if (data.length === 0) {
     return 0;
   }
@@ -31,13 +28,14 @@ function exponentialSmoothing(data, alpha) {
   return smoothedValue;
 }
 
-
 function calculatePrediction(amounts, ignorNegativeValue, method, maxLength) {
   // Преобразуем строку amounts в массив чисел
   const values = amounts.split('|').map(Number);
 
   // Фильтруем отрицательные значения, если это необходимо
-  const filteredValues = ignorNegativeValue ? values.filter(value => value >= 0) : values;
+  const filteredValues = ignorNegativeValue
+    ? values.filter((value) => value >= 0)
+    : values;
 
   // Ограничиваем количество возвращаемых значений
   const limitedValues = filteredValues.slice(0, maxLength);
@@ -53,12 +51,18 @@ function calculatePrediction(amounts, ignorNegativeValue, method, maxLength) {
     switch (method) {
       case 'linear':
         // Линейный метод: просто берем среднее значение
-        result = filteredValues.reduce((sum, value) => sum + value, 0) / filteredValues.length;
+        result =
+          filteredValues.reduce((sum, value) => sum + value, 0) /
+          filteredValues.length;
         break;
 
       case 'progressive':
         // Прогрессивный метод: например, сумма с учетом весов (индексы)
-        result = filteredValues.reduce((sum, value, index) => sum + value * (index + 1), 0) / filteredValues.length;
+        result =
+          filteredValues.reduce(
+            (sum, value, index) => sum + value * (index + 1),
+            0
+          ) / filteredValues.length;
         break;
       case 'exponential':
         result = exponentialSmoothing(filteredValues, 0.5); //0.5 -  Коэффициент сглаживания
@@ -78,11 +82,9 @@ function calculatePrediction(amounts, ignorNegativeValue, method, maxLength) {
   return {
     values: limitedValues,
     forecast: Math.ceil(result),
-    increased: increased
+    increased: increased,
   };
 }
-
-
 
 export const selectProductSales = createSelector(
   [getSelecteds, getSales],
@@ -97,10 +99,17 @@ export const selectProductSales = createSelector(
     if (!selectedCustomer) return [];
     if (!selectedProduct) return [];
     if (Array.isArray(sales) && sales.length > 0) {
-      const customerSales = sales.find((sale) => sale.customerCode === selectedCustomer?.code);
+      const customerSales = sales.find(
+        (sale) => sale.customerCode === selectedCustomer?.code
+      );
       // console.log('_customerSales', customerSales);
-      if (Array.isArray(customerSales?.sales) && customerSales.sales.length > 0) {
-        const productSales = customerSales.sales.find((sale) => sale.productCode === selectedProduct?.code);
+      if (
+        Array.isArray(customerSales?.sales) &&
+        customerSales.sales.length > 0
+      ) {
+        const productSales = customerSales.sales.find(
+          (sale) => sale.productCode === selectedProduct?.code
+        );
         // console.log('_productSales', productSales, selectedCustomer?.code);
 
         const amounts = productSales?.amounts;
@@ -111,7 +120,7 @@ export const selectProductSales = createSelector(
       }
     }
     return [];
-  },
+  }
 );
 
 export const selectProducts = createSelector(
@@ -123,6 +132,8 @@ export const selectProducts = createSelector(
       const selectedMenuLevel_2 = selecteds?.selectedMenuLevel_2;
       const selectedCustomer = selecteds?.selectedCustomer;
       const searchString = selecteds?.searchString?.toLowerCase();
+      const selectedScreen = selecteds?.selectedScreen;
+      console.log('selectProducts from screen', selectedScreen);
 
       if (!selectedCustomer) return 'Покупатель не выбран';
       // console.log('selectedCustomer', selectedCustomer);
@@ -132,6 +143,8 @@ export const selectProducts = createSelector(
 
       if (Array.isArray(productsCatalog) && productsCatalog.length > 0) {
         let productsQty = {}; //объект в котором будем хранить ключ-значение, где ключ-это код товара, а значение - количество
+
+        //только для страницы заказа
         if (Array.isArray(currentOrders) && currentOrders.length > 0) {
           //Если есть неотправленные заявки, то присоединяем к товарам информацию о количестве заявки
           const rows = currentOrders.filter(
@@ -139,7 +152,11 @@ export const selectProducts = createSelector(
           );
           if (rows && Array.isArray(rows) && rows.length > 0) {
             rows.forEach((row) => {
-              productsQty[row.productCode] = row.qty;
+              if (selectedScreen?.name.includes('Return')) {
+                productsQty[row.productCode] = row.ret;
+              } else {
+                productsQty[row.productCode] = row.qty;
+              }
             });
             // console.log('productsQty', productsQty);
           }
@@ -188,6 +205,12 @@ export const selectProducts = createSelector(
               topSalesProductCodes.push(row.productCode);
             });
           }
+
+          //а также добавим то, что уже заказно
+          Object.keys(productsQty).forEach((key) => {
+            topSalesProductCodes.push(key);
+          });
+
           // console.log('sales codes', topSalesProductCodes);
           if (topSalesProductCodes.length > 0) {
             catalog = catalog.filter((item) =>

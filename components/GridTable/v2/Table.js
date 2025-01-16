@@ -13,7 +13,7 @@ import TableHead from './TableHead';
 
 const Table = ({
   refreshing = false,
-  onRefresh = () => { },
+  onRefresh = () => {},
   columns,
   rows,
   selectedId,
@@ -95,7 +95,7 @@ const Table = ({
         keyExtractor={(item) => item[keyId]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
-      //extraData={someValue} //Свойство extraData в компоненте FlatList в React Native используется для управления перерисовкой списка, когда данные, которые не являются частью массива data, изменяются. Это особенно полезно, когда вы хотите, чтобы FlatList реагировал на изменения в состоянии или других переменных, которые не являются частью самого списка.
+        //extraData={someValue} //Свойство extraData в компоненте FlatList в React Native используется для управления перерисовкой списка, когда данные, которые не являются частью массива data, изменяются. Это особенно полезно, когда вы хотите, чтобы FlatList реагировал на изменения в состоянии или других переменных, которые не являются частью самого списка.
       />
     </KeyboardAvoidingView>
   );

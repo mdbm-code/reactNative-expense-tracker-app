@@ -7,8 +7,9 @@ import { getCurrentCustomerDoc } from '../../store/redux/selectors/orders';
 import { storeOrder } from '../../util/http';
 import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
 import PhoneButton from '../../components/ui/PhoneButton';
+import CustomerImages from '../../components/ImageViewer/CustomerImages';
 
-const CustomerProfileScreen = ({ }) => {
+const CustomerProfileScreen = ({}) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   const dispatch = useDispatch();
   const theme = useSelector(getThemePalette);
@@ -76,7 +77,8 @@ const CustomerProfileScreen = ({ }) => {
       {phones}
       <View style={styles.photoContainer}>
         <Text style={labelStyle}>Фото фасада:</Text>
-        <Photo code={selectedCustomer?.code} />
+        {/* <Photo code={selectedCustomer?.code} /> */}
+        <CustomerImages />
       </View>
     </View>
   );
