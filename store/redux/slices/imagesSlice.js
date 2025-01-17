@@ -18,7 +18,7 @@ const imagesSlice = createSlice({
       return action.payload; // Сохраните полученные изображения в состояние
     },
     loadLocalImages: (state) => {
-      console.log('loadLocalImages', localImages);
+      // console.log('loadLocalImages', localImages);
 
       return localImages; // Загрузите локальные изображения
     },

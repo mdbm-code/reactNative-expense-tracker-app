@@ -12,7 +12,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 
 const screenWidth = Dimensions.get('window').width;
 
-const ImageGallery = ({ rows }) => {
+const ImageGallery = ({ rows, theme }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false); // Состояние для полноэкранного режима
 
@@ -20,13 +20,13 @@ const ImageGallery = ({ rows }) => {
     setCurrentImageIndex(index);
   };
 
-  const handleSwipe = (direction) => {
-    if (direction === 'left' && currentImageIndex < rows.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    } else if (direction === 'right' && currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    }
-  };
+  // const handleSwipe = (direction) => {
+  //   if (direction === 'left' && currentImageIndex < rows.length - 1) {
+  //     setCurrentImageIndex(currentImageIndex + 1);
+  //   } else if (direction === 'right' && currentImageIndex > 0) {
+  //     setCurrentImageIndex(currentImageIndex - 1);
+  //   }
+  // };
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
@@ -37,12 +37,17 @@ const ImageGallery = ({ rows }) => {
   //   typeof image === 'string' ? { url: image } : { props: { source: image } }
   // );
   // Преобразуем массив `rows` в формат, который понимает `react-native-image-zoom-viewer`
-  const imageUrls = rows.map((image) =>
-    typeof image === 'string'
-      ? { url: image } // Для удаленных изображений
-      : { url: '', props: { source: image } } // Для локальных изображений
+  const imageUrls = rows.map(
+    (image) =>
+      typeof image === 'string'
+        ? { url: image } // Для удаленных изображений
+        : { url: '', props: { source: image } } // Для локальных изображений
   );
 
+  const selectedThumbnail = [
+    styles.selectedThumbnail,
+    { borderColor: theme.style.drawer.header.button.dark.bg },
+  ];
 
   return (
     <View style={styles.container}>
@@ -93,15 +98,11 @@ const ImageGallery = ({ rows }) => {
               >
                 <Image
                   source={
-                    typeof imageUri === 'string'
-                      ? { uri: imageUri }
-                      : imageUri
+                    typeof imageUri === 'string' ? { uri: imageUri } : imageUri
                   }
                   style={[
                     styles.thumbnail,
-                    index === currentImageIndex
-                      ? styles.selectedThumbnail
-                      : null,
+                    index === currentImageIndex ? selectedThumbnail : null,
                   ]}
                 />
               </TouchableOpacity>
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   },
   selectedThumbnail: {
     borderWidth: 2,
-    borderColor: 'blue',
+    // borderColor: 'blue',
   },
   closeButton: {
     position: 'absolute',

@@ -21,6 +21,7 @@ export const fetchDocuments = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  numberPerPage: 30,
   catalog: [],
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
@@ -31,7 +32,9 @@ const documentsSlice = createSlice({
   name: 'documents',
   initialState,
   reducers: {
-    // Добавление списка
+    setNumberPerPage: (state, action) => {
+      state.numberPerPage = action.payload;
+    },
     insertUpdateDocument: (state, action) => {
       const { code } = action.payload;
       const existingOrder = state.catalog.find((order) => order.code === code);
@@ -79,8 +82,11 @@ const documentsSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const { insertUpdateDocument, bulkInsertUpdateDocuments } =
-  documentsSlice.actions;
+export const {
+  insertUpdateDocument,
+  bulkInsertUpdateDocuments,
+  setNumberPerPage,
+} = documentsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
 export default documentsSlice.reducer;

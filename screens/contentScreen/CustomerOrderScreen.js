@@ -9,16 +9,14 @@ import ProductsTable from '../../components/ProductsTable';
 
 const CustomerOrderScreen = () => {
   const dispatch = useDispatch();
-  const { customerCode } = useSelector(
-    (state) => state.selecteds.selectedCustomer
-  );
+  const { code } = useSelector((state) => state.selecteds.selectedCustomer);
   const theme = useSelector(getTheme);
   const rows = useSelector(selectOrder);
 
   console.log('/screens/contentScreen/CustomerOrderScreen/');
 
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
-  if (!typeof customerCode === 'string')
+  if (!typeof code === 'string')
     return <FallbackText>{'Покупатель не выбран'}</FallbackText>;
 
   function onLongPressHandler(event) {
@@ -30,7 +28,7 @@ const CustomerOrderScreen = () => {
       {
         text: 'Удалить',
         onPress: () => {
-          dispatch(deleteOrderRow({ customerCode, productCode: event?.code }));
+          dispatch(deleteOrderRow({ code, productCode: event?.code }));
         },
       },
     ]);

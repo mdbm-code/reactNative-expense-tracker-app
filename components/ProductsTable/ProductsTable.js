@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProductSales } from '../../store/redux/selectors/products';
 import {
@@ -37,6 +37,26 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
   // }, [searchString, enteredSearchText]);
 
   const handleSubmitEditing = (product, newValue) => {
+    // console.log(product);
+    // {"base_price": 22, "code": "ТД000151", "default_price": 29, "description": "1-5", "multiple": 24,
+    // "name": "Йогурт ГЕК 0,1% клубника,персик, маракуйа пл-ст 0,100 кг.", "parentCode": "8", "price": 29,
+    // "prices": {"base_price": 22, "default_price": 29}, "qty": "", "rest": "800",
+    // "shortName": "Йог ГЕК 0,1% клуб-перс-марак пл-ст 0,100 кг.",
+    // "specs": [{"spec": "SO-0-0-2817-0-0-2452E", "value": 25.23}, {"spec": "SO-0-0-2817-0-0-1366E", "value": 22}],
+    // "unit": "шт"}
+    if (goal === 'order') {
+      const restExist = product?.hasOwnProperty('rest') ?? false;
+      if (restExist && ['', '0', 0, undefined].includes(product?.rest)) {
+        Alert.alert('', 'Товара нет на складе', [
+          {
+            text: 'Ок',
+            style: 'cancel',
+          },
+        ]);
+        return;
+      }
+    }
+
     const payload = {
       ...product,
       customerCode: selectedCustomer?.code,
@@ -110,7 +130,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
     return (
       <HeaderWithIcons
         titleStyle={{ color: theme.style.customerList.title }}
-        title={'Наименование'}
+        title={'Товар'}
         rows={icons}
       />
     );
@@ -199,10 +219,29 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
     </Tally>
   );
 
+  const redRowStyle = {
+    cond: {
+      key: 'rest',
+      inc: ['', '0', 0, undefined],
+      iftrue: {
+        borderLeftWidth: 1,
+        padding: 2,
+        backgroundColor: theme.style.customerList.dangerBg,
+      },
+      iffalse: {
+        borderLeftWidth: 1,
+        padding: 2,
+        backgroundColor: theme.style.customerList.bg2,
+      },
+    },
+  };
+
+  // console.log('redRowStyle', redRowStyle);
+
   const columns = [
     {
       id: 'name',
-      title: 'Наименование',
+      title: 'Товар',
       flex: 9,
       titleStyle: {
         textAlign: 'left',
@@ -210,7 +249,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
         fontSize: fontSize,
         paddingLeft: 6,
       },
-      viewStyle: { padding: 2, backgroundColor: theme.style.customerList.bg2 },
+      viewStyle: redRowStyle,
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -220,6 +259,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
     },
     {
       id: 'price',
+      group: 'priceRest',
       title: 'Цена',
       flex: 3,
       titleStyle: {
@@ -227,12 +267,26 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
         color: theme.style.customerList.title,
         width: '100%',
       },
-      viewStyle: {
+      viewStyle: redRowStyle,
+      headerViewStyle: {
+        backgroundColor:
+          headerColor || theme.style.drawer.header.button.light.bg,
         borderLeftWidth: 1,
-        borderRightWidth: 1,
+        // borderRightWidth: 1,
         padding: 2,
-        backgroundColor: theme.style.customerList.bg2,
       },
+    },
+    {
+      id: 'rest',
+      group: 'priceRest',
+      title: 'Ост.',
+      flex: 3,
+      titleStyle: {
+        textAlign: 'center',
+        color: theme.style.customerList.title,
+        width: '100%',
+      },
+      viewStyle: redRowStyle,
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -261,7 +315,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
         border: 1,
         height: '100%',
       },
-      viewStyle: { padding: 2, backgroundColor: theme.style.customerList.bg2 },
+      viewStyle: redRowStyle,
       headerViewStyle: {
         backgroundColor:
           headerColor || theme.style.drawer.header.button.light.bg,
@@ -283,11 +337,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
         onChangeText={handleSubmitEditing}
         selectedId={selectedProduct?.code}
         selectedRowFooter={selectedRowFooter}
-        onLongPress={() => {
-          // console.log('long press');
-        }}
-        // headerViewStyle={{ backgroundColor: 'red' }}
-        // headerTitleStyle={{ color: 'blue' }}
+        onLongPress={() => {}}
       />
     </View>
   );

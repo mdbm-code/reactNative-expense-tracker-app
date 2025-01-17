@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { products } from '../../../data/products';
+import { inventory } from '../../../data/inventory';
 
 // Пример асинхронной операции для получения списка клиентов с сервера
 export const fetchProducts = createAsyncThunk(
@@ -21,6 +22,7 @@ export const fetchProducts = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  inventory: {},
   catalog: products,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
@@ -34,6 +36,20 @@ const productsSlice = createSlice({
     // Добавление списка
     addProducts: (state, action) => {
       state.catalog = action.payload;
+    },
+    addInventory: (state, action) => {
+      const updatedData = {};
+      action.payload.forEach((item) => {
+        updatedData[item.code] = item.qty;
+      });
+      // console.log('updated inventory data', updatedData);
+
+      state.inventory = updatedData;
+    },
+    updateInventory: (state, action) => {
+      action.payload.forEach((item) => {
+        state.inventory[item.code] = item.qty;
+      });
     },
   },
   //- **extraReducers**: Обрабатывает действия, созданные `createAsyncThunk`.
@@ -58,7 +74,8 @@ const productsSlice = createSlice({
 });
 
 // Экспорт действий для использования в компонентах
-export const { addProducts } = productsSlice.actions;
+export const { addProducts, addInventory, updateInventory } =
+  productsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
 export default productsSlice.reducer;

@@ -17,6 +17,13 @@ const CustomerOrderManageScreen = () => {
   if (!typeof customerCode === 'string')
     return <FallbackText>{'Покупатель не выбран'}</FallbackText>;
 
+  // rows item:
+  // {"base_price": 105.6, "code": "ТД008072", "default_price": 134.4, "description": "",
+  // "multiple": 12, "name": "Масло 82,5% традиционное, золотая корова 0,2 кг.",
+  // "parentCode": "6", "price": 134.4, "prices": {"base_price": 105.6, "default_price": 134.4},
+  // "qty": "", "rest": "60", "shortName": "Масло 82,5% традиционное, золотая корова 0,2 кг.",
+  // "specs": [[Object]], "unit": "шт"}
+
   return (
     <View style={[styles.rootContainer]}>
       <ProductsTable

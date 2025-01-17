@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import React, { useState } from 'react';
 
 const CustomTextInput = ({
@@ -30,17 +37,24 @@ const CustomTextInput = ({
   // console.log('autofocus', autofocus, 'value', value);
 
   return (
-    <TextInput
-      autoFocus={autoFocus}
-      style={inputStyle}
-      value={value}
-      onChangeText={handleChangeText} // Обновляем внутреннее состояние
-      onBlur={handleBlur} // Сохраняем значение при потере фокуса
-      onSubmitEditing={handleSubmitEditing} // Сохраняем значение при нажатии "Done"
-      returnKeyType='done' // Устанавливаем тип клавиши "Done"
-      keyboardType='decimal-pad' // Устанавливаем тип клавиатуры numeric
-      // autoFocus // Автоматически устанавливаем фокус
-    />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Для iOS используем padding, для Android height
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Увеличьте значение по необходимости для iOS
+    >
+      <TextInput
+        autoFocus={autoFocus}
+        style={inputStyle}
+        value={value}
+        onChangeText={handleChangeText} // Обновляем внутреннее состояние
+        onBlur={handleBlur} // Сохраняем значение при потере фокуса
+        onSubmitEditing={handleSubmitEditing} // Сохраняем значение при нажатии "Done"
+        returnKeyType='done' // Устанавливаем тип клавиши "Done"
+        // keyboardType='decimal-pad' // Устанавливаем тип клавиатуры numeric
+        keyboardType='numeric' // Устанавливаем тип клавиатуры numeric
+        // autoFocus // Автоматически устанавливаем фокус
+      />
+    </KeyboardAvoidingView>
   );
 };
 

@@ -30,6 +30,7 @@ const Table = ({
     const isEditing = selectedId === item[keyId];
 
     const cells = [];
+    const rowValues = {};
     columns.forEach((column) => {
       let prefix = null;
       if (column?.prefix && typeof column?.prefix === 'object') {
@@ -47,6 +48,7 @@ const Table = ({
         }
       }
       if (column.hidden) return;
+      rowValues[column.id] = item[column.id];
 
       cells.push({
         ...column,
@@ -63,6 +65,7 @@ const Table = ({
         <TableRow
           rowStyle={rowStyle}
           cells={cells}
+          rowValues={rowValues}
           item={item}
           theme={theme}
           isEditing={isEditing}

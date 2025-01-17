@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 const getSelecteds = (state) => state.selecteds;
-const getProducts = (state) => state.products.catalog;
+const getProducts = (state) => state.products;
 const getCurrentOrders = (state) => state.currentOrders.rows;
 const getSales = (state) => state.sales.catalog;
 
@@ -125,15 +125,17 @@ export const selectProductSales = createSelector(
 
 export const selectProducts = createSelector(
   [getSelecteds, getProducts, getCurrentOrders, getSales],
-  (selecteds, productsCatalog, currentOrders, sales) => {
-    // console.log('selectProducts');
+  (selecteds, products, currentOrders, sales) => {
+    const productsCatalog = products.catalog;
+    const productsInventory = products.inventory;
+    // console.log('productsInventory', productsInventory);
 
     try {
       const selectedMenuLevel_2 = selecteds?.selectedMenuLevel_2;
       const selectedCustomer = selecteds?.selectedCustomer;
       const searchString = selecteds?.searchString?.toLowerCase();
       const selectedScreen = selecteds?.selectedScreen;
-      console.log('selectProducts from screen', selectedScreen);
+      // console.log('selectProducts from screen', selectedScreen);
 
       if (!selectedCustomer) return 'Покупатель не выбран';
       // console.log('selectedCustomer', selectedCustomer);
@@ -274,6 +276,7 @@ export const selectProducts = createSelector(
               base_price: item.base_price,
             },
             qty: productsQty[item.code] || '',
+            rest: productsInventory[item.code],
           };
         });
 

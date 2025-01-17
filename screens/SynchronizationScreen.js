@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 
 //actions
 import { addRoutes } from '../store/redux/slices/routesSlice';
-import { addProducts } from '../store/redux/slices/productsSlice';
+import { addInventory, addProducts } from '../store/redux/slices/productsSlice';
 import { addGroups } from '../store/redux/slices/groupsSlice';
 import { addDocuments } from '../store/redux/slices/debitCreditSlice';
 import { addSales } from '../store/redux/slices/salesSlice';
@@ -26,6 +26,7 @@ import { groups } from '../data/groups';
 import { sales } from '../data/sales';
 import ScreenWithDropdown from './ScreenWithDropdown';
 import { getTheme } from '../store/redux/selectors/theme';
+import { inventory } from '../data/inventory';
 
 const SynchronizationScreen = () => {
   const dispatch = useDispatch();
@@ -39,30 +40,30 @@ const SynchronizationScreen = () => {
   const selectedDocs = useSelector((state) => state.debitCredit.documents);
   const theme = useSelector(getTheme);
 
-  const loadRoutesHandler = () => {
-    dispatch(addRoutes(routes));
-  };
-  const loadProductsHandler = () => {
-    dispatch(addProducts(products));
-  };
-  const loadDebitCredit = () => {
-    dispatch(addDocuments(documents));
-  };
+  // const loadRoutesHandler = () => {
+  //   dispatch(addRoutes(routes));
+  // };
+  // const loadProductsHandler = () => {
+  //   dispatch(addProducts(products));
+  // };
+  // const loadDebitCredit = () => {
+  //   dispatch(addDocuments(documents));
+  // };
 
-  const loadGroupsHandler = () => {
-    dispatch(addGroups(groups));
-  };
-  const loadSalesHandler = () => {
-    dispatch(addSales(sales));
-  };
+  // const loadGroupsHandler = () => {
+  //   dispatch(addGroups(groups));
+  // };
+  // const loadSalesHandler = () => {
+  //   dispatch(addSales(sales));
+  // };
 
-  const showRoutesHandler = () => {
-    setShowSelecteds(true);
-  };
+  // const showRoutesHandler = () => {
+  //   setShowSelecteds(true);
+  // };
 
-  const toggleThemeHandler = () => {
-    dispatch(toggleTheme());
-  };
+  // const toggleThemeHandler = () => {
+  //   dispatch(toggleTheme());
+  // };
 
   const rows = [
     { label: 'Синхронизация', value: '_1' },
@@ -73,6 +74,19 @@ const SynchronizationScreen = () => {
     setCurrentView(value);
   }
 
+  const ActionButton = ({ onPress, children }) => {
+    return (
+      <View style={styles.buttonContainer}>
+        <Button
+          titleStyle={{ color: theme.style.customerList.title }}
+          onPress={onPress}
+        >
+          <Text>{children}</Text>
+        </Button>
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
@@ -81,33 +95,31 @@ const SynchronizationScreen = () => {
         onSelect={onSelectView}
       >
         <View style={styles.root}>
-          <View style={styles.buttonContainer}>
-            <Button onPress={loadRoutesHandler}>Загрузить маршруты</Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={loadProductsHandler}>Загрузить товары</Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={loadGroupsHandler}>
-              Загрузить группы товаров
-            </Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={loadDebitCredit}>Загрузить акты-сверки</Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={loadSalesHandler}>
-              Загрузить продажи клиентов
-            </Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={toggleThemeHandler}>Сменить тему</Button>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button onPress={showRoutesHandler}>
-              Показать текущие состояния
-            </Button>
-          </View>
+          <ActionButton onPress={() => dispatch(addRoutes(routes))}>
+            Загрузить маршруты
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(addProducts(products))}>
+            Загрузить товары
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(addGroups(groups))}>
+            Загрузить группы товаров
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(addDocuments(documents))}>
+            Загрузить акты-сверки
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(addInventory(inventory))}>
+            Загрузить остатки
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(addSales(sales))}>
+            Загрузить продажи клиентов
+          </ActionButton>
+          <ActionButton onPress={() => dispatch(toggleTheme())}>
+            Сменить тему
+          </ActionButton>
+          <ActionButton onPress={() => setShowSelecteds(true)}>
+            Показать текущие состояния
+          </ActionButton>
+
           <View>
             {showSelecteds && (
               <ScrollView>
@@ -191,6 +203,7 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+    justifyContent: 'flex-start',
   },
   scrollView: { flex: 1 },
   bg: {},

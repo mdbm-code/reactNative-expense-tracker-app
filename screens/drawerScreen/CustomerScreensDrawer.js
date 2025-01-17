@@ -8,12 +8,39 @@ import CustomerDebtScreen from '../contentScreen/CustomerDebtScreen';
 import CustomerReturnScreen from '../contentScreen/CustomerReturnScreen';
 import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
 import _log from 'react-dev-log';
+import CustomerDocumentsScreen from '../contentScreen/CustomerDocumentsScreen';
+import IconButton from '../../components/ui/IconButton';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
+
+  const shareCurrentOrder = () => {};
+
   _log('/screens/drawerScreen/CustomerScreensDrawer/');
+  const pressShareIconHandler = () => {
+    Alert.alert(
+      '',
+      'Отправить заявку на сервер ?',
+      [
+        {
+          text: 'Отмена',
+          onPress: () => console.log('Удалить нажато'),
+          style: 'cancel',
+        },
+        {
+          text: 'Да',
+          onPress: () => shareCurrentOrder('Отмена нажата'),
+          style: 'default',
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => console.log('Alert был закрыт'), // Вызывается при закрытии
+      } // Если true, Alert можно закрыть, нажав вне него);
+    );
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,6 +55,14 @@ const CustomerScreensDrawer = ({ navigation }) => {
           name={'chevron-back-outline'}
           size={24}
           color={theme.style.text.main}
+        />
+      ),
+      headerRight: () => (
+        <IconButton
+          name='share-outline'
+          color={'white'}
+          size={30}
+          onPress={pressShareIconHandler}
         />
       ),
     });
@@ -127,6 +162,18 @@ const CustomerScreensDrawer = ({ navigation }) => {
       header: {
         style: { backgroundColor: theme.style.drawer.header.bg },
         title: 'Сведения',
+        items: [headerItems[1], headerItems[2]],
+      },
+    },
+    {
+      name: 'CustomerDocumentsScreen',
+      component: CustomerDocumentsScreen,
+      drawer: {
+        label: 'Архив',
+      },
+      header: {
+        style: { backgroundColor: theme.style.drawer.header.bg },
+        title: 'Архив',
         items: [headerItems[1], headerItems[2]],
       },
     },

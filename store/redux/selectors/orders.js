@@ -7,6 +7,7 @@ const getCurrentOrders = (state) => state.currentOrders.rows;
 const getCurrentReturns = (state) => state.currentOrders.returnRows;
 const getCurrentDocs = (state) => state.currentOrders.docs;
 const getDocuments = (state) => state.documents.catalog;
+const getOrders = (state) => state.orders.catalog;
 
 export const selectOrderWithTop = createSelector(
   [getProducts, getSelectedCustomer, getCurrentOrders],

@@ -5,7 +5,11 @@ import { useSelector } from 'react-redux';
 // import { useGetImagesQuery } from './apiSlice';
 // import { setImages } from './imagesSlice';
 // import ImageViewer from './ImageGallery';
-import { loadLocalImages, selectImages, setImages } from '../../store/redux/slices/imagesSlice';
+import {
+  loadLocalImages,
+  selectImages,
+  setImages,
+} from '../../store/redux/slices/imagesSlice';
 // import { useGetImagesQuery } from '../../store/redux/api/apiSlices';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ImageGallery from './ImageGallery';
@@ -13,10 +17,9 @@ import ImageGallery from './ImageGallery';
 // import { selectImages } from './imagesSlice';
 // import {apiSlice} from './api/apiSlices'
 
-const CustomerImages = () => {
+const CustomerImages = ({ theme }) => {
   const dispatch = useDispatch();
   const imagesFromState = useSelector(selectImages); // Получаем локальные изображения из состояния
-  const theme = useSelector(getTheme);
   // const { data: apiImages, error, isLoading } = useGetImagesQuery();
   // const { data: images, error } = useGetImagesQuery();
   useEffect(() => {
@@ -48,24 +51,25 @@ const CustomerImages = () => {
 
   // const imagesToDisplay = apiImages || imagesFromState; // Используем данные из API, либо из локального состояния
 
-
-  console.log('imagesFromState', imagesFromState);
-
+  // console.log('imagesFromState', imagesFromState);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
-      {Array.isArray(imagesFromState) && imagesFromState?.length > 0 ? <ImageGallery rows={imagesFromState} /> : <Text>Loading...</Text>}
+      {Array.isArray(imagesFromState) && imagesFromState?.length > 0 ? (
+        <ImageGallery theme={theme} rows={imagesFromState} />
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </View>
   );
 };
 
 export default CustomerImages;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 12
+    marginTop: 12,
   },
   infoText: {
     flex: 1,
@@ -74,4 +78,3 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
 });
-

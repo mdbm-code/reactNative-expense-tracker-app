@@ -35,9 +35,9 @@ export default PhoneButton;
 
 const styles = StyleSheet.create({
   touchableButton: {
-    borderWidth: 2,
+    // borderWidth: 2,
     borderRadius: 8,
     margin: 2,
-    padding: 5,
+    padding: 10,
   },
 });

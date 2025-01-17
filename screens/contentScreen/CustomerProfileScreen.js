@@ -2,29 +2,29 @@ import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Photo from '../../components/Photo/Photo';
-import { getThemePalette } from '../../store/redux/selectors/theme';
+import { getTheme, getThemePalette } from '../../store/redux/selectors/theme';
 import { getCurrentCustomerDoc } from '../../store/redux/selectors/orders';
 import { storeOrder } from '../../util/http';
 import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
 import PhoneButton from '../../components/ui/PhoneButton';
 import CustomerImages from '../../components/ImageViewer/CustomerImages';
 
-const CustomerProfileScreen = ({ }) => {
+const CustomerProfileScreen = ({}) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
-  const dispatch = useDispatch();
-  const theme = useSelector(getThemePalette);
+  // const dispatch = useDispatch();
+  const theme = useSelector(getTheme);
   const customerDoc = useSelector(getCurrentCustomerDoc);
 
-  const textStyle = [styles.text, { color: theme.bg.active }];
-  const labelStyle = [styles.text, { color: theme.bg.text }];
+  const textStyle = [styles.text, { color: theme.style.customerList.title }];
+  const labelStyle = [styles.text, { color: theme.style.customerList.title }];
 
-  function onPressStoreHandler() {
-    if (typeof customerDoc === 'string') {
-      Alert.alert('Ошибка', customerDoc, { text: 'Отмена', style: 'cancel' });
-    }
-    dispatch(insertUpdateDocument(customerDoc)); //сохраним локально
-    storeOrder(customerDoc); //сохраним на сервере
-  }
+  // function onPressStoreHandler() {
+  //   if (typeof customerDoc === 'string') {
+  //     Alert.alert('Ошибка', customerDoc, { text: 'Отмена', style: 'cancel' });
+  //   }
+  //   dispatch(insertUpdateDocument(customerDoc)); //сохраним локально
+  //   storeOrder(customerDoc); //сохраним на сервере
+  // }
 
   let phones = '';
   if (
@@ -33,14 +33,19 @@ const CustomerProfileScreen = ({ }) => {
   ) {
     phones = (
       <View style={styles.dataContainer}>
-        <Text style={labelStyle}>Телефоны:</Text>
+        <Text style={[labelStyle]}>Телефоны:</Text>
         <View style={styles.phones}>
           {selectedCustomer.phone.split(',').map((phone, index) => (
             <PhoneButton
               key={index}
               number={phone}
-              style={{ borderColor: theme.success.light }}
-              textStyle={textStyle}
+              style={{
+                backgroundColor: theme.style.drawer.header.button.dark.bg,
+              }}
+              textStyle={
+                ([textStyle],
+                { color: theme.style.drawer.header.button.main.text })
+              }
             />
           ))}
         </View>
@@ -48,14 +53,18 @@ const CustomerProfileScreen = ({ }) => {
     );
   } else {
     phones = (
-      <Text style={textStyle}>
-        <Text style={labelStyle}>Телефон:</Text>
+      <View style={styles.dataContainer}>
+        <Text style={[labelStyle]}>Телефон:</Text>
         <PhoneButton
+          textStyle={
+            ([textStyle], { color: theme.style.drawer.header.button.main.text })
+          }
           number={selectedCustomer?.phone}
-          style={{ borderColor: theme.success.light }}
-          textStyle={textStyle}
+          style={{
+            backgroundColor: theme.style.drawer.header.button.dark.bg,
+          }}
         />
-      </Text>
+      </View>
     );
   }
 
@@ -63,15 +72,23 @@ const CustomerProfileScreen = ({ }) => {
     <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
       {/* <Text style={textStyle}>{selectedCustomer?.name}</Text> */}
 
-      <View style={styles.dataContainer}>
+      {/* <View style={styles.dataContainer}>
         <Button
           title='Отправить заявку на сервер'
           onPress={onPressStoreHandler}
         />
-      </View>
+      </View> */}
       <View style={styles.dataContainer}>
-        <Text style={labelStyle}>Адрес:</Text>
-        <Text style={[textStyle, styles.address]}>
+        <Text style={[labelStyle, { color: theme.style.customerList.title }]}>
+          Адрес:
+        </Text>
+        <Text
+          style={[
+            textStyle,
+            styles.address,
+            { color: theme.style.customerList.title },
+          ]}
+        >
           {selectedCustomer?.address}
         </Text>
       </View>
@@ -79,7 +96,7 @@ const CustomerProfileScreen = ({ }) => {
       <View style={styles.photoContainer}>
         {/* <Text style={labelStyle}>Фото фасада:</Text> */}
         {/* <Photo code={selectedCustomer?.code} /> */}
-        <CustomerImages />
+        <CustomerImages theme={theme} />
       </View>
     </View>
   );
@@ -96,7 +113,6 @@ const styles = StyleSheet.create({
   photoContainer: {
     // marginVertical: 10,
     flex: 1,
-
   },
   text: {
     fontSize: 14,
@@ -108,5 +124,6 @@ const styles = StyleSheet.create({
   },
   phones: {
     flexDirection: 'column',
+    marginRight: 8,
   },
 });
