@@ -9,7 +9,7 @@ import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
 import PhoneButton from '../../components/ui/PhoneButton';
 import CustomerImages from '../../components/ImageViewer/CustomerImages';
 
-const CustomerProfileScreen = ({}) => {
+const CustomerProfileScreen = ({ }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
   const dispatch = useDispatch();
   const theme = useSelector(getThemePalette);
@@ -60,8 +60,9 @@ const CustomerProfileScreen = ({}) => {
   }
 
   return (
-    <View style={styles.rootContainer}>
+    <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
       {/* <Text style={textStyle}>{selectedCustomer?.name}</Text> */}
+
       <View style={styles.dataContainer}>
         <Button
           title='Отправить заявку на сервер'
@@ -76,7 +77,7 @@ const CustomerProfileScreen = ({}) => {
       </View>
       {phones}
       <View style={styles.photoContainer}>
-        <Text style={labelStyle}>Фото фасада:</Text>
+        {/* <Text style={labelStyle}>Фото фасада:</Text> */}
         {/* <Photo code={selectedCustomer?.code} /> */}
         <CustomerImages />
       </View>
@@ -93,7 +94,9 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   photoContainer: {
-    marginVertical: 10,
+    // marginVertical: 10,
+    flex: 1,
+
   },
   text: {
     fontSize: 14,

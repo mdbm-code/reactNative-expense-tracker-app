@@ -11,11 +11,13 @@ import documentsReducer from './slices/documentsSlice';
 import currentOrderReducer from './slices/currentOrdersSlice';
 import themesReducer from './slices/themeSlice';
 import salesReducer from './slices/salesSlice';
+import imagesReducer from './slices/imagesSlice';
 import { apiSlice } from './api/apiSlices';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
 const rootReducer = combineReducers({
+  api: apiSlice.reducer, // Добавляем редюсер из apiSlice
   customers: customersReducer,
   debitCredit: debitCreditReducer,
   products: productsReducer,
@@ -26,6 +28,7 @@ const rootReducer = combineReducers({
   currentOrders: currentOrderReducer,
   theme: themesReducer,
   sales: salesReducer,
+  images: imagesReducer,
   //   productGroups: productGroupsReducer,
   //   prices: pricesReducer,
   //   tasks: tasksReducer,
@@ -56,20 +59,9 @@ const reduxStore = configureStore({
     getDefaultMiddleware({
       immutableCheck: false, // Отключаем проверку неизменности
       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
-    }),
+    }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
 });
 
-// const reduxStore = configureStore({
-//   reducer: {
-//     [apiSlice.reducerPath]: apiSlice.reducer, // Добавляем редюсер из apiSlice
-//     persisted: persistedReducer, // Ваш Redux редюсер
-//   },
-//   middleware: (getDefaultMiddleware) =>
-//     getDefaultMiddleware({
-//       immutableCheck: false, // Отключаем проверку неизменности
-//       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
-//     }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
-// });
 //serializableCheck**: Это опция, которая позволяет вам игнорировать проверку
 // сериализуемости для определенных действий.
 // В данном случае мы игнорируем действия `persist/PERSIST` и `persist/REHYDRATE`,
