@@ -19,11 +19,12 @@ import Tally from '../../components/Tally';
 import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 import Button from '../ui/Button';
 import SearchPanel from '../SearchPanel';
+import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
 
 const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
   const dispatch = useDispatch();
   const [showTableOptions, setShowTableOptions] = useState('');
-  const { selectedCustomer, selectedProduct, tableOptions, searchString } =
+  const { selectedCustomer, selectedProduct, tableOptions } =
     useSelector((state) => state.selecteds);
   const [fontSize, setFontsize] = useState(tableOptions?.fontSize || 12);
   const productSales = useSelector(selectProductSales); //история продаж
@@ -57,18 +58,24 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
       }
     }
 
+
+
     const payload = {
       ...product,
+      stateName: 'draft',
       customerCode: selectedCustomer?.code,
+      customerName: selectedCustomer?.name,
       productCode: product.code,
-      qty: goal === 'order' ? newValue : undefined,
-      ret: goal === 'return' ? newValue : undefined,
-      goal,
+      productName: product?.name,
+      orderQty: goal === 'order' ? newValue : undefined,
+      returnQty: goal === 'return' ? newValue : undefined,
+      // goal,
     };
 
     if (goal === 'promo') {
     } else {
-      dispatch(findAndUpdateOrderRow(payload));
+      // dispatch(findAndUpdateOrderRow(payload));
+      dispatch(updateOrderItem(payload));
     }
     dispatch(setSelectedProduct(null));
   };
@@ -337,7 +344,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
         onChangeText={handleSubmitEditing}
         selectedId={selectedProduct?.code}
         selectedRowFooter={selectedRowFooter}
-        onLongPress={() => {}}
+        onLongPress={() => { }}
       />
     </View>
   );

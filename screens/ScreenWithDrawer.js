@@ -112,19 +112,49 @@ const ScreenWithDrawer = ({
     } else if (item?.type === 'icon') {
       return <CustomHeaderIconButton navigation={navigation} {...item} />;
     } else if (item?.type === 'title') {
-      return (
-        <Text
-          style={[
-            styles.headerText,
-            styles.headerTitle,
-            { color: item?.color },
-          ]}
-        // numberOfLines={1}
-        // ellipsizeMode='clip'
-        >
-          {drawerTitle ? drawerTitle : currentScreen?.title}
-        </Text>
-      );
+      if (item?.subtitle) {
+        return (
+          <View style={{ flex: 1 }}>
+            {/* Верхний текст, прижатый к низу */}
+            {/* <View style={{ backgroundColor: 'red', }}> */}
+            <Text
+              style={[
+                // styles.headerText,
+                // styles.headerTitle,
+                { color: item?.color, alignSelf: 'center', fontSize: 16 },
+              ]}
+            >
+              {drawerTitle ? drawerTitle : currentScreen?.title}
+            </Text>
+            {/* </View> */}
+
+            {/* Нижний текст, прижатый к верху */}
+            {/* <View style={{ backgroundColor: 'green' }}> */}
+            <Text
+              style={[
+                // styles.headerText,
+                // styles.headerTitle,
+                { color: item?.color, alignSelf: 'center' },
+              ]}
+            >
+              {item?.subtitle}
+            </Text>
+            {/* </View> */}
+          </View>
+        );
+      } else {
+        return (
+          <Text
+            style={[
+              styles.headerText,
+              styles.headerTitle,
+              { color: item?.color },
+            ]}
+          >
+            {drawerTitle ? drawerTitle : currentScreen?.title}
+          </Text>
+        );
+      }
     } else if (item?.type === 'text') {
       return (
         <Text

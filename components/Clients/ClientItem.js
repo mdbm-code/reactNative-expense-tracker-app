@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import {
   setSelectedCustomer,
   setSelectedCustomerListItem,
+  setSelectedOrder,
 } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
@@ -23,7 +24,8 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
     }
   }
 
-  function selectCustomerHandler(data) {
+  function selectCustomerHandler(order) {
+    dispatch(setSelectedOrder(order));
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
     navigation.navigate('CustomerScreensDrawer');
@@ -32,7 +34,7 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   const containerStyle = [
     styles.container,
     {
-      backgroundColor: item?.hasOrder
+      backgroundColor: item?.draftOrders?.length > 0
         ? theme.style.customerList.accent
         : theme.style.customerList.bg2,
       shadowColor: theme.style.customerList.shadow,
@@ -53,33 +55,84 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
     item?.percent < 40 && { color: theme.style.customerList.dangerText },
   ];
 
-  let secondLine = (
-    <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
-  );
-  if (item?.hasOrder) {
-    const cells = [
-      { title: item?.baseTotal, flex: 3, titleStyle: textSubtitle },
-      { title: item?.total, flex: 3, titleStyle: textSubtitle },
-      { title: `${item?.percent}%`, flex: 3, titleStyle: percentStyle },
-    ];
-    secondLine = (
-      <View
-        style={[
-          styles.secondLineContainer,
-          item?.percent < 40 && {
-            backgroundColor: theme.style.customerList.dangerBg,
-          },
-        ]}
-      >
-        <GridTableRow cells={cells} />
+  // let secondLine = (
+  //   <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
+  // );
+
+  const Order = ({ data }) => {
+    return (
+      <Text style={styles.order}>
+        Заявка №{data?.code} сумма: {data?.totalAmount}
+      </Text>
+    );
+  }
+
+
+  if (item?.draftOrders?.length > 1) {
+    return (
+      <View style={[...containerStyle]}>
+        <View style={styles.firstLineContainer}>
+          <Text style={[...textTitle, styles.description]}>{item?.name}</Text>
+          <IconButton
+            color={theme.style.customerList.warningText}
+            size={24}
+            viewStyle={[...iconStyle]}
+            name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
+          />
+        </View>
+        {item.draftOrders.map((order, index) => {
+          return (<>
+            <Pressable
+              key={index}
+              onLongPress={onLongHandler}
+              onPress={() => selectCustomerHandler(order)}
+              style={[({ pressed }) => pressed && styles.pressed, styles.orderContainer]}
+              android_ripple={true}
+            >
+              <Order data={order} />
+            </Pressable>
+          </>);
+        })}
+
       </View>
     );
   }
 
+
+
+
+
+
+  // if (Array.isArray(item?.draftOrders)) {
+  //   const cells = [
+  //     { title: item?.baseTotal, flex: 3, titleStyle: textSubtitle },
+  //     { title: item?.total, flex: 3, titleStyle: textSubtitle },
+  //     { title: `${item?.percent}%`, flex: 3, titleStyle: percentStyle },
+  //   ];
+  //   secondLine = (
+  //     <View
+  //       style={[
+  //         styles.secondLineContainer,
+  //         item?.percent < 40 && {
+  //           backgroundColor: theme.style.customerList.dangerBg,
+  //         },
+  //       ]}
+  //     >
+  //       <GridTableRow cells={cells} />
+  //     </View>
+  //   );
+  // }
+
   return (
     <Pressable
       onLongPress={onLongHandler}
-      onPress={selectCustomerHandler}
+      onPress={() => {
+        if (Array.isArray(item?.draftOrders) && item?.draftOrders[0]) {
+          selectCustomerHandler(item?.draftOrders[0]);
+        } else {
+          selectCustomerHandler();
+        }
+      }}
       style={({ pressed }) => pressed && styles.pressed}
       android_ripple={true}
     >
@@ -94,7 +147,9 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
           />
         </View>
-        {secondLine}
+        {Array.isArray(item?.draftOrders) && item?.draftOrders[0]
+          ? <Order data={item?.draftOrders[0]} />
+          : <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>}
       </View>
     </Pressable>
   );
@@ -119,6 +174,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
+  },
+  orderContainer: {
+    padding: 12,
+    borderTopWidth: 1,
+    // backgroundColor: GlobalStyles.colors.primary400,
   },
   hasOrder: {
     // backgroundColor: GlobalStyles.colors.primary400,

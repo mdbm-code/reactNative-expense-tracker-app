@@ -64,6 +64,9 @@ const CustomersListScreen = ({ navigation }) => {
   const points = useSelector(selectCustomers);
   const theme = useSelector(getTheme);
 
+  console.log('points', points);
+
+
   let content = <></>;
   if (typeof points === 'string') {
     content = <Text style={styles.infoText}>{points}</Text>;

@@ -95,6 +95,8 @@ const recalculateReturnTotalForCustomer = (state, customerCode) => {
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  settings: {},
+  catalog: [],
   returnRows: [],
   rows: [],
   docs: [],

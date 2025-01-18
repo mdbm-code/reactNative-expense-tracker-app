@@ -33,11 +33,11 @@ const SynchronizationScreen = () => {
   const [currentView, setCurrentView] = useState('_1');
   // const state = useSelector((state) => state.routes);
   const [showSelecteds, setShowSelecteds] = useState(false);
-  const selectedData = useSelector((state) => state.selecteds);
+  // const selectedData = useSelector((state) => state.selecteds);
   // const selectedPoints = useSelector(selectRoutePoints);
-  const selectedProducts = useSelector(selectProducts);
-  const selectedGroups = useSelector(selectGroups);
-  const selectedDocs = useSelector((state) => state.debitCredit.documents);
+  // const selectedProducts = useSelector(selectProducts);
+  // const selectedGroups = useSelector(selectGroups);
+  // const selectedDocs = useSelector((state) => state.debitCredit.documents);
   const theme = useSelector(getTheme);
 
   // const loadRoutesHandler = () => {
@@ -120,7 +120,7 @@ const SynchronizationScreen = () => {
             Показать текущие состояния
           </ActionButton>
 
-          <View>
+          {/* <View>
             {showSelecteds && (
               <ScrollView>
                 <View>
@@ -174,21 +174,11 @@ const SynchronizationScreen = () => {
                       ? ` array(${selectedDocs.length})`
                       : selectedDocs}
                   </Text>
-                  {/* <Text style={styles.text}>
-                selectedPoints: {typeof selectedPoints}
-              </Text> */}
-                  {/* {Array.isArray(selectedPoints) &&
-                selectedPoints?.map((item) => (
-                  <View>
-                    <View>
-                      <Text style={styles.text}> {item?.name}</Text>
-                    </View>
-                  </View>
-                ))} */}
+     
                 </View>
               </ScrollView>
             )}
-          </View>
+          </View> */}
         </View>
       </ScreenWithDropdown>
     </View>

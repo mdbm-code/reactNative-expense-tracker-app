@@ -1,22 +1,20 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { selectProducts } from '../../store/redux/selectors/products';
+import { getSelector_selectProducts } from '../../store/redux/selectors/products';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ProductsTable from '../../components/ProductsTable';
+import FallbackText from '../../components/FallbackText';
 
 const CustomerOrderManageScreen = () => {
-  const { customerCode } = useSelector(
-    (state) => state.selecteds.selectedCustomer
-  );
   console.log('/screens/contentScreen/CustomerOrderManageScreen');
-
   const theme = useSelector(getTheme);
-  const rows = useSelector(selectProducts);
-  if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
-  if (!typeof customerCode === 'string')
-    return <FallbackText>{'Покупатель не выбран'}</FallbackText>;
+  const querySelector = getSelector_selectProducts({ stateName: 'draft', typeQty: 'order' });
+  const rows = useSelector(querySelector);
+  // const rows = [];
+  // const rows = useSelector(state => selectProducts(state, { stateName: 'draft', typeQty: 'order' }));
 
+  if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
   // rows item:
   // {"base_price": 105.6, "code": "ТД008072", "default_price": 134.4, "description": "",
   // "multiple": 12, "name": "Масло 82,5% традиционное, золотая корова 0,2 кг.",

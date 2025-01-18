@@ -12,11 +12,13 @@ import currentOrderReducer from './slices/currentOrdersSlice';
 import themesReducer from './slices/themeSlice';
 import salesReducer from './slices/salesSlice';
 import imagesReducer from './slices/imagesSlice';
+import ordersReduxer from './slices/ordersSlice';
+import updateReducer from './slices/updateSlice';
 import { apiSlice } from './api/apiSlices';
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   api: apiSlice.reducer, // Добавляем редюсер из apiSlice
   customers: customersReducer,
   debitCredit: debitCreditReducer,
@@ -29,11 +31,17 @@ const rootReducer = combineReducers({
   theme: themesReducer,
   sales: salesReducer,
   images: imagesReducer,
-  //   productGroups: productGroupsReducer,
-  //   prices: pricesReducer,
-  //   tasks: tasksReducer,
-  //   orders: ordersReducer,
+  orders: ordersReduxer,
+  updateSlice: updateReducer
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === 'RESET_STORE') {
+    // Возвращаем начальное состояние для всех редьюсеров
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
 
 // Настраиваю конфигурацию persist
 //тут можно настроить  `blacklist` или `whitelist`,
@@ -62,6 +70,7 @@ const reduxStore = configureStore({
     }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
 });
 
+
 //serializableCheck**: Это опция, которая позволяет вам игнорировать проверку
 // сериализуемости для определенных действий.
 // В данном случае мы игнорируем действия `persist/PERSIST` и `persist/REHYDRATE`,
@@ -71,5 +80,21 @@ const reduxStore = configureStore({
 const reduxPersistor = persistStore(reduxStore);
 //затем в App.js оборачиваю приложение с помощью <PersistGate loading={null} persistor={persistor}>
 //чтобы обеспечить восстановление состояния перед рендерингом.
+
+
+
+
+// Функция для перезапуска хранилища// Функция для сброса состояния
+export const resetStore = async () => {
+  // Очистка сохраненного состояния в AsyncStorage
+  //persistor.purge() очищает сохраненное состояние 
+  // в AsyncStorage(или другом хранилище, которое вы используете).
+  await reduxPersistor.purge();
+
+  // Действие RESET_STORE сбрасывает состояние всех редьюсеров, 
+  // так как в rootReducer состояние устанавливается в undefined
+  reduxStore.dispatch({ type: 'RESET_STORE' });
+};
+
 
 export { reduxStore, reduxPersistor };

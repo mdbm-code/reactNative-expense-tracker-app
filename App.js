@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //state
 import { reduxPersistor, reduxStore } from './store/redux/store.js';
-import { getThemePalette } from './store/redux/selectors/theme.js';
+import { getTheme, getThemePalette } from './store/redux/selectors/theme.js';
 
 //screens
 import CustomersListScreen from './screens/rootScreens/CustomersListScreen';
@@ -29,6 +29,7 @@ import ManageReturnProductsDrawer from './screens/ManageProductsScreen/ManageRet
 import ManageOrderProductsDrawer from './screens/ManageProductsScreen/ManageOrderProductsDrawer.js';
 import CustomerOrderManageDrawer from './screens/drawerScreen/CustomerOrderManageDrawer.js';
 import CustomerReturnManageDrawer from './screens/drawerScreen/CustomerReturnManageDrawer.js';
+import Updater from './components/Updater/index.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -62,7 +63,7 @@ function SettingsDrawerNavigator({ theme, stackNavigation }) {
 }
 
 function MainScreens({ navigation }) {
-  const theme = useSelector(getThemePalette);
+  const theme = useSelector(getTheme);
   return (
     <BottomTab.Navigator
       screenOptions={({ navigation }) => ({
@@ -226,6 +227,7 @@ export default function App() {
         <StatusBar style='light' />
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>
+            <Updater />
             <AppContent />
           </PersistGate>
         </Provider>

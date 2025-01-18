@@ -1,6 +1,6 @@
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import React, { useLayoutEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
 import CustomerOrderScreen from '../contentScreen/CustomerOrderScreen';
@@ -10,13 +10,14 @@ import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
 import _log from 'react-dev-log';
 import CustomerDocumentsScreen from '../contentScreen/CustomerDocumentsScreen';
 import IconButton from '../../components/ui/IconButton';
+// import { getSelectedCustomer } from '../../store/redux/selectors/selecteds';
 
 const CustomerScreensDrawer = ({ navigation }) => {
-  const { selectedCustomer } = useSelector((state) => state.selecteds);
-  // const dispatch = useDispatch();
+  const { selectedCustomer, selectedOrder } = useSelector(state => state.selecteds);
   const theme = useSelector(getTheme);
+  // const selectedCustomer = ''
 
-  const shareCurrentOrder = () => {};
+  const shareCurrentOrder = () => { };
 
   _log('/screens/drawerScreen/CustomerScreensDrawer/');
   const pressShareIconHandler = () => {
@@ -83,6 +84,7 @@ const CustomerScreensDrawer = ({ navigation }) => {
     2: {
       color: theme.style.drawer.listItem.title,
       type: 'title',
+      subtitle: selectedOrder?.code ? '№ ' + selectedOrder?.code : '(новая)',
       position: 'center',
       style: {
         color: theme.style.drawer.header.button.dark.text,
