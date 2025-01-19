@@ -1,20 +1,13 @@
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Photo from '../../components/Photo/Photo';
-import { getTheme, getThemePalette } from '../../store/redux/selectors/theme';
-import { getCurrentCustomerDoc } from '../../store/redux/selectors/orders';
-import { storeOrder } from '../../util/http';
-import { insertUpdateDocument } from '../../store/redux/slices/documentsSlice';
+import { useSelector } from 'react-redux';
+import { getTheme } from '../../store/redux/selectors/theme';
 import PhoneButton from '../../components/ui/PhoneButton';
 import CustomerImages from '../../components/ImageViewer/CustomerImages';
 
-const CustomerProfileScreen = ({}) => {
+const CustomerProfileScreen = ({ }) => {
   const { selectedCustomer } = useSelector((state) => state.selecteds);
-  // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
-  const customerDoc = useSelector(getCurrentCustomerDoc);
-
   const textStyle = [styles.text, { color: theme.style.customerList.title }];
   const labelStyle = [styles.text, { color: theme.style.customerList.title }];
 
@@ -44,7 +37,7 @@ const CustomerProfileScreen = ({}) => {
               }}
               textStyle={
                 ([textStyle],
-                { color: theme.style.drawer.header.button.main.text })
+                  { color: theme.style.drawer.header.button.main.text })
               }
             />
           ))}

@@ -15,6 +15,29 @@ import imagesReducer from './slices/imagesSlice';
 import ordersReduxer from './slices/ordersSlice';
 import updateReducer from './slices/updateSlice';
 import { apiSlice } from './api/apiSlices';
+import { createLogger } from 'redux-logger'; // Импорт logger
+
+
+// const logger = createLogger(); // Создайте экземпляр logger
+// Фильтруем действия для конкретного слайса
+const logger = createLogger({
+  predicate: (getState, action) => {
+    // например, вы хотите видеть только действия, связанные с слайсом "orders"
+    return action.type.startsWith('orders/'); // или другой префикс в зависимости от вашего слайса
+  },
+  // logger: {
+  //   log: (message) => {
+  //     // Например, вы можете выводить только нужные части состояния
+  //     const orderState = getState().orders; // Ваш слайс
+  //     console.log('Order State:', orderState);
+  //   },
+  // },
+  // Используем transform для настройки вывода
+  transformed: (getState) => {
+    const orderState = getState().orders; // Получаем состояние слайса
+    console.log('Order State:', orderState);
+  }
+});
 
 //Объединяю все редьюсеры с помощью `combineReducers`
 //Используется для объединения всех редьюсеров в один корневой редьюсер.
@@ -49,7 +72,7 @@ const rootReducer = (state, action) => {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: ['currentOrders', 'documents', 'selecteds', 'theme'], // Укажите здесь слайсы, которые не нужно сохранять
+  blacklist: ['documents'], // Укажите здесь слайсы, которые не нужно сохранять
   //whitelist: ['customers'], // Укажите здесь только те слайсы, которые нужно сохранять
 };
 
@@ -63,11 +86,13 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 // Настройка store
 const reduxStore = configureStore({
   reducer: persistedReducer,
+  // devTools: process.env.NODE_ENV !== 'production', // Только в разработке
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       immutableCheck: false, // Отключаем проверку неизменности
       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
     }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
+  // }).concat(logger, apiSlice.middleware), // Добавляем middleware из apiSlice
 });
 
 

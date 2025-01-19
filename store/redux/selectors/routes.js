@@ -2,11 +2,20 @@ import { createSelector } from 'reselect';
 const getSelecteds = (state) => state.selecteds;
 const getCustomers = (state) => state.customers.catalog;
 const getRoutesCatalog = (state) => state.routes.catalog;
-const getDraftOrders = (state) => state.orders.draftOrders;
+const getOrders = (state) => state.orders.catalog;
+
+
+function isSameDate(date1, date2) {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
 
 export const selectCustomers = createSelector(
-  [getCustomers, getSelecteds, getRoutesCatalog, getDraftOrders],
-  (customers, selecteds, routesCatalog, draftOrders) => {
+  [getCustomers, getSelecteds, getRoutesCatalog, getOrders],
+  (customers, selecteds, routesCatalog, orders) => {
 
     // console.log('draftOrders', draftOrders);
 
@@ -39,6 +48,10 @@ export const selectCustomers = createSelector(
       return 'Выберите маршрут';
     }
 
+    const draftOrders = Array.isArray(orders)
+      ? orders.filter((item) => isSameDate(new Date(item.date), new Date()))
+      : [];
+
     const customersOrders = Array.isArray(draftOrders)
       ? draftOrders.reduce((acc, item) => {
         // Проверяем, существует ли массив для данного customerCode
@@ -55,7 +68,7 @@ export const selectCustomers = createSelector(
         .filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()))
         .map(item => ({
           ...item,
-          draftOrders: customersOrders[item.code],
+          orders: customersOrders[item.code],
           // hasOrders: !!customersOrders[item.code],
           // baseTotal: customersOrders[item.code]?.baseTotal,
           // totalAmount: customersOrders[item.code]?.totalAmount,

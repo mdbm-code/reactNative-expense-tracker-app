@@ -1,21 +1,20 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { selectProducts } from '../../store/redux/selectors/products';
+import { getSelector_selectProducts, selectProducts } from '../../store/redux/selectors/products';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ProductsTable from '../../components/ProductsTable';
+import _log from 'react-dev-log';
 
 const CustomerReturnManageScreen = () => {
-  const { customerCode } = useSelector(
-    (state) => state.selecteds.selectedCustomer
-  );
+  _log('/screens/contentScreen/CustomerReturnManageScreen');
   const theme = useSelector(getTheme);
-  const rows = useSelector(selectProducts);
-  if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
-  if (!typeof customerCode === 'string')
-    return <FallbackText>{'Покупатель не выбран'}</FallbackText>;
+  const querySelector = getSelector_selectProducts({ stateName: 'draft', typeQty: 'return' });
+  const rows = useSelector(querySelector);
 
-  console.log('/screens/contentScreen/CustomerReturnManageScreen');
+  // console.log('rows', rows);
+
+  if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
 
   return (
     <View style={[styles.rootContainer]}>

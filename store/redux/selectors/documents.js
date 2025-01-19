@@ -1,17 +1,17 @@
 import { createSelector } from 'reselect';
 
 const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
-const getDocuments = (state) => state.documents;
+const getOrders = (state) => state.orders;
 
 //функция возвращает селектор
 export const getCustomerDocumentsSelector = (pageNumber) =>
   createSelector(
-    [getDocuments, getSelectedCustomer],
-    (documents, selectedCustomer) => {
+    [getOrders, getSelectedCustomer],
+    (orders, selectedCustomer) => {
       if (!selectedCustomer) return 'Покупатель не выбран';
 
-      const catalog = documents?.catalog || [];
-      const numberPerPage = documents?.numberPerPage || 30;
+      const catalog = orders?.catalog || [];
+      const numberPerPage = orders?.settings?.itemsPerPage || 30;
       let startIndex = 0;
       let endIndex = catalog.length - 1; // По умолчанию - все документы
 

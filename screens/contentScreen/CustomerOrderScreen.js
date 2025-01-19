@@ -1,33 +1,19 @@
 import { Alert, StyleSheet, View } from 'react-native';
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSelector_customerOrder } from '../../store/redux/selectors/orders';
 import { deleteOrderRow } from '../../store/redux/slices/currentOrdersSlice';
 import { getTheme } from '../../store/redux/selectors/theme';
 import FallbackText from '../../components/FallbackText';
 import ProductsTable from '../../components/ProductsTable';
-// import { getSelectedCustomer } from '../../store/redux/selectors/selecteds';
+import _log from 'react-dev-log';
 
 const CustomerOrderScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const { selectedCustomer } = useSelector(state => state.selecteds);
+  // _log('/screens/contentScreen/CustomerOrderScreen');
+  // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
-  const querySelector = getSelector_customerOrder({
-    stateName: 'draft',
-    customerCode: selectedCustomer?.code,
-    typeQty: 'order',
-  });
+  const querySelector = getSelector_customerOrder({ typeQty: 'order' });
   const rows = useSelector(querySelector);
-  console.log('rows', rows);
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     title: selectedCustomer?.name,
-  //   });
-  // }, [selectedCustomer]);
-
-
-  console.log('/screens/contentScreen/CustomerOrderScreen/');
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
 
   function onLongPressHandler(event) {
@@ -39,7 +25,7 @@ const CustomerOrderScreen = ({ navigation }) => {
       {
         text: 'Удалить',
         onPress: () => {
-          dispatch(deleteOrderRow({ code, productCode: event?.code }));
+          // dispatch(deleteOrderRow({ code, productCode: event?.code }));
         },
       },
     ]);

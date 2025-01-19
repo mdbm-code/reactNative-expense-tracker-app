@@ -5,14 +5,13 @@ import { getSelector_selectProducts } from '../../store/redux/selectors/products
 import { getTheme } from '../../store/redux/selectors/theme';
 import ProductsTable from '../../components/ProductsTable';
 import FallbackText from '../../components/FallbackText';
+import _log from 'react-dev-log';
 
 const CustomerOrderManageScreen = () => {
-  console.log('/screens/contentScreen/CustomerOrderManageScreen');
+  _log('/screens/contentScreen/CustomerOrderManageScreen');
   const theme = useSelector(getTheme);
-  const querySelector = getSelector_selectProducts({ stateName: 'draft', typeQty: 'order' });
+  const querySelector = getSelector_selectProducts({ typeQty: 'order' });
   const rows = useSelector(querySelector);
-  // const rows = [];
-  // const rows = useSelector(state => selectProducts(state, { stateName: 'draft', typeQty: 'order' }));
 
   if (typeof rows === 'string') return <FallbackText>{rows}</FallbackText>;
   // rows item:

@@ -5,14 +5,15 @@ import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
 import CustomerOrderManageScreen from '../contentScreen/CustomerOrderManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
+import _log from 'react-dev-log';
 
 const CustomerOrderManageDrawer = ({ navigation }) => {
+  _log('/screens/drawerScreen/CustomerOrderManageDrawer');
   const { selectedCustomer, selectedProductMenu, searchString } = useSelector(
     (state) => state.selecteds
   );
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
-  console.log('/screens/drawerScreen/CustomerOrderManageDrawer');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -47,6 +48,7 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
     2: {
       color: theme.style.drawer.listItem.title,
       type: 'title',
+      subtitle: selectedCustomer?.matrix?.length > 0 && '(матрица)',
       position: 'center',
       style: {
         color: theme.style.drawer.header.button.dark.text,

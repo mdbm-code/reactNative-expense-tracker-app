@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Keyboard } from 'react-native';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 //store
@@ -8,7 +8,7 @@ import {
   setSelectedCustomerListItem,
   setSelectedRoute,
 } from '../../store/redux/slices/selectedsSlice';
-import { loadColors } from '../../store/redux/slices/themeSlice';
+// import { loadColors } from '../../store/redux/slices/themeSlice';
 import {
   selectCustomers,
 } from '../../store/redux/selectors/routes';
@@ -20,14 +20,16 @@ import IconButton from '../../components/ui/IconButton';
 import ScreenWithDropdown from '../ScreenWithDropdown';
 import ClientsList from '../../components/Clients/ClientsList';
 
+
 const CustomersListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [showSearchPanel, setShowSearchPanel] = useState(false);
   const { selectedCustomerListItem } = useSelector((state) => state.selecteds);
+  const selecteds = useSelector((state) => state.selecteds);
+  const points = useSelector(selectCustomers);
+  const theme = useSelector(getTheme);
+  console.log('CustomersListScreen');
 
-  useEffect(() => {
-    dispatch(loadColors());
-  }, [dispatch]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -60,11 +62,9 @@ const CustomersListScreen = ({ navigation }) => {
     setShowSearchPanel(false);
   }
 
-  const selecteds = useSelector((state) => state.selecteds);
-  const points = useSelector(selectCustomers);
-  const theme = useSelector(getTheme);
 
-  console.log('points', points);
+
+  // console.log('points', points);
 
 
   let content = <></>;

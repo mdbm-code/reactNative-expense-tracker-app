@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
 // import { getFormattedDate } from '../../../util/date';
-
-// const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
-const getProducts = (state) => state.products.catalog;
+const getSelecteds = (state) => state.selecteds;
+const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
+const getProducts = (state) => state.products;
 // const getCurrentOrders = (state) => state.currentOrders.rows;
 // const getCurrentReturns = (state) => state.currentOrders.returnRows;
 // const getCurrentDocs = (state) => state.currentOrders.docs;
@@ -10,40 +10,74 @@ const getProducts = (state) => state.products.catalog;
 const getOrders = (state) => state.orders;
 
 
+export const getSelector_customerOrderList = (pageNumber) =>
+  createSelector(
+    [getOrders, getSelectedCustomer],
+    (orders, selectedCustomer) => {
+      if (!selectedCustomer) return 'Покупатель не выбран';
+
+      const catalog = orders?.catalog || [];
+      const numberPerPage = orders?.settings?.itemsPerPage || 30;
+      let startIndex = 0;
+      let endIndex = catalog.length - 1; // По умолчанию - все документы
+
+      if (pageNumber && pageNumber > 0) {
+        startIndex = (pageNumber - 1) * numberPerPage;
+        endIndex = Math.min(startIndex + numberPerPage, catalog.length) - 1; // Ограничение по количеству документов
+      }
+
+      // Предполагается, что selectedCustomer имеет поле code
+      const customerCode = selectedCustomer.code;
+
+      const customerDocuments = catalog.filter((doc, index) =>
+        doc?.customerCode === customerCode
+          ? index >= startIndex && index <= endIndex
+          : false
+      ).sort((a, b) => b.date - a.date); //свежие сверху
+
+      return customerDocuments;
+    }
+  );
+
 
 export const getSelector_customerOrder = (query) => createSelector(
   [getProducts, getOrders],
-  (productsCatalog, orders) => {
+  (products, orders) => {
 
-    if (!query?.customerCode) return 'Покупатель не выбран';
-    if (!query?.stateName) return 'Имя таблицы (draft или confirmed) не указано';
-    if (!['draft', 'confirmed'].includes(query?.stateName)) return `Указанное имя таблицы [${query?.from}] не найдено`;
+    const orderCode = orders.selectedOrder?.code;
+    if (!orderCode) return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
+
     if (!query?.typeQty) return 'Тип данных (return или order) не указан';
     if (!['return', 'order'].includes(query?.typeQty)) return `Указанное тип данных [${query?.typeQty}] не найден`;
+    // if (!query?.stateName) return 'Имя таблицы (draft или confirmed) не указано';
+    // if (!['draft', 'confirmed'].includes(query?.stateName)) return `Указанное имя таблицы [${query?.from}] не найдено`;
 
-    const customerCode = query.customerCode;
-    const orderList = orders[`${query.stateName}Orders`];
-
+    const orderList = orders?.catalog || [];
     if (!Array.isArray(orderList) || orderList.length === 0) {
-      return []; // Если заказы не найдены, возвращаем пустой массив
+      return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
     }
 
-    const orderIndex = orderList.findIndex(item => item.customerCode === customerCode);
+    const productsCatalog = products.catalog || [];
+    const productsInventory = products.inventory || {};
+
+    const orderIndex = orderList.findIndex(item => item.code === orderCode);
+    // const orderIndex = orderList.findIndex(item => item.customerCode === customerCode);
     if (orderIndex === -1) {
-      return []; // Заявка для указанного покупателя не найдена;
+      return 'Начните подбор товаров'; // Заявка для указанного покупателя не найдена;
     }
 
     const rows = orderList[orderIndex]?.items || [];
     if (!Array.isArray(rows) || rows.length === 0) {
-      return []; //  'Нет товаров в заказе';
+      return 'Начните подбор товаров'; //  'Нет товаров в заказе';
     }
+
 
     const productsCodes = rows
       .filter(row => row[`${query.typeQty}Qty`]) // Фильтруем товары с не нулевым количеством
-      .map(row => row.productCode); // Получаем коды товаров
+      .map(row => row.productCode); // Получаем коды товаров из заявки 
 
     const rowData = rows.reduce((acc, row) => {
-      acc[row.productCode] = { qty: row[`${query.typeQty}Qty`], price: row.price };
+      acc[row.productCode] = { qty: row[`${query.typeQty}Qty`], price: row.price }; //вытягиваем из заявки коичество и цену
       return acc;
     }, {});
 
@@ -56,11 +90,68 @@ export const getSelector_customerOrder = (query) => createSelector(
         qty: rowData[product.code]?.qty,
         price: rowData[product.code]?.price,
         base_price: product?.base_price,
+        rest: productsInventory[product.code] || '',
       }));
 
-    return toReturn.length > 0 ? toReturn : 'Товары не загружены';
+    return toReturn.length > 0 ? toReturn : 'Начните подбор товаров';
   }
 );
+// export const getSelector_customerOrder = (query) => createSelector(
+//   [getProducts, getOrders],
+//   (products, orders) => {
+
+//     const orderCode = orders.selectedOrder?.code;
+//     if (!orderCode) return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
+
+//     if (!query?.typeQty) return 'Тип данных (return или order) не указан';
+//     if (!['return', 'order'].includes(query?.typeQty)) return `Указанное тип данных [${query?.typeQty}] не найден`;
+//     if (!query?.stateName) return 'Имя таблицы (draft или confirmed) не указано';
+//     if (!['draft', 'confirmed'].includes(query?.stateName)) return `Указанное имя таблицы [${query?.from}] не найдено`;
+
+//     const orderList = orders[`${query.stateName}Orders`];//хранилище заявок в слайсе (draft - в стадии набора, confirmed - отправлены на сервер)
+//     if (!Array.isArray(orderList) || orderList.length === 0) {
+//       return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
+//     }
+
+//     const productsCatalog = products.catalog || [];
+//     const productsInventory = products.inventory || {};
+
+//     const orderIndex = orderList.findIndex(item => item.code === orderCode);
+//     // const orderIndex = orderList.findIndex(item => item.customerCode === customerCode);
+//     if (orderIndex === -1) {
+//       return 'Начните подбор товаров'; // Заявка для указанного покупателя не найдена;
+//     }
+
+//     const rows = orderList[orderIndex]?.items || [];
+//     if (!Array.isArray(rows) || rows.length === 0) {
+//       return 'Начните подбор товаров'; //  'Нет товаров в заказе';
+//     }
+
+
+//     const productsCodes = rows
+//       .filter(row => row[`${query.typeQty}Qty`]) // Фильтруем товары с не нулевым количеством
+//       .map(row => row.productCode); // Получаем коды товаров из заявки 
+
+//     const rowData = rows.reduce((acc, row) => {
+//       acc[row.productCode] = { qty: row[`${query.typeQty}Qty`], price: row.price }; //вытягиваем из заявки коичество и цену
+//       return acc;
+//     }, {});
+
+//     const toReturn = productsCatalog
+//       .filter(product => productsCodes.includes(product.code))
+//       .map(product => ({
+//         code: product.code,
+//         name: product.name,
+//         unit: product.unit,
+//         qty: rowData[product.code]?.qty,
+//         price: rowData[product.code]?.price,
+//         base_price: product?.base_price,
+//         rest: productsInventory[product.code] || '',
+//       }));
+
+//     return toReturn.length > 0 ? toReturn : 'Начните подбор товаров';
+//   }
+// );
 
 export const selectManyOrdersForCustomer = createSelector(
   [getOrders, (state, query) => query],

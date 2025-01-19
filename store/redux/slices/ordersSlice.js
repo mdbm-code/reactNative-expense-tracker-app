@@ -1,13 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
+import _log from 'react-dev-log';
 
 const calculateTotals = (items) => {
 	let totalAmount = 0;
 	let totalReturn = 0;
 
 	items.forEach(item => {
-		totalAmount += item.orderQty * item.price;
-		totalReturn += item.returnQty * item.price;
+		if (item.orderQty) {
+			totalAmount += Number(item.orderQty) * Number(item.price);
+		}
+		if (item.returnQty) {
+			totalReturn += Number(item.returnQty) * Number(item.price);
+		}
 	});
+
+	totalAmount = Math.round(totalAmount * 100) / 100;
+	totalReturn = Math.round(totalReturn * 100) / 100;
 
 	return { totalAmount, totalReturn };
 };
@@ -22,7 +31,11 @@ const orderApiRequest = createAsyncThunk(
 
 			switch (type) {
 				case 'sendOrder':
+					console.log('orderApiRequest.type', 'sendOrder');
 					response = await axios.post('/api/orders', order);
+					// console.log('response', response);
+					// console.log('response.data', response.data);
+
 					return response.data; // Возвращаем данные для отправки заказа
 				case 'getOrdersStatus':
 					if (!Array.isArray(order.ids) || order.ids.length === 0) {
@@ -75,7 +88,9 @@ const orderApiRequest = createAsyncThunk(
 const ordersSlice = createSlice({
 	name: 'orders',
 	initialState: {
-		settings: { itemPerPage: 5 },
+		selectedOrder: {},
+		catalog: [],
+		settings: { itemsPerPage: 5 },
 		draftOrders: [],   // Для заявок, которые еще не утверждены
 		confirmedOrders: [],  // Для окончательных заявок
 		orderIdCounter: 0, // Для генерации уникальных кодов
@@ -102,11 +117,17 @@ const ordersSlice = createSlice({
 			}
 		},
 		updateOrderStatus(state, action) {
-			const { orderId, status, error } = action.payload;
-			const orderIndex = state.confirmedOrders.findIndex(o => o.id === orderId);
+			const { orderId, orderCode, status, error } = action.payload;
+			let orderIndex = -1;
+			if (orderCode) {
+				orderIndex = state.catalog.findIndex(o => o.code === orderCode);
+			}
+			if (orderId) {
+				orderIndex = state.catalog.findIndex(o => o.id === orderId);
+			}
 			if (orderIndex !== -1) {
-				state.confirmedOrders[orderIndex].status = status; // обновляем статус
-				state.confirmedOrders[orderIndex].error = error || ''; // обновляем текст ошибки
+				state.catalog[orderIndex].status = status; // обновляем статус
+				state.catalog[orderIndex].error = error || ''; // обновляем текст ошибки
 			}
 		},
 		addOneOrder: (state, action) => {
@@ -139,6 +160,11 @@ const ordersSlice = createSlice({
 				const totals = calculateTotals(order.items); // используем order, поскольку мы обновляем его
 				order.totalAmount = totals.totalAmount;
 				order.totalReturn = totals.totalReturn;
+			}
+		},
+		setSelectedOrder: (state, action) => {
+			if (typeof action.payload === 'object') {
+				state.selectedOrder = action.payload;
 			}
 		},
 		setSettings: (state, action) => {
@@ -181,78 +207,86 @@ const ordersSlice = createSlice({
 				orders.splice(index, 1); // Правильное удаление элемента
 			}
 		},
-		updateOrderItem: (state, action) => {
-			const { stateName, orderCode, productName, productCode, orderQty, returnQty, customerCode, base_price, default_price, price } = action.payload;
-			if (!['draft', 'confirmed'].includes(stateName)) {
-				return; // Ранний выход, если stateName некорректен
+		addOneOrderWithItem: (state, action) => {
+			const { productName, productCode, orderQty, returnQty, customerCode, customerName, base_price, default_price, price } = action.payload;
+
+			const currentDate = new Date();
+			const formattedDate = currentDate.toLocaleDateString('ru-RU'); // Формат для России
+			console.log('formattedDate', formattedDate);
+
+			const newOrder = {
+				code: ++state.orderIdCounter,
+				date: currentDate,
+				formattedDate: formattedDate,
+				status: 'draft',
+				customerCode,
+				customerName,
+				totalAmount: 0,
+				totalReturn: 0,
+				items: [{
+					productCode,
+					productName,
+					base_price,
+					default_price,
+					price,
+					orderQty,
+					returnQty,
+				}],
+			};
+
+			const totals = calculateTotals(newOrder.items); // используем order, поскольку мы обновляем его
+			newOrder.totalAmount = totals.totalAmount;
+			newOrder.totalReturn = totals.totalReturn;
+
+			//записываем в качестве текущего
+			state.selectedOrder = newOrder;
+
+
+			if (!Array.isArray(state.catalog)) {
+				state.catalog = [];
 			}
-			let orderIndex = -1;
-			if (stateName === 'confirmed') {
-				orderIndex = state.confirmedOrders.findIndex(order => order.code === orderCode);
-			} else {
-				orderIndex = state.draftOrders.findIndex(order => order.customerCode === customerCode);
+			//сохраняем новый заказ в журнале заявок
+			state.catalog.push(newOrder);
+		},
+		updateSelectedOrderItem: (state, action) => {
+			const { productName, productCode, orderQty, returnQty, base_price, default_price, price } = action.payload;
+			const orderCode = state?.selectedOrder?.code;
+			const orderIndex = state.catalog.findIndex(order => order.code === orderCode);
+			if (orderIndex === -1) {
+				return state;
 			}
 
-			let order = null;
-			if (orderIndex !== -1) {
-				order = state[`${stateName}Orders`][orderIndex];
+			const order = state.catalog[orderIndex];
 
-				const itemIndex = order.items.findIndex(item => item.productCode === productCode);
-				if (itemIndex !== -1) {
-					const item = order.items[itemIndex];
+			const itemIndex = order.items.findIndex(item => item.productCode === productCode);
+			if (itemIndex !== -1) {
+				const item = order.items[itemIndex];
 
-					// Обновляем количество и возврат товара
-					if (orderQty !== undefined) {
-						item.orderQty = orderQty;
-					}
-					if (returnQty !== undefined) {
-						item.returnQty = returnQty;
-					}
-				} else {
-					// Добавляем новый товар
-					const newRow = {
-						customerCode,
-						productCode,
-						base_price,
-						default_price,
-						price,
-						orderQty: orderQty,
-						returnQty: returnQty,
-					}
-					order.items.push(newRow);
+				// Обновляем количество и возврат товара
+				if (orderQty !== undefined) {
+					item.orderQty = orderQty;
 				}
-				// Пересчитываем итоговые суммы после изменения товара
-				const totals = calculateTotals(order.items); // используем order, поскольку мы обновляем его
-				order.totalAmount = totals.totalAmount;
-				order.totalReturn = totals.totalReturn;
+				if (returnQty !== undefined) {
+					item.returnQty = returnQty;
+				}
 			} else {
-				//создаем новый заказ
-				const newOrder = {
-					code: ++state.orderIdCounter,
-					customerCode: action.payload.customerCode,
-					customerName: action.payload?.customerName,
-					totalAmount: 0,
-					totalReturn: 0,
-					items: [{
-						productCode,
-						productName,
-						base_price,
-						default_price,
-						price,
-						orderQty: orderQty,
-						returnQty: returnQty,
-					}],
-					baseTotal: 0,
-					percent: 0,
-					minSum: action.payload?.minSum || 0,
-				};
-				// Обновляем итоговые суммы
-				const totals = calculateTotals(newOrder.items); // используем order, поскольку мы обновляем его
-				newOrder.totalAmount = totals.totalAmount;
-				newOrder.totalReturn = totals.totalReturn;
-				state[`${stateName}Orders`].push(newOrder);
+				// Добавляем новый товар
+				const newRow = {
+					productCode,
+					productName,
+					base_price,
+					default_price,
+					price,
+					orderQty: orderQty,
+					returnQty: returnQty,
+				}
+				order.items.push(newRow);
 			}
-
+			// Пересчитываем итоговые суммы после изменения товара
+			const totals = calculateTotals(order.items); // используем order, поскольку мы обновляем его
+			order.totalAmount = totals.totalAmount;
+			order.totalReturn = totals.totalReturn;
+			state.selectedOrder = order; //обновляем также выбранный заказ
 		},
 		createNewItem: (productCode, productName, base_price, default_price, price, orderQty, returnQty) => {
 			return {
@@ -267,7 +301,7 @@ const ordersSlice = createSlice({
 		},
 		createNewOrder: (payload) => {
 			const newOrder = {
-				code: ++payload.state.orderIdCounter,
+				code: ++state.orderIdCounter,
 				customerCode: payload.customerCode,
 				customerName: payload?.customerName,
 				totalAmount: 0,
@@ -313,49 +347,52 @@ const ordersSlice = createSlice({
 		builder
 			.addCase(orderApiRequest.pending, (state, action) => {
 				if (action.meta.arg.type === 'sendOrder') {
-					state.status.confirmedOrders = 'loading';
+					// state.status.catalog = 'loading';
 				}
 			})
 			.addCase(orderApiRequest.fulfilled, (state, action) => {
 				if (action.meta.arg.type === 'sendOrder') {
-					const orderIndex = state.confirmedOrders.findIndex(order => order.code === action.meta.arg.order.code);
+					const orderIndex = state.catalog.findIndex(order => order.code === action.meta.arg.order.code);
 					if (orderIndex !== -1) {
-						state.confirmedOrders[orderIndex] = {
-							...state.confirmedOrders[orderIndex],
+						state.catalog[orderIndex] = {
+							...state.catalog[orderIndex],
 							id: action.payload.id,
 							status: action.payload.status,
+							error: ''
 						};
 					}
-					state.status.confirmedOrders = 'succeeded';
-					state.error = null;
+					// state.status.catalog = 'succeeded';
+					// state.error = null;
 				} else if (action.meta.arg.type === 'getOrdersStatus') {
 					const statuses = action.payload;
 					statuses.forEach(({ orderId, status }) => {
-						const orderIndex = state.confirmedOrders.findIndex(o => o.id === orderId);
+						const orderIndex = state.catalog.findIndex(o => o.id === orderId);
 						if (orderIndex !== -1) {
-							state.confirmedOrders[orderIndex].status = status; // Обновляем статус заказа напрямую
+							state.catalog[orderIndex].status = status; // Обновляем статус заказа напрямую
 						}
 					});
 				}
 			})
 			.addCase(orderApiRequest.rejected, (state, action) => {
 				if (action.meta.arg.type === 'sendOrder') {
-					const orderIndex = state.confirmedOrders.findIndex(order => order.code === action.meta.arg.order.code);
+					const orderIndex = state.catalog.findIndex(order => order.code === action.meta.arg.order.code);
 					if (orderIndex !== -1) {
 						// Обновляем статус на "НеДоставлено" в случае ошибки
-						state.confirmedOrders[orderIndex].status = 'failed';
+						state.catalog[orderIndex].status = 'failed';
+						state.catalog[orderIndex].error = action.payload;
 					}
-					state.status.confirmedOrders = 'failed';
-					state.error = action.payload;
+					// state.status.catalog = 'failed';
+					// state.error = action.payload;
 				}
 				// Обработка ошибок для getOrderStatus не требуется, так как already handled in moveAndSendOrder.
 			});
 	}
 });
 
+
 export const getOrderStatusFromServer = () => async (dispatch, getState) => {
 	const state = getState();
-	const targetOrders = state.orders?.confirmedOrders || [];
+	const targetOrders = state.orders?.catalog || [];
 
 	const ordersToUpdate = targetOrders.filter(order => {
 		const status = order.status;
@@ -372,20 +409,38 @@ export const getOrderStatusFromServer = () => async (dispatch, getState) => {
 	await dispatch(orderApiRequest({ order: { ids: orderIds }, type: 'getOrdersStatus' }));
 };
 
-export const moveAndSendOrder = (orderCode, sourceStateName, targetStateName) => async (dispatch, getState) => {
-	dispatch(moveOrder({ sourceStateName, targetStateName, orderCode }));
+export const confirmAndSendOrder = (orderCode) => async (dispatch, getState) => {
+	// dispatch(moveOrder({ sourceStateName, targetStateName, orderCode }));
+	if (!orderCode) {
+		return;
+	}
+	_log('confirmAndSendOrder', orderCode);
+	dispatch(updateOrderStatus({ orderId: null, orderCode, status: 'confirmed' }));
 
 	const state = getState();
-	const targetOrders = state.orders[`${targetStateName}Orders`];
-
-	const order = targetOrders.find(order => order.code === orderCode);
-
+	const orders = state.orders.catalog;
+	const order = orders.find(order => order.code === orderCode);
 	if (!order) {
-		console.error(`Ошибка: заказ ${orderCode} не был перемещен из состояния ${sourceStateName} в состояние ${targetStateName}`);
+		console.error(`Ошибка: заказ ${orderCode} не найден`);
+		return;
+	}
+	await dispatch(orderApiRequest({ order, type: 'sendOrder' }));
+};
+
+export const setSelectedOrderByCode = (orderCode) => async (dispatch, getState) => {
+	// dispatch(moveOrder({ sourceStateName, targetStateName, orderCode }));
+	if (!orderCode) {
 		return;
 	}
 
-	await dispatch(orderApiRequest({ order, type: 'sendOrder' }));
+	const state = getState();
+	const orders = state.orders.catalog;
+	const order = orders.find(order => order.code === orderCode);
+	if (!order) {
+		const errorMassage = `Ошибка: заказ ${orderCode} не найден`;
+		return errorMassage;
+	}
+	await dispatch(setSelectedOrder(order));
 };
 
 
@@ -478,10 +533,13 @@ export const moveAndSendOrder = (orderCode, sourceStateName, targetStateName) =>
 // Экспорт действий для использования в компонентах
 export const {
 	addOneOrder,
+	updateOrderStatus,
+	setSelectedOrder,
+	addOneOrderWithItem,
 	updateOneOrder,
 	confirmDraftOrder,
 	removeOneOrder,
-	updateOrderItem,
+	updateSelectedOrderItem,
 	deleteItemFromOrder,
 	setSettings,
 } = ordersSlice.actions;

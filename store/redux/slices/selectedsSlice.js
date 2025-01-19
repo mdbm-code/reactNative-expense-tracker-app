@@ -17,7 +17,6 @@ const initialState = {
   selectedRoute: null,
   selectedCustomer: null,
   selectedCustomerListItem: null,
-  selectedOrder: null,
   selectedDocTab: 0,
   selectedCustomerScreen: null,
   selectedTheme: 'light',
@@ -81,9 +80,9 @@ const selectedsSlice = createSlice({
       state.selectedCustomerScreen = action.payload;
     },
     // Добавление списка
-    setSelectedOrder: (state, action) => {
-      state.selectedOrder = action.payload;
-    },
+    // setSelectedOrder: (state, action) => {
+    //   state.selectedOrder = action.payload;
+    // },
     setSelectedDocTab: (state, action) => {
       state.selectedDocTab = action.payload;
     },
@@ -118,7 +117,6 @@ export const {
   setSearchString,
   setSelectedRoute,
   setSelectedCustomer,
-  setSelectedOrder,
   setSelectedDocTab,
   setSelectedTheme,
   setSelectedManager,

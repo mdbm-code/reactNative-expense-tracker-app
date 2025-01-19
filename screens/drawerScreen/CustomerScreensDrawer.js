@@ -1,6 +1,6 @@
 import { Alert, StyleSheet } from 'react-native';
 import React, { useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
 import CustomerOrderScreen from '../contentScreen/CustomerOrderScreen';
@@ -10,20 +10,26 @@ import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
 import _log from 'react-dev-log';
 import CustomerDocumentsScreen from '../contentScreen/CustomerDocumentsScreen';
 import IconButton from '../../components/ui/IconButton';
+import { confirmAndSendOrder, setSelectedOrder } from '../../store/redux/slices/ordersSlice';
 // import { getSelectedCustomer } from '../../store/redux/selectors/selecteds';
 
 const CustomerScreensDrawer = ({ navigation }) => {
-  const { selectedCustomer, selectedOrder } = useSelector(state => state.selecteds);
+  const dispatch = useDispatch();
+  const { selectedCustomer } = useSelector(state => state.selecteds);
+  const { selectedOrder } = useSelector(state => state.orders);
   const theme = useSelector(getTheme);
   // const selectedCustomer = ''
 
-  const shareCurrentOrder = () => { };
+  const shareCurrentOrder = () => {
+    const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
+    console.log('res', res);
+  };
 
-  _log('/screens/drawerScreen/CustomerScreensDrawer/');
+  // _log('/screens/drawerScreen/CustomerScreensDrawer/');
   const pressShareIconHandler = () => {
     Alert.alert(
       '',
-      'Отправить заявку на сервер ?',
+      'Отправить заявку на сервер ?%',
       [
         {
           text: 'Отмена',
@@ -67,6 +73,30 @@ const CustomerScreensDrawer = ({ navigation }) => {
         />
       ),
     });
+
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      // Предотвращаем переход, если пользователь не подтвердил
+      // e.preventDefault();
+      console.log('unsubscribe');
+      dispatch(setSelectedOrder({}));
+      // // Показываем предупреждение
+      // Alert.alert(
+      //   'Подтверждение',
+      //   'Вы уверены, что хотите покинуть этот экран?',
+      //   [
+      //     { text: 'Отмена', style: 'cancel', onPress: () => { } },
+      //     {
+      //       text: 'Да',
+      //       style: 'destructive',
+      //       onPress: () => navigation.dispatch(e.data.action),
+      //     },
+      //   ]
+      // );
+    });
+
+    // Очистка слушателя при размонтировании компонента
+    return unsubscribe;
+
   }, [navigation, selectedCustomer]);
 
   const headerItems = {
@@ -82,8 +112,8 @@ const CustomerScreensDrawer = ({ navigation }) => {
       },
     },
     2: {
-      color: theme.style.drawer.listItem.title,
       type: 'title',
+      color: theme.style.text.main,
       subtitle: selectedOrder?.code ? '№ ' + selectedOrder?.code : '(новая)',
       position: 'center',
       style: {

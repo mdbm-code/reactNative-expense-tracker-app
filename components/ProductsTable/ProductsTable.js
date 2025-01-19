@@ -20,8 +20,9 @@ import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 import Button from '../ui/Button';
 import SearchPanel from '../SearchPanel';
 import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
+import { createUpdateOrderItem } from '../../store/redux/thunks/orders';
 
-const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
+const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest }) => {
   const dispatch = useDispatch();
   const [showTableOptions, setShowTableOptions] = useState('');
   const { selectedCustomer, selectedProduct, tableOptions } =
@@ -45,24 +46,25 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
     // "shortName": "Йог ГЕК 0,1% клуб-перс-марак пл-ст 0,100 кг.",
     // "specs": [{"spec": "SO-0-0-2817-0-0-2452E", "value": 25.23}, {"spec": "SO-0-0-2817-0-0-1366E", "value": 22}],
     // "unit": "шт"}
+
+    //тут можно реагировать на попытку заказть товар без остатка
     if (goal === 'order') {
-      const restExist = product?.hasOwnProperty('rest') ?? false;
-      if (restExist && ['', '0', 0, undefined].includes(product?.rest)) {
-        Alert.alert('', 'Товара нет на складе', [
-          {
-            text: 'Ок',
-            style: 'cancel',
-          },
-        ]);
-        return;
-      }
+      // const restExist = product?.hasOwnProperty('rest') ?? false;
+      // if (restExist && ['', '0', 0, undefined].includes(product?.rest)) {
+      //   Alert.alert('', 'Товара нет на складе', [
+      //     {
+      //       text: 'Ок',
+      //       style: 'cancel',
+      //     },
+      //   ]);
+      //   return;
+      // }
     }
 
 
 
     const payload = {
       ...product,
-      stateName: 'draft',
       customerCode: selectedCustomer?.code,
       customerName: selectedCustomer?.name,
       productCode: product.code,
@@ -74,8 +76,9 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
 
     if (goal === 'promo') {
     } else {
+
       // dispatch(findAndUpdateOrderRow(payload));
-      dispatch(updateOrderItem(payload));
+      dispatch(createUpdateOrderItem(payload));
     }
     dispatch(setSelectedProduct(null));
   };
@@ -303,11 +306,27 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable }) => {
       },
     },
     {
+      id: 'autofocus',
+      hidden: true,
+    },
+    {
       id: 'qty',
       title: 'Кол.',
       flex: 2,
       as: 'input',
-      autoFocus: goal === 'return',
+      autoFocus: {
+        or: [
+          { iftrue: goal === 'return' },
+          {
+            cond: {
+              key: 'autofocus',
+              eq: true,
+              iftrue: true,
+              iffalse: false,
+            }
+          }
+        ]
+      },
       titleStyle: {
         textAlign: 'center',
         color: theme.style.customerList.title,

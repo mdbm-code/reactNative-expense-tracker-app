@@ -39,6 +39,7 @@
     "react-native-tab-view": "^4.0.5",
     "react-native-x-carousel": "^1.0.1",
     "react-redux": "^9.2.0",
+    "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "reselect": "^5.1.1"
   },

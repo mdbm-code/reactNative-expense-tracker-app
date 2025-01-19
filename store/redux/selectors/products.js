@@ -133,23 +133,24 @@ export const getSelector_selectProducts = (query) => createSelector(
     if (!['return', 'order'].includes(typeQty)) {
       return `Указанное тип данных [${typeQty}] не найден`;
     }
-    if (!stateName) return 'Имя таблицы (draft или confirmed) не указано';
-    if (!['draft', 'confirmed'].includes(stateName)) {
-      return `Указанное имя таблицы [${stateName}] не найдено`;
-    }
 
-    const orderList = orders[`${stateName}Orders`] || [];
+    const orderList = orders?.catalog || [];
+    // const orderList = orders[`${stateName}Orders`] || [];
     const productsCatalog = products.catalog || [];
     const productsInventory = products.inventory || {};
+    const selectedOrder = orders.selectedOrder || {};
     const selectedProductMenu = selecteds.selectedProductMenu || {};
     const searchString = selecteds.searchString?.toLowerCase() || '';
     const selectedCustomer = selecteds.selectedCustomer || {};
+    // console.log('selectedCustomer', selectedCustomer);
+
 
     if (!Array.isArray(productsCatalog) || productsCatalog.length === 0) {
       return 'Товары не загружены';
     }
 
-    const existedOrder = orderList.find((doc) => doc.customerCode === query.customerCode);
+    const existedOrder = orderList.find((doc) => doc.code === selectedOrder?.code);
+    // const existedOrder = orderList.find((doc) => doc.customerCode === query.customerCode);
 
     const productQuantities = Array.isArray(existedOrder?.items) ? existedOrder.items.reduce((acc, row) => {
       acc[row.productCode] = row[`${query.typeQty}Qty`];
@@ -157,6 +158,7 @@ export const getSelector_selectProducts = (query) => createSelector(
     }, {}) : {};
 
     let catalog = productsCatalog;
+    const topSalesProductCodes = getTopSalesProductCodes(sales, selectedCustomer.code);
 
     if (Array.isArray(selectedCustomer?.matrix) && selectedCustomer.matrix.length > 0) {
       catalog = catalog.filter(product => selectedCustomer.matrix.includes(product.code));
@@ -166,7 +168,6 @@ export const getSelector_selectProducts = (query) => createSelector(
     } else if (selectedProductMenu.level === 2) {
       catalog = catalog.filter(product => product.parentCode === selectedProductMenu.code);
     } else {
-      const topSalesProductCodes = getTopSalesProductCodes(sales, selectedCustomer.code);
       catalog = filterTopSalesProducts(catalog, productQuantities, topSalesProductCodes);
     }
 
@@ -175,6 +176,7 @@ export const getSelector_selectProducts = (query) => createSelector(
       const customerPrice = getCustomerPrice(item, selectedCustomer);
       return {
         ...item,
+        autofocus: !topSalesProductCodes.includes(item.code), //при клике на строку сразу предлагать ввод вместо окна выбора из истории
         price: customerPrice,
         default_price: customerPrice,
         prices: {
@@ -182,11 +184,11 @@ export const getSelector_selectProducts = (query) => createSelector(
           base_price: item.base_price,
         },
         qty: productQuantities[item.code] || '',
-        rest: productsInventory[item.code] || 0,
+        rest: productsInventory[item.code] || '',
       };
     });
-    console.log('existedOrder', existedOrder);
-    console.log('productQuantities', productQuantities);
+    // console.log('existedOrder', existedOrder);
+    // console.log('productQuantities', productQuantities);
     // console.log('toReturn', toReturn.length, toReturn);
     return toReturn;
 

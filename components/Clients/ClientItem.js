@@ -5,11 +5,30 @@ import { useDispatch } from 'react-redux';
 import {
   setSelectedCustomer,
   setSelectedCustomerListItem,
-  setSelectedOrder,
 } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
+import { setSelectedOrder } from '../../store/redux/slices/ordersSlice';
+import TableRow from '../GridTable/v2/TableRow';
+import { Ionicons } from '@expo/vector-icons';
 
+
+function getIcon(status) {
+  switch (status) {
+    case 'draft':
+      return 'scan-outline';
+    case 'failed':
+      return 'cloud-offline-outline';
+    case 'accepted':
+      return 'cloud-done-outline';
+    case 'delivered':
+      return 'star-outline';
+    case 'canceled':
+      return 'trash-outline';
+    default:
+      return 'square-outline';
+  }
+}
 
 const ClientItem = React.memo(({ item, theme, editedId }) => {
   const navigation = useNavigation();
@@ -25,7 +44,12 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   }
 
   function selectCustomerHandler(order) {
-    dispatch(setSelectedOrder(order));
+    if (order) {
+      console.log('selectCustomerHandler(order):', order);
+      dispatch(setSelectedOrder(order));
+    } else {
+      dispatch(setSelectedOrder({}));
+    }
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedCustomer({ ...item }));
     navigation.navigate('CustomerScreensDrawer');
@@ -62,9 +86,29 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   const Order = ({ data }) => {
     return (
       <Text style={styles.order}>
-        Заявка №{data?.code} сумма: {data?.totalAmount}
+        Заявка №{data?.code} от {data?.formattedDate} сумма: {data?.totalAmount}
       </Text>
     );
+  }
+
+  const OrderRow = ({ order }) => {
+    const cells = {
+      code: order.code,
+      title: `Заявка № ${order.code}`,// от ${order?.formattedDate}
+      status: getIcon(order.status),
+      sumContent: <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        {order.totalReturn === 0 ? null :
+          <Text style={{ color: theme.style.text.main, marginRight: 10, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', color: theme.style.error.main }}>-{order.totalReturn}</Text>
+        }
+        <Text style={{ color: theme.style.text.main, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', }}>{order.totalAmount}</Text>
+
+      </View >
+    };
+    return (<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1 }}>
+      <View style={{ flex: 1 }}><Ionicons name={cells.status} size={20} color={theme.style.text.main} /></View>
+      <View style={{ flex: 6 }}><Text style={{ color: theme.style.text.main }}>{cells.title}</Text></View>
+      <View style={{ flex: 7 }}>{cells.sumContent}</View>
+    </View>);
   }
 
 
@@ -73,28 +117,28 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
       <View style={[...containerStyle]}>
         <View style={styles.firstLineContainer}>
           <Text style={[...textTitle, styles.description]}>{item?.name}</Text>
-          <IconButton
+          {/* <IconButton
             color={theme.style.customerList.warningText}
             size={24}
             viewStyle={[...iconStyle]}
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
-          />
+          /> */}
         </View>
         {item.draftOrders.map((order, index) => {
-          return (<>
+          return (
             <Pressable
               key={index}
               onLongPress={onLongHandler}
               onPress={() => selectCustomerHandler(order)}
-              style={[({ pressed }) => pressed && styles.pressed, styles.orderContainer]}
+              style={[({ pressed }) => pressed && styles.pressed,]}
               android_ripple={true}
             >
-              <Order data={order} />
+              <OrderRow order={order} />
             </Pressable>
-          </>);
+          );
         })}
 
-      </View>
+      </View >
     );
   }
 
@@ -140,15 +184,15 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
         {/* <View style={styles.textContainer}> */}
         <View style={styles.firstLineContainer}>
           <Text style={[...textTitle, styles.description]}>{item?.name}</Text>
-          <IconButton
+          {/* <IconButton
             color={theme.style.customerList.warningText}
             size={24}
             viewStyle={[...iconStyle]}
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
-          />
+          /> */}
         </View>
         {Array.isArray(item?.draftOrders) && item?.draftOrders[0]
-          ? <Order data={item?.draftOrders[0]} />
+          ? <OrderRow order={item?.draftOrders[0]} />
           : <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>}
       </View>
     </Pressable>
@@ -174,6 +218,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
+  },
+  icon: {
+    flex: 1,
   },
   orderContainer: {
     padding: 12,

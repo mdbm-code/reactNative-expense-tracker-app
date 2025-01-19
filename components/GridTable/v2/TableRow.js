@@ -1,6 +1,36 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import TableCell from './TableCell';
+import { Ionicons } from '@expo/vector-icons';
+
+
+function parseValue(value) {
+  if (typeof value === 'string') {
+    // Проверяем, является ли строка числом
+    if (!isNaN(value) && value.trim() !== '') {
+      return Number(value);
+    }
+    // Проверяем, является ли строка булевым значением
+    if (value.toLowerCase() === 'true') {
+      return true;
+    }
+    if (value.toLowerCase() === 'false') {
+      return false;
+    }
+    // Проверяем, является ли строка 'undefined'
+    if (value === 'undefined') {
+      return null;
+    }
+  }
+
+  // Проверяем, является ли значение undefined
+  if (value === undefined) {
+    return null;
+  }
+
+  // Возвращаем входящий параметр без изменений
+  return value;
+}
 
 function getStyle(style, rowValues) {
   let viewStyle;
@@ -127,17 +157,63 @@ const TableRow = ({
     // }
   }
 
-  const rowComponents = [];
-  cells.forEach((cell) => {
-    const viewStyle = getStyle(cell?.viewStyle, rowValues);
-    const component = getComponent(cell);
-  });
+
+
+  function checkAutofocusCondition(rowValues, autoFocus) {
+    // autoFocus: {
+    //   or: [
+    //     { iftrue: goal === 'return' },
+    //     {
+    //       cond: {
+    //         key: 'autofocus',
+    //         eq: true,
+    //         iftrue: true,
+    //         iffalse: false,
+    //       }
+    //     }
+    //   ]
+    // },
+    let result = false;
+    if (autoFocus?.or && Array.isArray(autoFocus.or)) {
+      for (let i = 0; i < autoFocus.or.length; i++) {
+        const option = autoFocus.or[i];
+        //если указано явно что для всех ставим true
+        if (option?.iftrue == true) {
+          result = true; break;
+        }
+
+        if (option?.cond && typeof option.cond === 'object' && option.cond?.key && 'eq' in option.cond) {
+          const condValue = option.cond.eq;
+          const cellValue = parseValue(rowValues[option.cond.key]);
+          // console.log('rowValues', rowValues);
+          // console.log('condValue', condValue);
+          // console.log('option.cond.key', option.cond.key, 'cellValue', cellValue);
+
+          if ('iftrue' in option.cond && condValue === cellValue) {
+            result = option.cond?.iftrue; break;
+          }
+          if ('iffalse' in option.cond && !condValue === cellValue) {
+            result = option.cond?.iffalse; break;
+          }
+
+
+        }//конец блока с условием равенства
+      } //обход массива условий OR
+    }//конец блока сли это OR
+    return result;
+  }
+
 
   return (
     <View style={[styles.container, !!rowStyle && rowStyle]}>
       {cells.map((cell, index) => {
-        let viewStyle;
 
+        let autoFocus = cell?.autoFocus;
+        if (typeof autoFocus === 'object') {
+          autoFocus = checkAutofocusCondition(rowValues, autoFocus);
+        }
+
+        let viewStyle;
         //проверка на наличие условных стилей для View ячейки
         if (cell?.viewStyle) {
           if (cell.viewStyle?.cond && cell.viewStyle.cond?.key) {
@@ -211,6 +287,11 @@ const TableRow = ({
           //стили не прислали
         }
 
+        if (cell?.hidden) {
+          //использую скрытые колонки для служебных значений
+          return null;
+        }
+
         if (cell?.as === 'input' && isEditing) {
           return (
             <View
@@ -221,7 +302,7 @@ const TableRow = ({
               ]}
             >
               <TableCell
-                autoFocus={cell?.autoFocus}
+                autoFocus={autoFocus}
                 selected={isEditing}
                 flex={cell?.flex}
                 titleStyle={cell?.titleStyle}
@@ -235,11 +316,30 @@ const TableRow = ({
               </TableCell>
             </View>
           );
+        } else if (cell?.as === 'icon') {
+          return (
+            <View key={index} style={[styles.iconContainer,
+            cell?.flex && styles[`flex${cell?.flex}`],
+            !!viewStyle && viewStyle,
+            ]}>
+              <Ionicons name={cell?.title} size={20} style={styles.icon} />
+            </View>);
+        } else if (cell?.as === 'component') {
+          return (
+            <View key={index} style={[
+              cell?.flex && styles[`flex${cell?.flex}`],
+              !!viewStyle && viewStyle,
+            ]}>
+              {cell?.title}
+            </View>);
         } else {
           return (
             <TouchableOpacity
               key={index}
-              onPress={() => onEdit(cell?.returnParams)}
+              onPress={() => {
+                // console.log('cell?.returnParams', cell?.returnParams);
+                onEdit(cell?.returnParams);
+              }}
               style={[
                 cell?.flex && styles[`flex${cell?.flex}`],
                 !!viewStyle && viewStyle,
@@ -262,6 +362,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
+  },
+  // iconContainer: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+  icon: {
+    flex: 1,
   },
   flex1: { flex: 1 },
   flex2: { flex: 2 },
