@@ -23,12 +23,13 @@ import ClientsList from '../../components/Clients/ClientsList';
 
 const CustomersListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [searchString, setSearchString] = useState(''); // Поисковая строка
   const [showSearchPanel, setShowSearchPanel] = useState(false);
   const { selectedCustomerListItem } = useSelector((state) => state.selecteds);
   const selecteds = useSelector((state) => state.selecteds);
   const points = useSelector(selectCustomers);
   const theme = useSelector(getTheme);
-  console.log('CustomersListScreen');
+  // console.log('CustomersListScreen');
 
 
   useLayoutEffect(() => {
@@ -37,7 +38,7 @@ const CustomersListScreen = ({ navigation }) => {
       headerBackTitle: '',
       headerRight: ({ tintColor }) => (
         <IconButton
-          name='search'
+          name={showSearchPanel ? 'share-social-outline' : 'search'}
           color={tintColor}
           size={24}
           onPress={() => {
@@ -53,12 +54,13 @@ const CustomersListScreen = ({ navigation }) => {
     });
   }, [navigation, showSearchPanel]);
 
-  function handleSearch(searchString) {
+  function handleSearch() {
     dispatch(setCustomerSearchString(searchString)); // Сохраняем поисковую строку в состоянии
     Keyboard.dismiss(); // Закрываем клавиатуру
   }
   function handleCancelSearch() {
     dispatch(setCustomerSearchString('')); // Сохраняем поисковую строку в состоянии
+    setSearchString('');
     setShowSearchPanel(false);
   }
 
@@ -97,14 +99,21 @@ const CustomersListScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
-      {showSearchPanel && (
+      {/* {showSearchPanel && (
         <SearchPanel
           onCancel={handleCancelSearch}
           onSearch={handleSearch}
           theme={theme}
         />
-      )}
+      )} */}
       <ScreenWithDropdown
+        component={showSearchPanel && <SearchPanel
+          onCancel={handleCancelSearch}
+          onSearch={handleSearch}
+          theme={theme}
+          value={searchString}
+          onChangeText={setSearchString}
+        />}
         rows={options}
         value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}

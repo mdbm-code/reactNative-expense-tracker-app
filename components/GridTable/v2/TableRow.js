@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import TableCell from './TableCell';
 import { Ionicons } from '@expo/vector-icons';
+import CheckBox from '@react-native-community/checkbox';
 
 
 function parseValue(value) {
@@ -316,13 +317,29 @@ const TableRow = ({
               </TableCell>
             </View>
           );
+        } else if (cell?.as === 'checkbox') {
+          console.log('cell ', cell);
+          return (
+            <TouchableOpacity key={index} onPress={() => onEdit(cell?.returnParams)} style={[styles.checkboxContainer,]}>
+              <View style={[styles.checkbox, { backgroundColor: !!cell?.title ? cell?.tintColors?.true : cell?.tintColors?.false }, viewStyle]} />
+              {/* <Text style={styles.label}>Согласен с условиями</Text> */}
+            </TouchableOpacity>
+            // <View style={[styles.checkboxContainer, viewStyle]}>
+            //   <CheckBox
+            //     value={cell?.title}
+            //     onValueChange={() => onEdit(cell?.returnParams)}
+            //     tintColors={cell?.tintColors} // цвет чекбокса { true: '#f00', false: '#000' }
+            //   />
+            //   {/* <Text style={styles.label}>Лейб</Text> */}
+            // </View>
+          )
         } else if (cell?.as === 'icon') {
           return (
             <View key={index} style={[styles.iconContainer,
             cell?.flex && styles[`flex${cell?.flex}`],
             !!viewStyle && viewStyle,
             ]}>
-              <Ionicons name={cell?.title} size={20} style={styles.icon} />
+              <Ionicons name={cell?.title} size={20} color={cell?.color} style={styles.icon} />
             </View>);
         } else if (cell?.as === 'component') {
           return (
@@ -363,11 +380,31 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  // iconContainer: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 40,
+    height: 40,
+    width: 40,
+    height: 40,
+    borderRadius: 3,
+    borderWidth: 2,
+    // borderColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   icon: {
     flex: 1,
   },

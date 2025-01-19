@@ -8,13 +8,19 @@ import { getFormattedDate } from '../../util/date';
 import Table from '../../components/GridTable/v2/Table';
 import { getSelector_customerOrderList } from '../../store/redux/selectors/orders';
 import { setSelectedOrderByCode } from '../../store/redux/slices/ordersSlice';
+import Pager from '../../components/ui/Pager/Pager';
 
 const CustomerDocumentsScreen = () => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const selector = getSelector_customerOrderList(page);
-  const rows = useSelector(selector);
+  const { rows, pages, perPage, pages2 } = useSelector(selector);
   const selectedOrder = useSelector(state => state.orders?.selectedOrder);
+
+  console.log('pages', pages);
+  console.log('perPage', perPage);
+  // console.log('perPage', perPage);
+
 
   const theme = useSelector(getTheme);
   if (typeof rows === 'string')
@@ -23,6 +29,10 @@ const CustomerDocumentsScreen = () => {
         {rows}
       </FallbackText>
     );
+
+  function onPageChangeHandler(page) {
+    setPage(page);
+  }
 
   // console.log(rows);
   function getIcon(status) {
@@ -45,19 +55,21 @@ const CustomerDocumentsScreen = () => {
   const documents = rows.map((row) => {
     return {
       code: row.code,
-      title: `Заявка № ${row.code} от ${row?.formattedDate}`,
+      title: `№ ${row.code} от ${row?.formattedDate}`,
       // totalAmount: row.totalAmount,
       // totalReturn: row.totalReturn === 0 ? '' : row.totalReturn,
       status: getIcon(row.status),
       sumContent: <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-        <Text style={{ textAlign: 'right' }}>{row.totalAmount}</Text>
-        {row.totalReturn === 0 ? null : <Text style={{ textAlign: 'right', color: theme.style.error.dark }}>-{row.totalReturn}</Text>}
+        <Text style={{ textAlign: 'right', color: theme.style.text.main }}>{row.totalAmount}</Text>
+        {row.totalReturn === 0
+          ? null
+          : <Text style={{ textAlign: 'right', color: theme.style.error.dark }}>-{row.totalReturn}</Text>}
       </View >
     };
   });
 
-  console.log('documents', documents);
-  console.log('selectedOrder', selectedOrder);
+  // console.log('documents', documents);
+  // console.log('selectedOrder', selectedOrder);
 
   function pressOnItemHandler(returnParams) {
     //{ "column": "title", 
@@ -80,13 +92,15 @@ const CustomerDocumentsScreen = () => {
       inc: [selectedOrder?.code],
       iftrue: {
         borderLeftWidth: 1,
-        padding: 2,
+        padding: 5,
         backgroundColor: theme.style.drawer.header.bg,
+        height: 50
       },
       iffalse: {
         borderLeftWidth: 1,
-        padding: 2,
+        padding: 5,
         backgroundColor: theme.style.customerList.bg2,
+        height: 50
       },
     },
   };
@@ -97,12 +111,12 @@ const CustomerDocumentsScreen = () => {
       inc: [selectedOrder?.code],
       iftrue: {
         // borderLeftWidth: 1,
-        padding: 2,
+        padding: 5,
         backgroundColor: theme.style.drawer.header.bg,
       },
       iffalse: {
         // borderLeftWidth: 1,
-        padding: 2,
+        padding: 5,
         backgroundColor: theme.style.customerList.bg2,
       },
     },
@@ -112,9 +126,10 @@ const CustomerDocumentsScreen = () => {
     {
       id: 'status',
       as: 'icon',
+      color: theme.style.text.main,
       title: '',
       flex: 1,
-      // titleStyle: { textAlign: 'left', color: theme.style.customerList.title },
+      titleStyle: { color: theme.style.text.main },
       viewStyle: redRowStyleIcon,
     },
     {
@@ -125,7 +140,7 @@ const CustomerDocumentsScreen = () => {
       id: 'title',
       title: 'Документ',
       flex: 9,
-      titleStyle: { textAlign: 'left', color: theme.style.customerList.title },
+      titleStyle: { textAlign: 'left', color: theme.style.text.main },
       viewStyle: redRowStyle,
     },
 
@@ -134,7 +149,7 @@ const CustomerDocumentsScreen = () => {
       title: 'Суммы',
       flex: 4,
       as: 'component',
-      titleStyle: { textAlign: 'right', color: theme.style.customerList.title },
+      titleStyle: { textAlign: 'right', color: theme.style.text.main },
       viewStyle: redRowStyle,
     },
 
@@ -156,6 +171,21 @@ const CustomerDocumentsScreen = () => {
 
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
+      {Number(pages) > 1 &&
+        <View style={[styles.paginationContainer, { backgroundColor: theme.style.bg }]}>
+          <Text style={[styles.text, { color: theme.style.customerList.title }]}>Страница: </Text>
+          <Pager
+            minimumValue={1}
+            maximumValue={Number(pages)}
+            step={1}
+            value={Number(page)}
+            onValueChange={(value) => onPageChangeHandler(value)}
+            buttonViewStyle={[styles.pagerButtonViewStyle, { borderColor: theme.style.text.main }]}
+            titleStyle={[styles.pagerTitleStyle, , { color: theme.style.text.main }]}
+            titleStyleSelected={[styles.pagerTitleStyleSelected, { borderColor: theme.style.success.main }]}
+          />
+        </View>
+      }
       <Table
         rowStyle={styles.rowStyle}
         columns={columns}
@@ -174,6 +204,33 @@ const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
     paddingBottom: 36,
+    paddingHorizontal: 6
+  },
+  paginationContainer: {
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  pagerContainer: {
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginLeft: 8,
+
+  },
+  pagerButtonViewStyle: {
+    width: 50,
+    height: 50,
+    padding: 5
+  },
+  pagerTitleStyle: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   headerContainer: {
     // backgroundColor: GlobalStyles.colors.primary400,

@@ -11,21 +11,27 @@ import _log from 'react-dev-log';
 import CustomerDocumentsScreen from '../contentScreen/CustomerDocumentsScreen';
 import IconButton from '../../components/ui/IconButton';
 import { confirmAndSendOrder, setSelectedOrder } from '../../store/redux/slices/ordersSlice';
-// import { getSelectedCustomer } from '../../store/redux/selectors/selecteds';
+import CustomerRoutesScreen from '../contentScreen/CustomerRoutesScreen';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const dispatch = useDispatch();
   const { selectedCustomer } = useSelector(state => state.selecteds);
   const { selectedOrder } = useSelector(state => state.orders);
   const theme = useSelector(getTheme);
-  // const selectedCustomer = ''
 
+  // console.log('selected customer', selectedCustomer);
+
+
+
+  /**
+   * Подтвердить и отправить заявку
+   */
   const shareCurrentOrder = () => {
     const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
     console.log('res', res);
   };
 
-  // _log('/screens/drawerScreen/CustomerScreensDrawer/');
+
   const pressShareIconHandler = () => {
     Alert.alert(
       '',
@@ -209,6 +215,18 @@ const CustomerScreensDrawer = ({ navigation }) => {
         items: [headerItems[1], headerItems[2]],
       },
     },
+    {
+      name: 'CustomerRoutesScreen',
+      component: CustomerRoutesScreen,
+      drawer: {
+        label: 'Маршруты',
+      },
+      header: {
+        style: { backgroundColor: theme.style.drawer.header.bg },
+        title: 'Маршруты',
+        items: [headerItems[1], headerItems[2]],
+      },
+    },
   ];
 
   const screenOptions = {
@@ -226,6 +244,11 @@ const CustomerScreensDrawer = ({ navigation }) => {
 
   return (
     <ScreenWithDrawer
+      initialRouteName={
+        Array.isArray(selectedCustomer?.draftOrders) && selectedCustomer.draftOrders.length > 1
+          ? 'CustomerDocumentsScreen'
+          : 'CustomerOrderScreen'
+      }
       screens={screens}
       theme={theme}
       onChangeScreen={changeScreenHandler}

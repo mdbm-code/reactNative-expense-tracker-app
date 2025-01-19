@@ -18,6 +18,7 @@ const breakLongWord = (word) => {
 };
 
 const ScreenWithDrawer = ({
+  initialRouteName,
   drawerTitle,
   screens,
   theme,
@@ -348,9 +349,12 @@ const ScreenWithDrawer = ({
     );
   };
 
+  console.log('initialRouteName', initialRouteName);
+
+
   return (
     <Drawer.Navigator
-      initialRouteName={currentScreen?.name ? currentScreen.name : null} // Устанавливаем начальный экран
+      initialRouteName={initialRouteName ? initialRouteName : currentScreen?.name ? currentScreen.name : null} // Устанавливаем начальный экран
       screenOptions={({ navigation }) => ({
         header: () => (
           <CustomHeader

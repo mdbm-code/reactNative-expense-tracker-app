@@ -3,18 +3,16 @@ import { GlobalStyles } from '../../constans/styles';
 
 const Button = ({ children, onPress, mode, style, titleStyle }) => {
   return (
-    <View style={style}>
-      <Pressable
-        onPress={onPress}
-        style={({ pressed }) => pressed && styles.pressed}
-      >
-        <View style={[styles.button, mode === 'flat' && styles.flat]}>
-          <Text style={[styles.buttonText, titleStyle, mode === 'flat' && styles.flatText]}>
-            {children}
-          </Text>
-        </View>
-      </Pressable>
-    </View>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => pressed && styles.pressed}
+    >
+      <View style={[styles.button, mode === 'flat' && styles.flat, style]}>
+        <Text style={[styles.buttonText, titleStyle, mode === 'flat' && styles.flatText]}>
+          {children}
+        </Text>
+      </View>
+    </Pressable>
   );
 };
 

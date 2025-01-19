@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import Tally from '../components/Tally';
 import Selector from '../components/Selector';
 
-const ScreenWithDropdown = ({ rows, value, onSelect, children, title, footerContent }) => {
+const ScreenWithDropdown = ({ component, rows, value, onSelect, children, title, footerContent }) => {
   const theme = useSelector(getTheme);
   const modalOptionsContainerStyle = {
     padding: 20,
@@ -32,26 +32,27 @@ const ScreenWithDropdown = ({ rows, value, onSelect, children, title, footerCont
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <Tally color={theme.style.nav.bg} bg={theme.style.bg}>
-        <Selector
-          value={value}
-          onSelect={onSelect}
-          isMultiple={false}
-          rows={rows}
-          dropdownContainerStyle={styles.dropdownContainerStyle}
-          dropdownStyle={{
-            backgroundColor: theme.style.bars[2].bg,
-            borderRadius: 15,
-          }}
-          selectedItemStyle={[
-            styles.selectedItemStyle,
-            { color: theme.style.customerRouter.text },
-          ]}
-          modalControls={{
-            modalOptionsContainerStyle,
-          }}
-          listComponentStyles={{ marginBottom: 20, marginTop: 20 }}
-          renderFooter={renderFooter}
-        />
+        {component ? component :
+          <Selector
+            value={value}
+            onSelect={onSelect}
+            isMultiple={false}
+            rows={rows}
+            dropdownContainerStyle={styles.dropdownContainerStyle}
+            dropdownStyle={{
+              backgroundColor: theme.style.bars[2].bg,
+              borderRadius: 15,
+            }}
+            selectedItemStyle={[
+              styles.selectedItemStyle,
+              { color: theme.style.customerRouter.text },
+            ]}
+            modalControls={{
+              modalOptionsContainerStyle,
+            }}
+            listComponentStyles={{ marginBottom: 20, marginTop: 20 }}
+            renderFooter={renderFooter}
+          />}
       </Tally>
       {title && <Text style={styles.infoText}>{title}</Text>}
       {children}

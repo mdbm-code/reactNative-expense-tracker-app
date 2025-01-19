@@ -13,6 +13,52 @@ function isSameDate(date1, date2) {
   );
 }
 
+
+export const getSelector_customerRouteList = () =>
+  createSelector(
+    [getRoutesCatalog, getSelecteds],
+    (routesCatalog, selecteds) => {
+
+      const managerCode = selecteds?.selectedManager;
+      const customerCode = selecteds?.selectedCustomer?.code;
+
+      if (!managerCode) return 'Менеджер не выбран';
+      if (!customerCode) return 'Покупатель не выбран';
+
+      const managerRoot = routesCatalog.find((item) => item.managerCode === managerCode);
+      if (!managerRoot) {
+        return `Маршруты для менеджера [${managerCode}] не найдены`;
+      }
+
+      const managerRoutes = managerRoot?.routes;
+      if (!Array.isArray(managerRoutes) || managerRoutes.length === 0) {
+        return `Маршруты для менеджера [${managerCode}] не заполнены`;
+      }
+
+      const customerRoutes = [];
+      managerRoutes.forEach((route) => {
+        const pointIndex = route.points.findIndex((point) => point.customerCode === customerCode);
+        if (pointIndex !== -1) {
+          customerRoutes.push(route?.routeCode);
+        }
+      });
+      // managerRoutes.find((item) => item.routeCode === routeCode);
+      const routes = managerRoutes.map((route, index) => (
+        {
+          code: route.routeCode,
+          title: route?.title || `Маршрут ${route?.routeCode}`,
+          checked: customerRoutes.includes(route?.routeCode),
+          sort: index
+        }
+      ));
+
+      return routes
+    }
+  );
+
+
+
+
 export const selectCustomers = createSelector(
   [getCustomers, getSelecteds, getRoutesCatalog, getOrders],
   (customers, selecteds, routesCatalog, orders) => {
@@ -63,7 +109,7 @@ export const selectCustomers = createSelector(
       }, {})
       : {};
 
-    if (searchString) {
+    if (typeof searchString === 'string' && searchString) {
       return customers
         .filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()))
         .map(item => ({

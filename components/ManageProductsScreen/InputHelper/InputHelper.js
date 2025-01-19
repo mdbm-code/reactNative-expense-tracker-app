@@ -26,11 +26,12 @@ const InputHelper = ({ values, postValue, theme, onPress }) => {
               key={index}
               titleStyle={[
                 styles.rowFooterButtonText,
-                { color: theme.style?.bars[2].text },
+                { color: theme.style.text.main },
               ]}
               style={[
                 styles.rowFooterButton,
-                { borderColor: theme.style?.bars[1]?.bg },
+                { borderColor: theme.style.text.main },
+                { width: 40, height: 40 },
               ]}
               onPress={() => onPress(item)}
             >
@@ -41,14 +42,15 @@ const InputHelper = ({ values, postValue, theme, onPress }) => {
           <Button
             titleStyle={[
               styles.rowFooterButtonText,
-              { color: theme.style?.bars[2].text },
+              { color: theme.style.text.main },
             ]}
             style={[
               styles.rowFooterButton,
               {
                 borderColor: theme.style?.warning.main,
-                backgroundColor: theme.style?.warning.light,
-              },
+
+                // backgroundColor: theme.style?.warning.light,
+              }, { width: 40, height: 40 },
             ]}
             onPress={() => onPress(postValue)}
           >
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: 'green',
+    // borderColor: 'green',
   },
   rowFooterButtonText: {
     fontWeight: 'bold',
@@ -77,6 +79,6 @@ const styles = StyleSheet.create({
   rowFooterLastButton: {
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: 'blue',
+    // borderColor: 'blue',
   },
 });

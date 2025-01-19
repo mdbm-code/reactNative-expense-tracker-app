@@ -19,8 +19,8 @@ import ManageProductsScreen from './screens/ManageProductsScreen/';
 // import DocumentListScreen from './screens/DocumentListScreen.js';
 import SettingsScreen from './screens/SettingsScreen.js';
 import DocumentScreen from './screens/DocumentScreen.js';
-import ThemeScreen from './screens/ThemeScreen.js';
-import CustomerScreens from './screens/CustomerScreens/';
+// import ThemeScreen from './screens/ThemeScreen.js';
+// import CustomerScreens from './screens/CustomerScreens/';
 import SummaryScreen from './screens/SummaryScreen.js';
 import DocumentsScreen from './screens/DocumentsScreen.js';
 import CustomerPromoScreen from './screens/CustomerScreens/screens/CustomerPromoScreen.js';
@@ -33,34 +33,8 @@ import Updater from './components/Updater/index.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
-const SettingsDrawer = createDrawerNavigator();
+// const SettingsDrawer = createDrawerNavigator();
 
-function SettingsDrawerNavigator({ theme, stackNavigation }) {
-  return (
-    <SettingsDrawer.Navigator
-      screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: theme.style.nav.bg },
-        headerTintColor: theme.style.nav.text,
-      })}
-    >
-      <SettingsDrawer.Screen
-        name='SettingsMain'
-        title='aaa'
-        component={SettingsScreen}
-        options={{
-          drawerLabel: 'Основные',
-        }}
-      />
-      <SettingsDrawer.Screen
-        name='ThemeScreen'
-        component={ThemeScreen}
-        options={{
-          drawerLabel: 'Цветовая схема',
-        }}
-      />
-    </SettingsDrawer.Navigator>
-  );
-}
 
 function MainScreens({ navigation }) {
   const theme = useSelector(getTheme);
@@ -152,7 +126,6 @@ function AppContent() {
         <Stack.Navigator
           onStateChange={(state) => {
             const currentRoute = state.routes[state.index];
-            // console.log('Stack.Navigator.onStateChange', currentRoute.name);
           }}
           screenOptions={{
             // headerShown: false, // Скрыть заголовок BottomTab.Navigator
@@ -169,16 +142,6 @@ function AppContent() {
               headerShown: false,
             }}
           />
-          {/* <Stack.Screen
-            name='CustomerScreens'
-            component={CustomerScreens} //страница клиента
-            options={{
-              headerStyle: { backgroundColor: theme.bar.color },
-              headerTintColor: theme.bar.active,
-              // headerBackTitle: '',
-              // headerBackTitleVisible: false,
-            }}
-          /> */}
           <Stack.Screen
             name='CustomerScreensDrawer'
             component={CustomerScreensDrawer} //страница клиента

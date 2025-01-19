@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { __round } from '../../../util/numbers';
 // import { getFormattedDate } from '../../../util/date';
 const getSelecteds = (state) => state.selecteds;
 const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
@@ -29,13 +30,13 @@ export const getSelector_customerOrderList = (pageNumber) =>
       // Предполагается, что selectedCustomer имеет поле code
       const customerCode = selectedCustomer.code;
 
-      const customerDocuments = catalog.filter((doc, index) =>
-        doc?.customerCode === customerCode
-          ? index >= startIndex && index <= endIndex
-          : false
-      ).sort((a, b) => b.date - a.date); //свежие сверху
+      const allCustomerDocuments = catalog.filter((doc) => doc?.customerCode === customerCode);
+      const pages = allCustomerDocuments.length / numberPerPage;
+      const portion = allCustomerDocuments
+        .filter((doc, index) => index >= startIndex && index <= endIndex)
+        .sort((a, b) => b.date - a.date); //свежие сверху
 
-      return customerDocuments;
+      return { rows: portion, pages: __round(pages, 'up'), perPage: numberPerPage, };
     }
   );
 

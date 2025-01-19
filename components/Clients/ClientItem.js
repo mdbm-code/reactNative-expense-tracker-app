@@ -45,7 +45,7 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
 
   function selectCustomerHandler(order) {
     if (order) {
-      console.log('selectCustomerHandler(order):', order);
+      // console.log('selectCustomerHandler(order):', order);
       dispatch(setSelectedOrder(order));
     } else {
       dispatch(setSelectedOrder({}));
@@ -86,7 +86,7 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   const Order = ({ data }) => {
     return (
       <Text style={styles.order}>
-        Заявка №{data?.code} от {data?.formattedDate} сумма: {data?.totalAmount}
+        №{data?.code} от {data?.formattedDate} сумма: {data?.totalAmount}
       </Text>
     );
   }
@@ -94,7 +94,7 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   const OrderRow = ({ order }) => {
     const cells = {
       code: order.code,
-      title: `Заявка № ${order.code}`,// от ${order?.formattedDate}
+      title: `№ ${order.code}`,// от ${order?.formattedDate}
       status: getIcon(order.status),
       sumContent: <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
         {order.totalReturn === 0 ? null :
