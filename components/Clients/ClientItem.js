@@ -1,5 +1,12 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import {
@@ -8,27 +15,12 @@ import {
 } from '../../store/redux/slices/selectedsSlice';
 import IconButton from '../ui/IconButton';
 import GridTableRow from '../GridTable/GridTableRow';
-import { setSelectedOrder } from '../../store/redux/slices/ordersSlice';
+import {
+  confirmAndSendOrder,
+  setSelectedOrder,
+} from '../../store/redux/slices/ordersSlice';
 import TableRow from '../GridTable/v2/TableRow';
 import { Ionicons } from '@expo/vector-icons';
-
-
-function getIcon(status) {
-  switch (status) {
-    case 'draft':
-      return 'scan-outline';
-    case 'failed':
-      return 'cloud-offline-outline';
-    case 'accepted':
-      return 'cloud-done-outline';
-    case 'delivered':
-      return 'star-outline';
-    case 'canceled':
-      return 'trash-outline';
-    default:
-      return 'square-outline';
-  }
-}
 
 const ClientItem = React.memo(({ item, theme, editedId }) => {
   const navigation = useNavigation();
@@ -58,9 +50,10 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
   const containerStyle = [
     styles.container,
     {
-      backgroundColor: item?.draftOrders?.length > 0
-        ? theme.style.customerList.accent
-        : theme.style.customerList.bg2,
+      backgroundColor:
+        item?.draftOrders?.length > 0
+          ? theme.style.customerList.accent
+          : theme.style.customerList.bg2,
       shadowColor: theme.style.customerList.shadow,
     },
   ];
@@ -89,28 +82,134 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
         №{data?.code} от {data?.formattedDate} сумма: {data?.totalAmount}
       </Text>
     );
+  };
+
+  function getIcon(status) {
+    switch (status) {
+      case 'draft':
+        return ['share-outline', theme.style.warning.light];
+      case 'accepted':
+        return ['cloud-offline-outline', theme.style.error.light];
+      case 'failed':
+        return ['cloud-done-outline', theme.style.success.light];
+      case 'delivered':
+        return ['star-outline', theme.style.info.light];
+      case 'canceled':
+        return [
+          'trash-outline',
+          theme.style.customerList.bg2,
+          theme.style.error.dark,
+        ];
+      default:
+        return ['time-outline', theme.style.info.light];
+    }
+  }
+
+  const shareCurrentOrder = (orderCode) => {
+    const res = dispatch(confirmAndSendOrder(orderCode));
+    console.log('res', res);
+  };
+
+  function onPressShareOrderHandler(orderCode) {
+    Alert.alert(
+      '',
+      'Отправить заявку на сервер ?',
+      [
+        {
+          text: 'Отмена',
+          // onPress: () => console.log('Удалить нажато'),
+          style: 'cancel',
+        },
+        {
+          text: 'Да',
+          onPress: () => shareCurrentOrder(orderCode),
+          style: 'default',
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => console.log('Alert был закрыт'), // Вызывается при закрытии
+      } // Если true, Alert можно закрыть, нажав вне него);
+    );
   }
 
   const OrderRow = ({ order }) => {
+    const iconSet = getIcon(order.status);
     const cells = {
       code: order.code,
-      title: `№ ${order.code}`,// от ${order?.formattedDate}
-      status: getIcon(order.status),
-      sumContent: <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-        {order.totalReturn === 0 ? null :
-          <Text style={{ color: theme.style.text.main, marginRight: 10, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', color: theme.style.error.main }}>-{order.totalReturn}</Text>
-        }
-        <Text style={{ color: theme.style.text.main, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', }}>{order.totalAmount}</Text>
-
-      </View >
+      title: `№ ${order.code}`, // от ${order?.formattedDate}
+      status: iconSet[0],
+      iconBg: iconSet[1],
+      iconColor: iconSet[2],
+      sumContent: (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
+        >
+          {order.totalReturn === 0 ? null : (
+            <Text
+              style={{
+                color: theme.style.text.main,
+                marginRight: 10,
+                textAlign: 'left',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                color: theme.style.error.main,
+              }}
+            >
+              -{order.totalReturn}
+            </Text>
+          )}
+          <Text
+            style={{
+              color: theme.style.text.main,
+              textAlign: 'right',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+            }}
+          >
+            {order.totalAmount}
+          </Text>
+        </View>
+      ),
     };
-    return (<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1 }}>
-      <View style={{ flex: 1 }}><Ionicons name={cells.status} size={20} color={theme.style.text.main} /></View>
-      <View style={{ flex: 6 }}><Text style={{ color: theme.style.text.main }}>{cells.title}</Text></View>
-      <View style={{ flex: 7 }}>{cells.sumContent}</View>
-    </View>);
-  }
-
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderTopWidth: 1,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onPressShareOrderHandler(order.code)}
+          style={{
+            flex: 1,
+            marginRight: 12,
+            backgroundColor: cells.iconBg,
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8,
+            padding: 8,
+            marginBottom: 6,
+          }}
+        >
+          <Ionicons
+            name={cells.status}
+            size={24}
+            color={cells.iconColor || theme.style.text.main}
+          />
+        </TouchableOpacity>
+        <View style={{ flex: 6 }}>
+          <Text style={{ color: theme.style.text.main }}>{cells.title}</Text>
+        </View>
+        <View style={{ flex: 7 }}>{cells.sumContent}</View>
+      </View>
+    );
+  };
 
   if (item?.draftOrders?.length > 1) {
     return (
@@ -130,22 +229,16 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
               key={index}
               onLongPress={onLongHandler}
               onPress={() => selectCustomerHandler(order)}
-              style={[({ pressed }) => pressed && styles.pressed,]}
+              style={[({ pressed }) => pressed && styles.pressed]}
               android_ripple={true}
             >
               <OrderRow order={order} />
             </Pressable>
           );
         })}
-
-      </View >
+      </View>
     );
   }
-
-
-
-
-
 
   // if (Array.isArray(item?.draftOrders)) {
   //   const cells = [
@@ -191,9 +284,11 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
             name={item?.visit === 1 ? 'footsteps-outline' : 'call-outline'}
           /> */}
         </View>
-        {Array.isArray(item?.draftOrders) && item?.draftOrders[0]
-          ? <OrderRow order={item?.draftOrders[0]} />
-          : <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>}
+        {Array.isArray(item?.draftOrders) && item?.draftOrders[0] ? (
+          <OrderRow order={item?.draftOrders[0]} />
+        ) : (
+          <Text style={[...textSubtitle, styles.address]}>{item?.address}</Text>
+        )}
       </View>
     </Pressable>
   );

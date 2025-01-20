@@ -30,11 +30,11 @@ import ManageOrderProductsDrawer from './screens/ManageProductsScreen/ManageOrde
 import CustomerOrderManageDrawer from './screens/drawerScreen/CustomerOrderManageDrawer.js';
 import CustomerReturnManageDrawer from './screens/drawerScreen/CustomerReturnManageDrawer.js';
 import Updater from './components/Updater/index.js';
+import RoutesManageScreen from './screens/contentScreen/RoutesManageScreen.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 // const SettingsDrawer = createDrawerNavigator();
-
 
 function MainScreens({ navigation }) {
   const theme = useSelector(getTheme);
@@ -171,11 +171,18 @@ function AppContent() {
             component={CustomerReturnManageDrawer} //!подбор товаров на возврат
           />
           <Stack.Screen
+            name='RoutesManageScreen'
+            component={RoutesManageScreen} //!подбор товаров на возврат
+            options={{
+              title: 'Управление маршрутами',
+              presentation: 'card',
+              headerStyle: { backgroundColor: theme.style.bar },
+              headerTintColor: theme.style.nav.text,
+            }}
+          />
+          <Stack.Screen
             name='DocumentScreen'
             component={DocumentScreen} //подбор товаров в заявку клиента
-          // options={{
-          //   presentation: 'fullScreenModal',
-          // }}
           />
         </Stack.Navigator>
       </NavigationContainer>

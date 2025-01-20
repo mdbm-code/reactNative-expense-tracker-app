@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import { __round } from '../../../util/numbers';
+import { filterByDateRange } from '../../../util/arrays';
 // import { getFormattedDate } from '../../../util/date';
 const getSelecteds = (state) => state.selecteds;
 const getSelectedCustomer = (state) => state.selecteds.selectedCustomer;
@@ -10,12 +11,18 @@ const getProducts = (state) => state.products;
 // const getDocuments = (state) => state.documents.catalog;
 const getOrders = (state) => state.orders;
 
-
-export const getSelector_customerOrderList = (pageNumber) =>
+export const getSelector_customerOrderList = (pageNumber, periodCode, by) =>
   createSelector(
     [getOrders, getSelectedCustomer],
     (orders, selectedCustomer) => {
-      if (!selectedCustomer) return 'Покупатель не выбран';
+      if (!by) return 'Не указан признак основного отбора'; //byCustomer, byManager
+      if (
+        !periodCode ||
+        !['D', 'YD', 'W', 'M', 'Q', 'Y', 'A'].includes(periodCode)
+      )
+        return 'Не указан период'; //D - день, YD - вчера, W - неделю, M - месяц, Q-квартал, Y - год, A - все
+      if (by === 'byCustomer' && !selectedCustomer)
+        return 'Покупатель не выбран';
 
       const catalog = orders?.catalog || [];
       const numberPerPage = orders?.settings?.itemsPerPage || 30;
@@ -29,27 +36,34 @@ export const getSelector_customerOrderList = (pageNumber) =>
 
       // Предполагается, что selectedCustomer имеет поле code
       const customerCode = selectedCustomer.code;
+      let documents = catalog;
+      if ((by = 'byCustomer')) {
+        documents = catalog.filter((doc) => doc?.customerCode === customerCode);
+      }
 
-      const allCustomerDocuments = catalog.filter((doc) => doc?.customerCode === customerCode);
-      const pages = allCustomerDocuments.length / numberPerPage;
-      const portion = allCustomerDocuments
+      documents = filterByDateRange(periodCode, documents);
+
+      const pages = documents.length / numberPerPage;
+      const portion = documents
         .filter((doc, index) => index >= startIndex && index <= endIndex)
         .sort((a, b) => b.date - a.date); //свежие сверху
 
-      return { rows: portion, pages: __round(pages, 'up'), perPage: numberPerPage, };
+      return {
+        rows: portion,
+        pages: __round(pages, 'up'),
+        perPage: numberPerPage,
+      };
     }
   );
 
-
-export const getSelector_customerOrder = (query) => createSelector(
-  [getProducts, getOrders],
-  (products, orders) => {
-
+export const getSelector_customerOrder = (query) =>
+  createSelector([getProducts, getOrders], (products, orders) => {
     const orderCode = orders.selectedOrder?.code;
     if (!orderCode) return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
 
     if (!query?.typeQty) return 'Тип данных (return или order) не указан';
-    if (!['return', 'order'].includes(query?.typeQty)) return `Указанное тип данных [${query?.typeQty}] не найден`;
+    if (!['return', 'order'].includes(query?.typeQty))
+      return `Указанное тип данных [${query?.typeQty}] не найден`;
     // if (!query?.stateName) return 'Имя таблицы (draft или confirmed) не указано';
     // if (!['draft', 'confirmed'].includes(query?.stateName)) return `Указанное имя таблицы [${query?.from}] не найдено`;
 
@@ -61,7 +75,7 @@ export const getSelector_customerOrder = (query) => createSelector(
     const productsCatalog = products.catalog || [];
     const productsInventory = products.inventory || {};
 
-    const orderIndex = orderList.findIndex(item => item.code === orderCode);
+    const orderIndex = orderList.findIndex((item) => item.code === orderCode);
     // const orderIndex = orderList.findIndex(item => item.customerCode === customerCode);
     if (orderIndex === -1) {
       return 'Начните подбор товаров'; // Заявка для указанного покупателя не найдена;
@@ -72,19 +86,21 @@ export const getSelector_customerOrder = (query) => createSelector(
       return 'Начните подбор товаров'; //  'Нет товаров в заказе';
     }
 
-
     const productsCodes = rows
-      .filter(row => row[`${query.typeQty}Qty`]) // Фильтруем товары с не нулевым количеством
-      .map(row => row.productCode); // Получаем коды товаров из заявки 
+      .filter((row) => row[`${query.typeQty}Qty`]) // Фильтруем товары с не нулевым количеством
+      .map((row) => row.productCode); // Получаем коды товаров из заявки
 
     const rowData = rows.reduce((acc, row) => {
-      acc[row.productCode] = { qty: row[`${query.typeQty}Qty`], price: row.price }; //вытягиваем из заявки коичество и цену
+      acc[row.productCode] = {
+        qty: row[`${query.typeQty}Qty`],
+        price: row.price,
+      }; //вытягиваем из заявки коичество и цену
       return acc;
     }, {});
 
     const toReturn = productsCatalog
-      .filter(product => productsCodes.includes(product.code))
-      .map(product => ({
+      .filter((product) => productsCodes.includes(product.code))
+      .map((product) => ({
         code: product.code,
         name: product.name,
         unit: product.unit,
@@ -95,8 +111,7 @@ export const getSelector_customerOrder = (query) => createSelector(
       }));
 
     return toReturn.length > 0 ? toReturn : 'Начните подбор товаров';
-  }
-);
+  });
 // export const getSelector_customerOrder = (query) => createSelector(
 //   [getProducts, getOrders],
 //   (products, orders) => {
@@ -128,10 +143,9 @@ export const getSelector_customerOrder = (query) => createSelector(
 //       return 'Начните подбор товаров'; //  'Нет товаров в заказе';
 //     }
 
-
 //     const productsCodes = rows
 //       .filter(row => row[`${query.typeQty}Qty`]) // Фильтруем товары с не нулевым количеством
-//       .map(row => row.productCode); // Получаем коды товаров из заявки 
+//       .map(row => row.productCode); // Получаем коды товаров из заявки
 
 //     const rowData = rows.reduce((acc, row) => {
 //       acc[row.productCode] = { qty: row[`${query.typeQty}Qty`], price: row.price }; //вытягиваем из заявки коичество и цену
@@ -157,12 +171,13 @@ export const getSelector_customerOrder = (query) => createSelector(
 export const selectManyOrdersForCustomer = createSelector(
   [getOrders, (state, query) => query],
   (orders, query) => {
-
     if (!query?.customerCode) return 'Покупатель не выбран';
     if (!query?.from) return 'Имя таблицы (draft или confirmed) не указано';
-    if (!['draft', 'confirmed'].includes(query?.from)) return `Указанное имя таблицы [${query?.from}] не найдено`;
+    if (!['draft', 'confirmed'].includes(query?.from))
+      return `Указанное имя таблицы [${query?.from}] не найдено`;
     if (!query?.by) return 'Тип данных (return или order) не указан';
-    if (!['return', 'order'].includes(query?.by)) return `Указанное тип данных [${query?.by}] не найден`;
+    if (!['return', 'order'].includes(query?.by))
+      return `Указанное тип данных [${query?.by}] не найден`;
 
     const pageNumber = Number(query?.page) || 1;
     const itemsPerPage = Number(orders?.settings.itemsPerPage) || 10;
@@ -173,20 +188,23 @@ export const selectManyOrdersForCustomer = createSelector(
       return []; // Если заказы не найдены, возвращаем пустой массив
     }
 
-    const customerOrders = orderList.filter(item => item.customerCode === customerCode);
+    const customerOrders = orderList.filter(
+      (item) => item.customerCode === customerCode
+    );
     if (customerOrders.length === 0) {
       return []; // Заявка для указанного покупателя не найдена;
     }
 
     const startIndex = (pageNumber - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, customerOrders.length - 1);
+    const endIndex = Math.min(
+      startIndex + itemsPerPage,
+      customerOrders.length - 1
+    );
 
     const toReturn = customerOrders.slice(startIndex, endIndex); // Получаем нужные заказы для указанной страницы
     return toReturn; // Возвращаем массив данных, даже если пустой
   }
 );
-
-
 
 // export const selectDraftOrderWithPositiveOrderQty = createSelector(
 //   [getProducts, getSelectedCustomer, getOrders],
@@ -208,7 +226,6 @@ export const selectManyOrdersForCustomer = createSelector(
 //             rowData[row.productCode] = { orderQty: row.orderQty, returnQty: row.returnQty, price: row.price };
 //             productsCodes.push(row.productCode);
 //           });
-
 
 //           const toReturn = productsCatalog
 //             .filter((product) => productsCodes.includes(product.code))

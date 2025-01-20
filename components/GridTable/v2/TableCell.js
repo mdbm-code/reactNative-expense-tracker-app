@@ -9,6 +9,8 @@ import {
 import React, { useState } from 'react';
 
 const CustomTextInput = ({
+  
+  keyboardType,
   autoFocus,
   inputStyle,
   initialValue,
@@ -51,7 +53,8 @@ const CustomTextInput = ({
         onSubmitEditing={handleSubmitEditing} // Сохраняем значение при нажатии "Done"
         returnKeyType='done' // Устанавливаем тип клавиши "Done"
         // keyboardType='decimal-pad' // Устанавливаем тип клавиатуры numeric
-        keyboardType='numeric' // Устанавливаем тип клавиатуры numeric
+        keyboardType={keyboardType || 'numeric'} // Устанавливаем тип клавиатуры
+        // numeric | default|email-address | numeric |phone-pad |url |decimal-pad |visible-password |ascii-capable |
         // autoFocus // Автоматически устанавливаем фокус
       />
     </KeyboardAvoidingView>
@@ -61,6 +64,7 @@ const CustomTextInput = ({
 const TableCell = ({
   autoFocus,
   as,
+  keyboardType,
   onSubmitEditing,
   onBlur,
   onValueChange,
@@ -82,6 +86,7 @@ const TableCell = ({
   if (as === 'input') {
     return (
       <CustomTextInput
+        keyboardType={keyboardType}
         autoFocus={autoFocus}
         inputStyle={inputStyle}
         initialValue={children}

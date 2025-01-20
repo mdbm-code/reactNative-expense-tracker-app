@@ -1,24 +1,21 @@
-import { StyleSheet, View, Text } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import { getTheme } from '../../store/redux/selectors/theme';
 import FallbackText from '../../components/FallbackText';
-import { getFormattedDate } from '../../util/date';
 import Table from '../../components/GridTable/v2/Table';
-import { getSelector_customerOrderList } from '../../store/redux/selectors/orders';
-import { setSelectedOrderByCode } from '../../store/redux/slices/ordersSlice';
-import Pager from '../../components/ui/Pager/Pager';
 import { getSelector_customerRouteList } from '../../store/redux/selectors/routes';
+import {
+  thunk_addCustomerToRoute,
+  thunk_removeCustomerFromRoute,
+} from '../../store/redux/slices/routesSlice';
 
 const CustomerRoutesScreen = () => {
   const dispatch = useDispatch();
-  const [page, setPage] = useState(1);
   const selector = getSelector_customerRouteList();
   const rows = useSelector(selector);
   const theme = useSelector(getTheme);
 
-  console.log('rows', rows);
   if (typeof rows === 'string')
     return (
       <FallbackText titleStyle={{ color: theme.style.text.main }}>
@@ -28,62 +25,19 @@ const CustomerRoutesScreen = () => {
 
   function pressOnItemHandler(payload) {
     console.log(payload);
-
+    const routeCode = payload?.item?.code;
+    if (payload?.item?.checked === true) {
+      const result = dispatch(thunk_removeCustomerFromRoute(routeCode));
+      console.log(result);
+    } else if (payload?.item?.checked === false) {
+      const result = dispatch(thunk_addCustomerToRoute(routeCode));
+      console.log(result);
+    }
   }
 
 
 
-
-  const redRowStyle = {
-    // cond: {
-    //   key: 'code',
-    //   inc: [selectedOrder?.code],
-    //   iftrue: {
-    //     borderLeftWidth: 1,
-    //     padding: 5,
-    //     backgroundColor: theme.style.drawer.header.bg,
-    //     height: 50
-    //   },
-    //   iffalse: {
-    //     borderLeftWidth: 1,
-    //     padding: 5,
-    //     backgroundColor: theme.style.customerList.bg2,
-    //     height: 50
-    //   },
-    // },
-  };
-
-  const redRowStyleIcon = {
-    // cond: {
-    //   key: 'code',
-    //   inc: [selectedOrder?.code],
-    //   iftrue: {
-    //     // borderLeftWidth: 1,
-    //     padding: 5,
-    //     backgroundColor: theme.style.drawer.header.bg,
-    //   },
-    //   iffalse: {
-    //     // borderLeftWidth: 1,
-    //     padding: 5,
-    //     backgroundColor: theme.style.customerList.bg2,
-    //   },
-    // },
-  };
-
   const columns = [
-    // {
-    //   id: 'status',
-    //   as: 'icon',
-    //   color: theme.style.text.main,
-    //   title: '',
-    //   flex: 1,
-    //   titleStyle: { color: theme.style.text.main },
-    //   viewStyle: redRowStyleIcon,
-    // },
-    // {
-    //   id: 'code',
-    //   hidden: true,
-    // },
     {
       id: 'title',
       title: 'Маршрут',
@@ -92,20 +46,11 @@ const CustomerRoutesScreen = () => {
       viewStyle: { height: 50 },
     },
 
-    // {
-    //   id: 'sumContent',
-    //   title: 'Суммы',
-    //   flex: 4,
-    //   as: 'component',
-    //   titleStyle: { textAlign: 'right', color: theme.style.text.main },
-    //   viewStyle: redRowStyle,
-    // },
-
     {
       id: 'checked',
       title: 'Выбран',
       as: 'checkbox',
-      tintColors: { true: theme.style.success.main, false: theme.style.bg },
+      tintColors: { true: theme.style.drawer.header.bg, false: theme.style.bg },
       flex: 3,
       titleStyle: { textAlign: 'left', color: theme.style.text.main },
       viewStyle: { borderColor: theme.style.text.main },
@@ -139,7 +84,7 @@ const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
     paddingBottom: 36,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   rowStyle: {
     borderBottomWidth: 1,

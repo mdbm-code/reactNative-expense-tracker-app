@@ -5,13 +5,22 @@ import { useSelector } from 'react-redux';
 import Tally from '../components/Tally';
 import Selector from '../components/Selector';
 
-const ScreenWithDropdown = ({ component, rows, value, onSelect, children, title, footerContent }) => {
+const ScreenWithDropdown = ({
+  onSwipe,
+  component,
+  rows,
+  value,
+  onSelect,
+  children,
+  title,
+  footerContent,
+}) => {
   const theme = useSelector(getTheme);
   const modalOptionsContainerStyle = {
     padding: 20,
     backgroundColor: theme.style.bars[2].bg,
     marginBottom: 20,
-  }
+  };
 
   const renderFooter = () => {
     return (
@@ -32,8 +41,11 @@ const ScreenWithDropdown = ({ component, rows, value, onSelect, children, title,
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <Tally color={theme.style.nav.bg} bg={theme.style.bg}>
-        {component ? component :
+        {component ? (
+          component
+        ) : (
           <Selector
+            onSwipe={onSwipe}
             value={value}
             onSelect={onSelect}
             isMultiple={false}
@@ -52,7 +64,8 @@ const ScreenWithDropdown = ({ component, rows, value, onSelect, children, title,
             }}
             listComponentStyles={{ marginBottom: 20, marginTop: 20 }}
             renderFooter={renderFooter}
-          />}
+          />
+        )}
       </Tally>
       {title && <Text style={styles.infoText}>{title}</Text>}
       {children}
@@ -90,6 +103,6 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   footer: {
-    minHeight: 30
-  }
+    minHeight: 30,
+  },
 });

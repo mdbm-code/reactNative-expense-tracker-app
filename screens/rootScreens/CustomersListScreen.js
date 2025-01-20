@@ -10,6 +10,7 @@ import {
 } from '../../store/redux/slices/selectedsSlice';
 // import { loadColors } from '../../store/redux/slices/themeSlice';
 import {
+  getSelector_selectedManagerRoutes,
   selectCustomers,
 } from '../../store/redux/selectors/routes';
 import { getTheme } from '../../store/redux/selectors/theme';
@@ -19,18 +20,21 @@ import SearchPanel from '../../components/SearchPanel';
 import IconButton from '../../components/ui/IconButton';
 import ScreenWithDropdown from '../ScreenWithDropdown';
 import ClientsList from '../../components/Clients/ClientsList';
-
+import Button from '../../components/ui/Button';
 
 const CustomersListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [searchString, setSearchString] = useState(''); // Поисковая строка
   const [showSearchPanel, setShowSearchPanel] = useState(false);
   const { selectedCustomerListItem } = useSelector((state) => state.selecteds);
+
+  const rotesSelector = getSelector_selectedManagerRoutes();
+  const options = useSelector(rotesSelector);
+
   const selecteds = useSelector((state) => state.selecteds);
   const points = useSelector(selectCustomers);
   const theme = useSelector(getTheme);
   // console.log('CustomersListScreen');
-
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -64,10 +68,11 @@ const CustomersListScreen = ({ navigation }) => {
     setShowSearchPanel(false);
   }
 
-
+  function onPressEditRouteList() {
+    navigation.navigate('RoutesManageScreen');
+  }
 
   // console.log('points', points);
-
 
   let content = <></>;
   if (typeof points === 'string') {
@@ -82,20 +87,32 @@ const CustomersListScreen = ({ navigation }) => {
     );
   }
 
+  let footerComponent = <></>;
+  footerComponent = (
+    <View>
+      <Button
+        onPress={onPressEditRouteList}
+        titleStyle={{ color: theme.style.text.main }}
+      >
+        Редактировать список
+      </Button>
+    </View>
+  );
+
   function selectRouteHandler(value) {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedRoute(value));
   }
 
-  const options = [
-    { label: 'Понедельник', value: '_1' },
-    { label: 'Вторник', value: '_2' },
-    { label: 'Среда', value: '_3' },
-    { label: 'Четверг', value: '_4' },
-    { label: 'Пятница', value: '_5' },
-    { label: 'Суббота', value: '_6' },
-    { label: 'Воскресенье', value: '_7' },
-  ];
+  // const options = [
+  //   { label: 'Понедельник', value: '_1' },
+  //   { label: 'Вторник', value: '_2' },
+  //   { label: 'Среда', value: '_3' },
+  //   { label: 'Четверг', value: '_4' },
+  //   { label: 'Пятница', value: '_5' },
+  //   { label: 'Суббота', value: '_6' },
+  //   { label: 'Воскресенье', value: '_7' },
+  // ];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
@@ -107,16 +124,21 @@ const CustomersListScreen = ({ navigation }) => {
         />
       )} */}
       <ScreenWithDropdown
-        component={showSearchPanel && <SearchPanel
-          onCancel={handleCancelSearch}
-          onSearch={handleSearch}
-          theme={theme}
-          value={searchString}
-          onChangeText={setSearchString}
-        />}
+        component={
+          showSearchPanel && (
+            <SearchPanel
+              onCancel={handleCancelSearch}
+              onSearch={handleSearch}
+              theme={theme}
+              value={searchString}
+              onChangeText={setSearchString}
+            />
+          )
+        }
         rows={options}
         value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}
+        footerContent={footerComponent}
       >
         {content}
       </ScreenWithDropdown>

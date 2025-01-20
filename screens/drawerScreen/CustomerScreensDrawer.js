@@ -10,18 +10,19 @@ import CustomerProfileScreen from '../contentScreen/CustomerProfileScreen';
 import _log from 'react-dev-log';
 import CustomerDocumentsScreen from '../contentScreen/CustomerDocumentsScreen';
 import IconButton from '../../components/ui/IconButton';
-import { confirmAndSendOrder, setSelectedOrder } from '../../store/redux/slices/ordersSlice';
+import {
+  confirmAndSendOrder,
+  setSelectedOrder,
+} from '../../store/redux/slices/ordersSlice';
 import CustomerRoutesScreen from '../contentScreen/CustomerRoutesScreen';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { selectedCustomer } = useSelector(state => state.selecteds);
-  const { selectedOrder } = useSelector(state => state.orders);
+  const { selectedCustomer } = useSelector((state) => state.selecteds);
+  const { selectedOrder } = useSelector((state) => state.orders);
   const theme = useSelector(getTheme);
 
   // console.log('selected customer', selectedCustomer);
-
-
 
   /**
    * Подтвердить и отправить заявку
@@ -30,7 +31,6 @@ const CustomerScreensDrawer = ({ navigation }) => {
     const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
     console.log('res', res);
   };
-
 
   const pressShareIconHandler = () => {
     Alert.alert(
@@ -70,14 +70,14 @@ const CustomerScreensDrawer = ({ navigation }) => {
           color={theme.style.text.main}
         />
       ),
-      headerRight: () => (
-        <IconButton
-          name='share-outline'
-          color={'white'}
-          size={30}
-          onPress={pressShareIconHandler}
-        />
-      ),
+      // headerRight: () => (
+      //   <IconButton
+      //     name='share-outline'
+      //     color={'white'}
+      //     size={30}
+      //     onPress={pressShareIconHandler}
+      //   />
+      // ),
     });
 
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
@@ -102,7 +102,6 @@ const CustomerScreensDrawer = ({ navigation }) => {
 
     // Очистка слушателя при размонтировании компонента
     return unsubscribe;
-
   }, [navigation, selectedCustomer]);
 
   const headerItems = {
@@ -245,7 +244,8 @@ const CustomerScreensDrawer = ({ navigation }) => {
   return (
     <ScreenWithDrawer
       initialRouteName={
-        Array.isArray(selectedCustomer?.draftOrders) && selectedCustomer.draftOrders.length > 1
+        Array.isArray(selectedCustomer?.draftOrders) &&
+        selectedCustomer.draftOrders.length > 1
           ? 'CustomerDocumentsScreen'
           : 'CustomerOrderScreen'
       }

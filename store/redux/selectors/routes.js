@@ -4,7 +4,6 @@ const getCustomers = (state) => state.customers.catalog;
 const getRoutesCatalog = (state) => state.routes.catalog;
 const getOrders = (state) => state.orders.catalog;
 
-
 function isSameDate(date1, date2) {
   return (
     date1.getFullYear() === date2.getFullYear() &&
@@ -13,19 +12,19 @@ function isSameDate(date1, date2) {
   );
 }
 
-
 export const getSelector_customerRouteList = () =>
   createSelector(
     [getRoutesCatalog, getSelecteds],
     (routesCatalog, selecteds) => {
-
       const managerCode = selecteds?.selectedManager;
       const customerCode = selecteds?.selectedCustomer?.code;
 
       if (!managerCode) return 'Менеджер не выбран';
       if (!customerCode) return 'Покупатель не выбран';
 
-      const managerRoot = routesCatalog.find((item) => item.managerCode === managerCode);
+      const managerRoot = routesCatalog.find(
+        (item) => item.managerCode === managerCode
+      );
       if (!managerRoot) {
         return `Маршруты для менеджера [${managerCode}] не найдены`;
       }
@@ -37,32 +36,63 @@ export const getSelector_customerRouteList = () =>
 
       const customerRoutes = [];
       managerRoutes.forEach((route) => {
-        const pointIndex = route.points.findIndex((point) => point.customerCode === customerCode);
+        const pointIndex = route.points.findIndex(
+          (point) => point.customerCode === customerCode
+        );
         if (pointIndex !== -1) {
           customerRoutes.push(route?.routeCode);
         }
       });
       // managerRoutes.find((item) => item.routeCode === routeCode);
-      const routes = managerRoutes.map((route, index) => (
-        {
-          code: route.routeCode,
-          title: route?.title || `Маршрут ${route?.routeCode}`,
-          checked: customerRoutes.includes(route?.routeCode),
-          sort: index
-        }
-      ));
+      const routes = managerRoutes.map((route, index) => ({
+        code: route.routeCode,
+        title: route?.title || `Маршрут ${route?.routeCode}`,
+        checked: customerRoutes.includes(route?.routeCode),
+        sort: index,
+      }));
 
-      return routes
+      return routes;
     }
   );
 
+export const getSelector_selectedManagerRoutes = () =>
+  createSelector(
+    [getRoutesCatalog, getSelecteds],
+    (routesCatalog, selecteds) => {
+      const managerCode = selecteds?.selectedManager;
+      if (!managerCode) return 'Менеджер не выбран';
 
+      const managerRoot = routesCatalog.find(
+        (item) => item.managerCode === managerCode
+      );
+      if (!managerRoot) {
+        return `Маршруты для менеджера [${managerCode}] не найдены`;
+      }
 
+      const managerRoutes = managerRoot?.routes;
+      if (!Array.isArray(managerRoutes) || managerRoutes.length === 0) {
+        return [];
+      }
+
+      const toReturn = managerRoutes.map((route) => {
+        const count = Array.isArray(route?.points) ? route.points.length : '';
+        const label = route?.title || `Маршрут ${route?.routeCode}`;
+        return {
+          code: route.routeCode,
+          value: route?.routeCode,
+          title: route?.title || label,
+          label: `${label} ${count > 0 ? '(' + count + ')' : ''}`,
+          count: count,
+        };
+      });
+
+      return toReturn;
+    }
+  );
 
 export const selectCustomers = createSelector(
   [getCustomers, getSelecteds, getRoutesCatalog, getOrders],
   (customers, selecteds, routesCatalog, orders) => {
-
     // console.log('draftOrders', draftOrders);
 
     const selectedManager = selecteds?.selectedManager;
@@ -89,7 +119,6 @@ export const selectCustomers = createSelector(
       return `Маршруты для выбранного менеджера [${managerCode}] не найдены`;
     }
 
-
     if (!routeCode && !searchString) {
       return 'Выберите маршрут';
     }
@@ -100,19 +129,21 @@ export const selectCustomers = createSelector(
 
     const customersOrders = Array.isArray(draftOrders)
       ? draftOrders.reduce((acc, item) => {
-        // Проверяем, существует ли массив для данного customerCode
-        if (!acc[item.customerCode]) {
-          acc[item.customerCode] = []; // Инициализируем массив, если его нет
-        }
-        acc[item.customerCode].push(item); // Добавляем элемент в массив
-        return acc;
-      }, {})
+          // Проверяем, существует ли массив для данного customerCode
+          if (!acc[item.customerCode]) {
+            acc[item.customerCode] = []; // Инициализируем массив, если его нет
+          }
+          acc[item.customerCode].push(item); // Добавляем элемент в массив
+          return acc;
+        }, {})
       : {};
 
     if (typeof searchString === 'string' && searchString) {
       return customers
-        .filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()))
-        .map(item => ({
+        .filter((item) =>
+          item.name.toLowerCase().includes(searchString.toLowerCase())
+        )
+        .map((item) => ({
           ...item,
           orders: customersOrders[item.code],
           // hasOrders: !!customersOrders[item.code],
@@ -135,11 +166,12 @@ export const selectCustomers = createSelector(
     const customersParams = {};
     const allowedCodes = foundRoute.points.reduce((acc, item) => {
       acc.push(item.customerCode);
-      customersParams[item.customerCode] = { sort: item.sort, visit: item.visit };
+      customersParams[item.customerCode] = {
+        sort: item.sort,
+        visit: item.visit,
+      };
       return acc;
     }, []);
-
-
 
     const toReturn = customers
       .filter((item) => allowedCodes.includes(item.code))
@@ -152,7 +184,8 @@ export const selectCustomers = createSelector(
       .sort((a, b) => a.sort - b.sort);
 
     return toReturn;
-  });
+  }
+);
 
 // export const selectCustomers = createSelector(
 //   [getCustomers, getSelecteds, getRoutesCatalog, getDraftOrders],
@@ -178,11 +211,9 @@ export const selectCustomers = createSelector(
 //       return `Маршруты для выбранного менеджера [${managerCode}] не найдены`;
 //     }
 
-
 //     if (!routeCode && !searchString) {
 //       return 'Выберите маршрут';
 //     }
-
 
 //     let customersOrders = {};
 //     if (Array.isArray(currentOrders) && currentOrders.length > 0) {
@@ -223,7 +254,6 @@ export const selectCustomers = createSelector(
 //     });
 
 //     // let customerWhoHasOrder = [];
-
 
 //     // const allowedCodes = [];
 //     // const points = foundRoute['points']

@@ -4,7 +4,6 @@ import TableCell from './TableCell';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '@react-native-community/checkbox';
 
-
 function parseValue(value) {
   if (typeof value === 'string') {
     // Проверяем, является ли строка числом
@@ -158,8 +157,6 @@ const TableRow = ({
     // }
   }
 
-
-
   function checkAutofocusCondition(rowValues, autoFocus) {
     // autoFocus: {
     //   or: [
@@ -180,10 +177,16 @@ const TableRow = ({
         const option = autoFocus.or[i];
         //если указано явно что для всех ставим true
         if (option?.iftrue == true) {
-          result = true; break;
+          result = true;
+          break;
         }
 
-        if (option?.cond && typeof option.cond === 'object' && option.cond?.key && 'eq' in option.cond) {
+        if (
+          option?.cond &&
+          typeof option.cond === 'object' &&
+          option.cond?.key &&
+          'eq' in option.cond
+        ) {
           const condValue = option.cond.eq;
           const cellValue = parseValue(rowValues[option.cond.key]);
           // console.log('rowValues', rowValues);
@@ -191,23 +194,46 @@ const TableRow = ({
           // console.log('option.cond.key', option.cond.key, 'cellValue', cellValue);
 
           if ('iftrue' in option.cond && condValue === cellValue) {
-            result = option.cond?.iftrue; break;
+            result = option.cond?.iftrue;
+            break;
           }
           if ('iffalse' in option.cond && !condValue === cellValue) {
-            result = option.cond?.iffalse; break;
+            result = option.cond?.iffalse;
+            break;
           }
-
-
-        }//конец блока с условием равенства
+        } //конец блока с условием равенства
       } //обход массива условий OR
-    }//конец блока сли это OR
+    } //конец блока сли это OR
     return result;
   }
 
+  function checkAsCondition(rowValues, as) {
+    if (typeof as === 'string') return as;
+    // console.log('as?.cond?.key', as?.cond?.key);
+    // console.log('rowValues[as?.cond?.key]', rowValues[as?.cond?.key]);
+    if (!as?.cond?.key || !rowValues[as?.cond?.key]) return null;
+    const cellValue = rowValues[as?.cond?.key];
+
+    let condValue;
+    if (as.cond?.eq) {
+      condValue = as.cond.eq;
+
+      if ('iftrue' in as.cond && cellValue === condValue) {
+        console.log(cellValue, '=', condValue);
+        console.log('return', as.cond.iftrue);
+        return as.cond.iftrue;
+      }
+      if ('iffalse' in as.cond && !cellValue === condValue) {
+        return as.cond.iffalse;
+      }
+      return null;
+    }
+  }
 
   return (
     <View style={[styles.container, !!rowStyle && rowStyle]}>
       {cells.map((cell, index) => {
+        const _as = checkAsCondition(rowValues, cell?.as);
 
         let autoFocus = cell?.autoFocus;
         if (typeof autoFocus === 'object') {
@@ -293,7 +319,7 @@ const TableRow = ({
           return null;
         }
 
-        if (cell?.as === 'input' && isEditing) {
+        if (_as === 'input' && isEditing) {
           return (
             <View
               key={index}
@@ -308,6 +334,7 @@ const TableRow = ({
                 flex={cell?.flex}
                 titleStyle={cell?.titleStyle}
                 inputStyle={cell?.inputStyle}
+                keyboardType={cell?.keyboardType}
                 as='input'
                 onSubmitEditing={onBlur}
                 onBlur={onBlur}
@@ -317,38 +344,56 @@ const TableRow = ({
               </TableCell>
             </View>
           );
-        } else if (cell?.as === 'checkbox') {
-          console.log('cell ', cell);
+        } else if (_as === 'checkbox') {
           return (
-            <TouchableOpacity key={index} onPress={() => onEdit(cell?.returnParams)} style={[styles.checkboxContainer,]}>
-              <View style={[styles.checkbox, { backgroundColor: !!cell?.title ? cell?.tintColors?.true : cell?.tintColors?.false }, viewStyle]} />
-              {/* <Text style={styles.label}>Согласен с условиями</Text> */}
+            <TouchableOpacity
+              key={index}
+              onPress={() => onEdit(cell?.returnParams)}
+              style={[styles.checkboxContainer]}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    backgroundColor: !!cell?.title
+                      ? cell?.tintColors?.true
+                      : cell?.tintColors?.false,
+                  },
+                  viewStyle,
+                ]}
+              />
             </TouchableOpacity>
-            // <View style={[styles.checkboxContainer, viewStyle]}>
-            //   <CheckBox
-            //     value={cell?.title}
-            //     onValueChange={() => onEdit(cell?.returnParams)}
-            //     tintColors={cell?.tintColors} // цвет чекбокса { true: '#f00', false: '#000' }
-            //   />
-            //   {/* <Text style={styles.label}>Лейб</Text> */}
-            // </View>
-          )
-        } else if (cell?.as === 'icon') {
+          );
+        } else if (_as === 'icon') {
           return (
-            <View key={index} style={[styles.iconContainer,
-            cell?.flex && styles[`flex${cell?.flex}`],
-            !!viewStyle && viewStyle,
-            ]}>
-              <Ionicons name={cell?.title} size={20} color={cell?.color} style={styles.icon} />
-            </View>);
-        } else if (cell?.as === 'component') {
+            <View
+              key={index}
+              style={[
+                styles.iconContainer,
+                cell?.flex && styles[`flex${cell?.flex}`],
+                !!viewStyle && viewStyle,
+              ]}
+            >
+              <Ionicons
+                name={cell?.title}
+                size={20}
+                color={cell?.color}
+                style={styles.icon}
+              />
+            </View>
+          );
+        } else if (_as === 'component') {
           return (
-            <View key={index} style={[
-              cell?.flex && styles[`flex${cell?.flex}`],
-              !!viewStyle && viewStyle,
-            ]}>
+            <View
+              key={index}
+              style={[
+                cell?.flex && styles[`flex${cell?.flex}`],
+                !!viewStyle && viewStyle,
+              ]}
+            >
               {cell?.title}
-            </View>);
+            </View>
+          );
         } else {
           return (
             <TouchableOpacity
@@ -400,7 +445,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 3,
-    borderWidth: 2,
+    borderWidth: 1,
     // borderColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',

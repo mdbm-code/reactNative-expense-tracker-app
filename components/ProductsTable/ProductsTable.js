@@ -22,11 +22,19 @@ import SearchPanel from '../SearchPanel';
 import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
 import { createUpdateOrderItem } from '../../store/redux/thunks/orders';
 
-const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest }) => {
+const ProductsTable = ({
+  rows,
+  goal,
+  headerColor,
+  theme,
+  searchable,
+  hideColums = [],
+}) => {
   const dispatch = useDispatch();
   const [showTableOptions, setShowTableOptions] = useState('');
-  const { selectedCustomer, selectedProduct, tableOptions } =
-    useSelector((state) => state.selecteds);
+  const { selectedCustomer, selectedProduct, tableOptions } = useSelector(
+    (state) => state.selecteds
+  );
   const [fontSize, setFontsize] = useState(tableOptions?.fontSize || 12);
   const productSales = useSelector(selectProductSales); //история продаж
   const [enteredSearchText, setEnteredSearchText] = useState('');
@@ -61,8 +69,6 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
       // }
     }
 
-
-
     const payload = {
       ...product,
       customerCode: selectedCustomer?.code,
@@ -76,7 +82,6 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
 
     if (goal === 'promo') {
     } else {
-
       // dispatch(findAndUpdateOrderRow(payload));
       dispatch(createUpdateOrderItem(payload));
     }
@@ -248,7 +253,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
 
   // console.log('redRowStyle', redRowStyle);
 
-  const columns = [
+  let columns = [
     {
       id: 'name',
       title: 'Товар',
@@ -323,9 +328,9 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
               eq: true,
               iftrue: true,
               iffalse: false,
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       titleStyle: {
         textAlign: 'center',
@@ -349,6 +354,9 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
       },
     },
   ];
+  if (Array.isArray(hideColums) && hideColums.length > 0) {
+    columns = columns.filter((col) => !hideColums.includes(col.id));
+  }
 
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
@@ -363,7 +371,7 @@ const ProductsTable = ({ rows, goal, headerColor, theme, searchable, showRest })
         onChangeText={handleSubmitEditing}
         selectedId={selectedProduct?.code}
         selectedRowFooter={selectedRowFooter}
-        onLongPress={() => { }}
+        onLongPress={() => {}}
       />
     </View>
   );
