@@ -90,7 +90,7 @@ const SynchronizationScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
-        rows={rows}
+        rows={rows || []}
         value={currentView}
         onSelect={onSelectView}
       >

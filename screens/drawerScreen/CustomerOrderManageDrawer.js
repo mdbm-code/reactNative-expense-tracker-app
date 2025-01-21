@@ -6,9 +6,10 @@ import ScreenWithDrawer from '../ScreenWithDrawer';
 import CustomerOrderManageScreen from '../contentScreen/CustomerOrderManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 import _log from 'react-dev-log';
+import OrderFooter from '../../components/OrderFooter/OrderFooter';
 
 const CustomerOrderManageDrawer = ({ navigation }) => {
-  _log('/screens/drawerScreen/CustomerOrderManageDrawer');
+  // _log('/screens/drawerScreen/CustomerOrderManageDrawer');
   const { selectedCustomer, selectedProductMenu, searchString } = useSelector(
     (state) => state.selecteds
   );

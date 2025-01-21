@@ -45,7 +45,8 @@ const ScreenWithDropdown = ({
           component
         ) : (
           <Selector
-            onSwipe={onSwipe}
+            // isSearchable={false}
+            // onSwipe={onSwipe}
             value={value}
             onSelect={onSelect}
             isMultiple={false}

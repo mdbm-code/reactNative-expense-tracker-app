@@ -104,16 +104,6 @@ const CustomersListScreen = ({ navigation }) => {
     dispatch(setSelectedRoute(value));
   }
 
-  // const options = [
-  //   { label: 'Понедельник', value: '_1' },
-  //   { label: 'Вторник', value: '_2' },
-  //   { label: 'Среда', value: '_3' },
-  //   { label: 'Четверг', value: '_4' },
-  //   { label: 'Пятница', value: '_5' },
-  //   { label: 'Суббота', value: '_6' },
-  //   { label: 'Воскресенье', value: '_7' },
-  // ];
-
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       {/* {showSearchPanel && (
@@ -135,7 +125,7 @@ const CustomersListScreen = ({ navigation }) => {
             />
           )
         }
-        rows={options}
+        rows={options || []}
         value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}
         footerContent={footerComponent}

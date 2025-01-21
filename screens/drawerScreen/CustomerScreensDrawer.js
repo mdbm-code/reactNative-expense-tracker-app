@@ -1,4 +1,4 @@
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, StyleSheet, Text } from 'react-native';
 import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
@@ -15,6 +15,7 @@ import {
   setSelectedOrder,
 } from '../../store/redux/slices/ordersSlice';
 import CustomerRoutesScreen from '../contentScreen/CustomerRoutesScreen';
+import OrderFooter from '../../components/OrderFooter/OrderFooter';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,33 +28,33 @@ const CustomerScreensDrawer = ({ navigation }) => {
   /**
    * Подтвердить и отправить заявку
    */
-  const shareCurrentOrder = () => {
-    const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
-    console.log('res', res);
-  };
+  // const shareCurrentOrder = () => {
+  //   const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
+  //   console.log('res', res);
+  // };
 
-  const pressShareIconHandler = () => {
-    Alert.alert(
-      '',
-      'Отправить заявку на сервер ?%',
-      [
-        {
-          text: 'Отмена',
-          onPress: () => console.log('Удалить нажато'),
-          style: 'cancel',
-        },
-        {
-          text: 'Да',
-          onPress: () => shareCurrentOrder('Отмена нажата'),
-          style: 'default',
-        },
-      ],
-      {
-        cancelable: true,
-        onDismiss: () => console.log('Alert был закрыт'), // Вызывается при закрытии
-      } // Если true, Alert можно закрыть, нажав вне него);
-    );
-  };
+  // const pressShareIconHandler = () => {
+  //   Alert.alert(
+  //     '',
+  //     'Отправить заявку на сервер ?%',
+  //     [
+  //       {
+  //         text: 'Отмена',
+  //         onPress: () => console.log('Удалить нажато'),
+  //         style: 'cancel',
+  //       },
+  //       {
+  //         text: 'Да',
+  //         onPress: () => shareCurrentOrder('Отмена нажата'),
+  //         style: 'default',
+  //       },
+  //     ],
+  //     {
+  //       cancelable: true,
+  //       onDismiss: () => console.log('Alert был закрыт'), // Вызывается при закрытии
+  //     } // Если true, Alert можно закрыть, нажав вне него);
+  //   );
+  // };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -83,8 +84,10 @@ const CustomerScreensDrawer = ({ navigation }) => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       // Предотвращаем переход, если пользователь не подтвердил
       // e.preventDefault();
-      console.log('unsubscribe');
-      dispatch(setSelectedOrder({}));
+      // console.log('unsubscribe');
+      const res = dispatch(setSelectedOrder({}));
+      if (typeof res === 'string') console.log(res);
+
       // // Показываем предупреждение
       // Alert.alert(
       //   'Подтверждение',
@@ -242,18 +245,20 @@ const CustomerScreensDrawer = ({ navigation }) => {
   }
 
   return (
-    <ScreenWithDrawer
-      initialRouteName={
-        Array.isArray(selectedCustomer?.draftOrders) &&
-        selectedCustomer.draftOrders.length > 1
-          ? 'CustomerDocumentsScreen'
-          : 'CustomerOrderScreen'
-      }
-      screens={screens}
-      theme={theme}
-      onChangeScreen={changeScreenHandler}
-      screenOptions={screenOptions}
-    />
+    <>
+      <ScreenWithDrawer
+        initialRouteName={
+          Array.isArray(selectedCustomer?.draftOrders) &&
+          selectedCustomer.draftOrders.length > 1
+            ? 'CustomerDocumentsScreen'
+            : 'CustomerOrderScreen'
+        }
+        screens={screens}
+        theme={theme}
+        onChangeScreen={changeScreenHandler}
+        screenOptions={screenOptions}
+      />
+    </>
   );
 };
 

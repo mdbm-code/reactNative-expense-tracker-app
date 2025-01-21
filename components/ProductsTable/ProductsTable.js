@@ -23,6 +23,7 @@ import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
 import { createUpdateOrderItem } from '../../store/redux/thunks/orders';
 
 const ProductsTable = ({
+  footer,
   rows,
   goal,
   headerColor,
@@ -373,6 +374,7 @@ const ProductsTable = ({
         selectedRowFooter={selectedRowFooter}
         onLongPress={() => {}}
       />
+      {footer && footer}
     </View>
   );
 };
@@ -382,7 +384,7 @@ export default ProductsTable;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    paddingBottom: 6,
+    // paddingBottom: 6,
   },
   container: {
     flex: 1,

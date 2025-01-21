@@ -22,7 +22,7 @@ import DocumentScreen from './screens/DocumentScreen.js';
 // import ThemeScreen from './screens/ThemeScreen.js';
 // import CustomerScreens from './screens/CustomerScreens/';
 import SummaryScreen from './screens/SummaryScreen.js';
-import DocumentsScreen from './screens/DocumentsScreen.js';
+import DocumentsScreen from './screens/rootScreens/DocumentsScreen.js';
 import CustomerPromoScreen from './screens/CustomerScreens/screens/CustomerPromoScreen.js';
 import CustomerScreensDrawer from './screens/drawerScreen/CustomerScreensDrawer.js';
 import ManageReturnProductsDrawer from './screens/ManageProductsScreen/ManageReturnProductsDrawer.js';

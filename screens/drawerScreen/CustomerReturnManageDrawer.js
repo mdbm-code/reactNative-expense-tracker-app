@@ -13,7 +13,7 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
   );
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
-  console.log('/screens/drawerScreen/CustomerReturnManageDrawer');
+  // console.log('/screens/drawerScreen/CustomerReturnManageDrawer');
 
   useLayoutEffect(() => {
     navigation.setOptions({

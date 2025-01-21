@@ -6,9 +6,10 @@ import { getTheme } from '../../store/redux/selectors/theme';
 import ProductsTable from '../../components/ProductsTable';
 import FallbackText from '../../components/FallbackText';
 import _log from 'react-dev-log';
+import OrderFooter from '../../components/OrderFooter/OrderFooter';
 
 const CustomerOrderManageScreen = () => {
-  _log('/screens/contentScreen/CustomerOrderManageScreen');
+  // _log('/screens/contentScreen/CustomerOrderManageScreen');
   const theme = useSelector(getTheme);
   const querySelector = getSelector_selectProducts({ typeQty: 'order' });
   const rows = useSelector(querySelector);
@@ -29,6 +30,7 @@ const CustomerOrderManageScreen = () => {
         goal={'order'}
         headerColor={theme.style.drawer.header.button.light.bg}
         theme={theme}
+        footer={<OrderFooter theme={theme} />}
       />
     </View>
   );

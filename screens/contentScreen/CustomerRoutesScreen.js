@@ -24,18 +24,16 @@ const CustomerRoutesScreen = () => {
     );
 
   function pressOnItemHandler(payload) {
-    console.log(payload);
+    // console.log(payload);
     const routeCode = payload?.item?.code;
     if (payload?.item?.checked === true) {
       const result = dispatch(thunk_removeCustomerFromRoute(routeCode));
-      console.log(result);
+      // console.log(result);
     } else if (payload?.item?.checked === false) {
       const result = dispatch(thunk_addCustomerToRoute(routeCode));
-      console.log(result);
+      // console.log(result);
     }
   }
-
-
 
   const columns = [
     {

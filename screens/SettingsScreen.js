@@ -25,7 +25,7 @@ const SettingsScreen = ({ navigation }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
-        rows={options}
+        rows={options || []}
         value={selected}
         onSelect={selectHandler}
         title={'Параметры и настройки'}

@@ -59,7 +59,7 @@ export const getSelector_customerOrderList = (pageNumber, periodCode, by) =>
 export const getSelector_customerOrder = (query) =>
   createSelector([getProducts, getOrders], (products, orders) => {
     const orderCode = orders.selectedOrder?.code;
-    if (!orderCode) return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
+    if (!orderCode) return 'empty'; // Если заказы не найдены, возвращаем пустой массив
 
     if (!query?.typeQty) return 'Тип данных (return или order) не указан';
     if (!['return', 'order'].includes(query?.typeQty))
@@ -69,7 +69,7 @@ export const getSelector_customerOrder = (query) =>
 
     const orderList = orders?.catalog || [];
     if (!Array.isArray(orderList) || orderList.length === 0) {
-      return 'Начните подбор товаров'; // Если заказы не найдены, возвращаем пустой массив
+      return 'empty'; // Если заказы не найдены, возвращаем пустой массив
     }
 
     const productsCatalog = products.catalog || [];
@@ -78,12 +78,12 @@ export const getSelector_customerOrder = (query) =>
     const orderIndex = orderList.findIndex((item) => item.code === orderCode);
     // const orderIndex = orderList.findIndex(item => item.customerCode === customerCode);
     if (orderIndex === -1) {
-      return 'Начните подбор товаров'; // Заявка для указанного покупателя не найдена;
+      return 'empty'; // Заявка для указанного покупателя не найдена;
     }
 
     const rows = orderList[orderIndex]?.items || [];
     if (!Array.isArray(rows) || rows.length === 0) {
-      return 'Начните подбор товаров'; //  'Нет товаров в заказе';
+      return 'empty'; //  'Нет товаров в заказе';
     }
 
     const productsCodes = rows
@@ -110,8 +110,21 @@ export const getSelector_customerOrder = (query) =>
         rest: productsInventory[product.code] || '',
       }));
 
-    return toReturn.length > 0 ? toReturn : 'Начните подбор товаров';
+    return toReturn.length > 0 ? toReturn : 'empty';
   });
+
+export const selecteOrderData = createSelector([getOrders], (order) => {
+  const selectedOrder = order?.selectedOrder;
+  // console.log(selectedOrder);
+
+  if (!selectedOrder) return;
+  return {
+    totalAmount: selectedOrder?.totalAmount,
+    totalReturn: selectedOrder?.totalReturn,
+    totalBase: selectedOrder?.totalBase,
+    minSum: selectedOrder?.minSum,
+  };
+});
 // export const getSelector_customerOrder = (query) => createSelector(
 //   [getProducts, getOrders],
 //   (products, orders) => {

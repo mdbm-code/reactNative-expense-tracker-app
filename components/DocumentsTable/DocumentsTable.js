@@ -5,6 +5,8 @@ import Table from '../../components/GridTable/v2/Table';
 import { confirmAndSendOrder } from '../../store/redux/slices/ordersSlice';
 import { Ionicons } from '@expo/vector-icons';
 const DocumentsTable = ({
+  onRefresh,
+  refreshing,
   hideHeader,
   onPress,
   rows,
@@ -228,6 +230,8 @@ const DocumentsTable = ({
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
       <Table
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         hideHeader={hideHeader}
         rowStyle={styles.rowStyle}
         columns={columns}

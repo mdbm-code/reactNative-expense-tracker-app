@@ -7,9 +7,10 @@ import {
   Platform,
 } from 'react-native';
 import React, { useState } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const CustomTextInput = ({
-  
+  shell,
   keyboardType,
   autoFocus,
   inputStyle,
@@ -36,13 +37,33 @@ const CustomTextInput = ({
     onValueChange(text);
   };
 
-  // console.log('autofocus', autofocus, 'value', value);
+  if (shell === 'KeyboardAwareScrollView')
+    return (
+      <KeyboardAwareScrollView
+        extraScrollHeight={50} // Добавьте дополнительный сдвиг
+        enableOnAndroid={true} // Включите поддержку для Android
+      >
+        <TextInput
+          autoFocus={autoFocus}
+          style={inputStyle}
+          value={value}
+          onChangeText={handleChangeText} // Обновляем внутреннее состояние
+          onBlur={handleBlur} // Сохраняем значение при потере фокуса
+          onSubmitEditing={handleSubmitEditing} // Сохраняем значение при нажатии "Done"
+          returnKeyType='done' // Устанавливаем тип клавиши "Done"
+          // keyboardType='decimal-pad' // Устанавливаем тип клавиатуры numeric
+          keyboardType={keyboardType || 'numeric'} // Устанавливаем тип клавиатуры
+          // numeric | default|email-address | numeric |phone-pad |url |decimal-pad |visible-password |ascii-capable |
+          // autoFocus // Автоматически устанавливаем фокус
+        />
+      </KeyboardAwareScrollView>
+    );
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Для iOS используем padding, для Android height
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Увеличьте значение по необходимости для iOS
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 250 : 0} // Увеличьте значение по необходимости для iOS
     >
       <TextInput
         autoFocus={autoFocus}

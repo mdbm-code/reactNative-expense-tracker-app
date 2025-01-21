@@ -18,6 +18,8 @@ const breakLongWord = (word) => {
 };
 
 const ScreenWithDrawer = ({
+  footerContent,
+  headerContent,
   initialRouteName,
   drawerTitle,
   screens,
@@ -28,6 +30,11 @@ const ScreenWithDrawer = ({
   customDrawerContent,
   children,
 }) => {
+  const [headerData, setHeaderData] = useState({
+    left: '',
+    center: '',
+    right: '',
+  });
   const [currentScreen, setCurrentScreen] = useState({
     name: '',
     title: '',
@@ -157,6 +164,7 @@ const ScreenWithDrawer = ({
         );
       }
     } else if (item?.type === 'text') {
+      let title = headerData[position] || drawerTitle || currentScreen?.title;
       return (
         <Text
           style={[
@@ -164,10 +172,11 @@ const ScreenWithDrawer = ({
             styles.headerTitle,
             { color: item?.color },
           ]}
-        // numberOfLines={1}
-        // ellipsizeMode='clip'
+          // numberOfLines={1}
+          // ellipsizeMode='clip'
         >
-          {breakLongWord(drawerTitle ? drawerTitle : currentScreen?.title)}
+          {/* {breakLongWord(drawerTitle ? drawerTitle : currentScreen?.title)} */}
+          {breakLongWord(title)}
         </Text>
       );
     }
@@ -196,38 +205,57 @@ const ScreenWithDrawer = ({
           { backgroundColor: currentScreen?.backgroundColor },
         ]}
       >
-        <View
-          style={[
-            styles.headerLeftItems,
-            headerStyle?.left?.flex && styles[`flex${headerStyle?.left?.flex}`],
-          ]}
-        >
-          {leftItems.map((item, index) => (
-            <CustomHeaderItem key={index} item={item} navigation={navigation} />
-          ))}
-        </View>
-        <View
-          style={[
-            styles.headerCenterItems,
-            headerStyle?.center?.flex &&
-            styles[`flex${headerStyle?.center?.flex}`],
-          ]}
-        >
-          {centerItems.map((item, index) => (
-            <CustomHeaderItem key={index} item={item} navigation={navigation} />
-          ))}
-        </View>
-        <View
-          style={[
-            styles.headerRightItems,
-            headerStyle?.right?.flex &&
-            styles[`flex${headerStyle?.right?.flex}`],
-          ]}
-        >
-          {rightItems.map((item, index) => (
-            <CustomHeaderItem key={index} item={item} navigation={navigation} />
-          ))}
-        </View>
+        {headerContent ? (
+          headerContent
+        ) : (
+          <>
+            <View
+              style={[
+                styles.headerLeftItems,
+                headerStyle?.left?.flex &&
+                  styles[`flex${headerStyle?.left?.flex}`],
+              ]}
+            >
+              {leftItems.map((item, index) => (
+                <CustomHeaderItem
+                  key={index}
+                  item={item}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+            <View
+              style={[
+                styles.headerCenterItems,
+                headerStyle?.center?.flex &&
+                  styles[`flex${headerStyle?.center?.flex}`],
+              ]}
+            >
+              {centerItems.map((item, index) => (
+                <CustomHeaderItem
+                  key={index}
+                  item={item}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+            <View
+              style={[
+                styles.headerRightItems,
+                headerStyle?.right?.flex &&
+                  styles[`flex${headerStyle?.right?.flex}`],
+              ]}
+            >
+              {rightItems.map((item, index) => (
+                <CustomHeaderItem
+                  key={index}
+                  item={item}
+                  navigation={navigation}
+                />
+              ))}
+            </View>
+          </>
+        )}
       </View>
     );
   };
@@ -252,7 +280,7 @@ const ScreenWithDrawer = ({
       labelStyle.push({
         color:
           theme.style.drawer.listItem[
-          index === state.index ? 'titleActive' : 'title'
+            index === state.index ? 'titleActive' : 'title'
           ],
       });
     }
@@ -275,8 +303,8 @@ const ScreenWithDrawer = ({
             backgroundColor: labelBackground
               ? labelBackground
               : theme.style.drawer.listItem[
-              index === state.index ? 'bgActive' : 'bg'
-              ],
+                  index === state.index ? 'bgActive' : 'bg'
+                ],
           },
         ]}
       />
@@ -349,90 +377,98 @@ const ScreenWithDrawer = ({
     );
   };
 
-  console.log('initialRouteName', initialRouteName);
-
+  // console.log('initialRouteName', initialRouteName);
 
   return (
-    <Drawer.Navigator
-      initialRouteName={initialRouteName ? initialRouteName : currentScreen?.name ? currentScreen.name : null} // Устанавливаем начальный экран
-      screenOptions={({ navigation }) => ({
-        header: () => (
-          <CustomHeader
-            navigation={navigation}
-            theme={theme}
-            headerParts={headerParts}
-            headerStyle={screenOptions?.headerStyle}
-          />
-        ),
-        drawerType: screenOptions?.drawerType || 'front', //'back','permanent' // front overlay
-        overlayColor: screenOptions?.overlayColor || 'rgba(0, 0, 0, 0.5)', // цвет затемнения
-        drawerStyle: screenOptions?.drawerStyle || {
-          backgroundColor: 'transparent', // Цвет фона для выезжающей панели
-          width: '70%', // Пример ширины
-        },
-      })}
-      drawerContent={(props) => {
-        // 1. Вариант: customDrawerContent был передан так {ИмяКомпоненты}
-        if (customDrawerContent) {
-          const CustomDrawerContent = customDrawerContent;
+    <>
+      <Drawer.Navigator
+        initialRouteName={
+          initialRouteName
+            ? initialRouteName
+            : currentScreen?.name
+            ? currentScreen.name
+            : null
+        } // Устанавливаем начальный экран
+        screenOptions={({ navigation }) => ({
+          header: () => (
+            <CustomHeader
+              navigation={navigation}
+              theme={theme}
+              headerParts={headerParts}
+              headerStyle={screenOptions?.headerStyle}
+            />
+          ),
+          drawerType: screenOptions?.drawerType || 'front', //'back','permanent' // front overlay
+          overlayColor: screenOptions?.overlayColor || 'rgba(0, 0, 0, 0.5)', // цвет затемнения
+          drawerStyle: screenOptions?.drawerStyle || {
+            backgroundColor: 'transparent', // Цвет фона для выезжающей панели
+            width: '70%', // Пример ширины
+          },
+        })}
+        drawerContent={(props) => {
+          // 1. Вариант: customDrawerContent был передан так {ИмяКомпоненты}
+          if (customDrawerContent) {
+            const CustomDrawerContent = customDrawerContent;
+            return (
+              <CustomDrawerContent
+                {...props}
+                selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+                theme={theme}
+                rows={screens}
+                closeDrawer={props?.navigation?.closeDrawer}
+              />
+            );
+          }
+
+          // 2. Вариант: children были переданы так <ИмяКомпоненты />
+          if (children) {
+            return React.cloneElement(children, {
+              ...props,
+              closeDrawer: props?.navigation?.closeDrawer,
+              selectedStyle: screenOptions?.drawerStyle?.label?.selected,
+              theme,
+              rows: screens,
+            }); // Передаем props в дочерний элемент
+          }
+
+          //3. вариант если без children
           return (
-            <CustomDrawerContent
-              {...props}
+            <DeafultDrawerContent
               selectedStyle={screenOptions?.drawerStyle?.label?.selected}
+              {...props}
               theme={theme}
               rows={screens}
-              closeDrawer={props?.navigation?.closeDrawer}
             />
           );
-        }
-
-        // 2. Вариант: children были переданы так <ИмяКомпоненты />
-        if (children) {
-          return React.cloneElement(children, {
-            ...props,
-            closeDrawer: props?.navigation?.closeDrawer,
-            selectedStyle: screenOptions?.drawerStyle?.label?.selected,
-            theme,
-            rows: screens,
-          }); // Передаем props в дочерний элемент
-        }
-
-        //3. вариант если без children
-        return (
-          <DeafultDrawerContent
-            selectedStyle={screenOptions?.drawerStyle?.label?.selected}
-            {...props}
-            theme={theme}
-            rows={screens}
-          />
-        );
-      }}
-    >
-      {Array.isArray(screens) &&
-        screens.map((screen, index) => {
-          return (
-            <Drawer.Screen
-              key={index}
-              name={screen?.name}
-              component={screen.component}
-              options={{
-                drawerLabel: screen?.drawer?.label,
-                title: screen?.header?.title,
-                headerRight: screen?.headerRight,
-              }}
-              listeners={({ navigation }) => ({
-                focus: () =>
-                  changeScreenHandler({
-                    name: screen?.name,
-                    title: screen?.header?.title,
-                    backgroundColor: screen?.header?.style?.backgroundColor,
-                    items: screen?.header?.items,
-                  }),
-              })}
-            ></Drawer.Screen>
-          );
-        })}
-    </Drawer.Navigator>
+        }}
+      >
+        {Array.isArray(screens) &&
+          screens.map((screen, index) => {
+            return (
+              <Drawer.Screen
+                key={index}
+                name={screen?.name}
+                component={screen.component}
+                options={{
+                  drawerLabel: screen?.drawer?.label,
+                  title: screen?.header?.title,
+                  headerRight: screen?.headerRight,
+                }}
+                listeners={({ navigation }) => ({
+                  focus: () =>
+                    changeScreenHandler({
+                      name: screen?.name,
+                      title: screen?.header?.title,
+                      backgroundColor: screen?.header?.style?.backgroundColor,
+                      items: screen?.header?.items,
+                    }),
+                })}
+              ></Drawer.Screen>
+            );
+          })}
+      </Drawer.Navigator>
+      {footerContent && footerContent}
+    </>
   );
 };
 

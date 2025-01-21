@@ -69,8 +69,6 @@ const CustomersListScreen = ({ navigation }) => {
 
   console.log('points', points);
 
-
-
   let content = <></>;
   if (typeof points === 'string') {
     content = <Text style={styles.infoText}>{points}</Text>;
@@ -109,7 +107,7 @@ const CustomersListScreen = ({ navigation }) => {
         />
       )}
       <ScreenWithDropdown
-        rows={options}
+        rows={options || []}
         value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}
       >

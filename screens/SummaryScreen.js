@@ -26,7 +26,7 @@ const SummaryScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
-        rows={rows}
+        rows={rows || []}
         value={selectedSummary}
         onSelect={selectSummaryHandler}
         title={'Отчет'}

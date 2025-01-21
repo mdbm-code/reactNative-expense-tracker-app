@@ -13,13 +13,10 @@ import {
   setSelectedCustomer,
   setSelectedCustomerListItem,
 } from '../../store/redux/slices/selectedsSlice';
-import IconButton from '../ui/IconButton';
-import GridTableRow from '../GridTable/GridTableRow';
 import {
   confirmAndSendOrder,
   setSelectedOrder,
 } from '../../store/redux/slices/ordersSlice';
-import TableRow from '../GridTable/v2/TableRow';
 import { Ionicons } from '@expo/vector-icons';
 
 const ClientItem = React.memo(({ item, theme, editedId }) => {
@@ -240,26 +237,6 @@ const ClientItem = React.memo(({ item, theme, editedId }) => {
     );
   }
 
-  // if (Array.isArray(item?.draftOrders)) {
-  //   const cells = [
-  //     { title: item?.baseTotal, flex: 3, titleStyle: textSubtitle },
-  //     { title: item?.total, flex: 3, titleStyle: textSubtitle },
-  //     { title: `${item?.percent}%`, flex: 3, titleStyle: percentStyle },
-  //   ];
-  //   secondLine = (
-  //     <View
-  //       style={[
-  //         styles.secondLineContainer,
-  //         item?.percent < 40 && {
-  //           backgroundColor: theme.style.customerList.dangerBg,
-  //         },
-  //       ]}
-  //     >
-  //       <GridTableRow cells={cells} />
-  //     </View>
-  //   );
-  // }
-
   return (
     <Pressable
       onLongPress={onLongHandler}
@@ -299,7 +276,8 @@ export default ClientItem;
 const styles = StyleSheet.create({
   container: {
     padding: 12,
-    marginVertical: 8,
+    marginTop: 12,
+    // marginVertical: 8,
     // backgroundColor: GlobalStyles.colors.primary800,
     flexDirection: 'column',
     // justifyContent: 'space-between',

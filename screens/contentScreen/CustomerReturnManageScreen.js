@@ -7,7 +7,7 @@ import ProductsTable from '../../components/ProductsTable';
 import _log from 'react-dev-log';
 
 const CustomerReturnManageScreen = () => {
-  _log('/screens/contentScreen/CustomerReturnManageScreen');
+  // _log('/screens/contentScreen/CustomerReturnManageScreen');
   const theme = useSelector(getTheme);
   const querySelector = getSelector_selectProducts({ stateName: 'draft', typeQty: 'return' });
   const rows = useSelector(querySelector);

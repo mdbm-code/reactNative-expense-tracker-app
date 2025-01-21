@@ -12,7 +12,7 @@ import ProductsTable from '../../components/ProductsTable';
 import _log from 'react-dev-log';
 
 const CustomerReturnScreen = () => {
-  _log('/screens/contentScreen/CustomerReturnScreen');
+  // _log('/screens/contentScreen/CustomerReturnScreen');
   // const dispatch = useDispatch();
   const theme = useSelector(getTheme);
   const querySelector = getSelector_customerOrder({ typeQty: 'return' });

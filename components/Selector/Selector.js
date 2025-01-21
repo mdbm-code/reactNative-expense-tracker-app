@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import Dropdown from 'react-native-input-select';
 
 const Selector = ({
-  onSwipe,
+  onSwipe = () => {},
   onSelect,
   value,
   isMultiple = false,
@@ -15,6 +15,7 @@ const Selector = ({
   listComponentStyles,
   dropdownIconStyle,
   renderFooter,
+  isSearchable,
 }) => {
   return (
     <Dropdown

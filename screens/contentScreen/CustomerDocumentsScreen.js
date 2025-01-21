@@ -27,9 +27,10 @@ const CustomerDocumentsScreen = () => {
     setPage(page);
   }
 
-  function pressOnItemHandler(returnParams) {
-    if (returnParams?.item?.code) {
-      dispatch(setSelectedOrderByCode(returnParams?.item?.code));
+  function pressOnItemHandler(code) {
+    if (code) {
+      const res = dispatch(setSelectedOrderByCode(code));
+      if (typeof res === 'string') console.log(res);
     }
   }
 

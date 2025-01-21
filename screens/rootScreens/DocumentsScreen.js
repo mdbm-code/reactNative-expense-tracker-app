@@ -1,19 +1,21 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
-import { getTheme } from '../store/redux/selectors/theme';
+import React, { useCallback, useEffect, useState } from 'react';
+import { getTheme } from '../../store/redux/selectors/theme';
 import { useDispatch, useSelector } from 'react-redux';
-import ScreenWithDropdown from './ScreenWithDropdown';
-import DocumentsTable from '../components/DocumentsTable';
-import { setSelectedOrderByCode } from '../store/redux/slices/ordersSlice';
-import { getSelector_customerOrderList } from '../store/redux/selectors/orders';
-import Paginator from '../components/ui/Pager/Paginator';
-import { periods } from '../constans/dates';
+import ScreenWithDropdown from '../ScreenWithDropdown';
+import DocumentsTable from '../../components/DocumentsTable';
+import { setSelectedOrderByCode } from '../../store/redux/slices/ordersSlice';
+import { getSelector_customerOrderList } from '../../store/redux/selectors/orders';
+import Paginator from '../../components/ui/Pager/Paginator';
+import { periods } from '../../constans/dates';
+import { useFocusEffect } from '@react-navigation/native';
 
-const DocumentsScreen = () => {
+const DocumentsScreen = ({ navigation }) => {
   const theme = useSelector(getTheme);
   const [selectedPeriod, setSelectedPeriod] = useState('D');
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
   const selector = getSelector_customerOrderList(
     page,
     selectedPeriod,
@@ -24,6 +26,38 @@ const DocumentsScreen = () => {
   function selectHandler(value) {
     setSelectedPeriod(value);
   }
+
+  //Обновление при открытии. Варинат 1
+  useFocusEffect(
+    useCallback(() => {
+      // Действие, которое выполняется при фокусе экрана
+      // console.log('Screen is focused');
+
+      return () => {
+        // Действие, которое выполняется при уходе с экрана (опционально)
+        // console.log('Screen is unfocused');
+      };
+    }, [])
+  );
+
+  //Обновление при открытии. Варинат 2
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Действие при фокусе экрана
+      // console.log('Screen is focused');
+    });
+
+    return unsubscribe; // Отписываемся от события при размонтировании
+  }, [navigation]);
+
+  const onRefreshHandler = useCallback(() => {
+    setRefreshing(true);
+    // Имитация обновления данных
+    setTimeout(() => {
+      // setData(['New Item 1', 'New Item 2', 'New Item 3']);
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   function pressOnItemHandler(returnParams) {
     if (returnParams?.item?.code) {
@@ -62,16 +96,22 @@ const DocumentsScreen = () => {
     }
   };
 
+  function onPageChangeHandler(page) {
+    setPage(page);
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <ScreenWithDropdown
         onSwipe={onSwipeHandler}
-        rows={periods}
+        rows={periods || []}
         value={selectedPeriod}
         onSelect={selectHandler}
         // title={'Таблица с заявками'}
       >
         <DocumentsTable
+          onRefresh={onRefreshHandler}
+          refreshing={refreshing}
           // hideHeader={true}
           onPress={pressOnItemHandler}
           rows={rows || []}
