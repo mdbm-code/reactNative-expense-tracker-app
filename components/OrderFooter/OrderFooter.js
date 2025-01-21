@@ -13,18 +13,18 @@ const OrderFooter = ({ theme }) => {
 
   let content = (
     <Text style={{ color: theme?.style?.nav?.text }}>
-      Сумма: {totalAmount.toLocaleString('ru-RU')}
+      Сумма: {totalAmount?.toLocaleString('ru-RU')}
     </Text>
   );
   if (minSum) {
     content = (
       <>
         <Text style={{ color: theme?.style?.nav?.text }}>
-          {minSum.toLocaleString('ru-RU')}
+          {minSum?.toLocaleString('ru-RU')}
         </Text>
         <Text style={{ color: theme?.style?.nav?.text }}>{'/'}</Text>
         <Text style={{ color: theme?.style?.nav?.text }}>
-          {totalAmount.toLocaleString('ru-RU')}
+          {totalAmount?.toLocaleString('ru-RU')}
         </Text>
         {proc && <Text style={{ color: theme?.style?.nav?.text }}>{':'}</Text>}
         {proc && <Text style={{ color: theme?.style?.nav?.text }}>{proc}</Text>}

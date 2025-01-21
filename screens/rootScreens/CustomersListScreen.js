@@ -21,6 +21,7 @@ import IconButton from '../../components/ui/IconButton';
 import ScreenWithDropdown from '../ScreenWithDropdown';
 import ClientsList from '../../components/Clients/ClientsList';
 import Button from '../../components/ui/Button';
+import ScreenWithPicker from '../ScreenWithPicker';
 
 const CustomersListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -99,10 +100,12 @@ const CustomersListScreen = ({ navigation }) => {
     </View>
   );
 
-  function selectRouteHandler(value) {
+  function selectRouteHandler(listItem) {
     dispatch(setSelectedCustomerListItem(''));
-    dispatch(setSelectedRoute(value));
+    dispatch(setSelectedRoute(listItem?.value));
   }
+
+  console.log('selectedRoute', selecteds?.selectedRoute);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
@@ -113,7 +116,14 @@ const CustomersListScreen = ({ navigation }) => {
           theme={theme}
         />
       )} */}
-      <ScreenWithDropdown
+      <ScreenWithPicker
+        rows={options || []}
+        value={selecteds?.selectedRoute}
+        onSelect={selectRouteHandler}
+        footerContent={footerComponent}
+      >{content}</ScreenWithPicker>
+
+      {/* <ScreenWithDropdown
         component={
           showSearchPanel && (
             <SearchPanel
@@ -131,7 +141,7 @@ const CustomersListScreen = ({ navigation }) => {
         footerContent={footerComponent}
       >
         {content}
-      </ScreenWithDropdown>
+      </ScreenWithDropdown> */}
     </View>
   );
 };
