@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback, FlatList } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
+  FlatList,
+} from 'react-native';
 import { getTheme } from '../store/redux/selectors/theme';
 import { useSelector } from 'react-redux';
 import Tally from '../components/Tally';
@@ -14,41 +22,52 @@ const ScreenWithPicker = ({
   title,
   footerContent,
 }) => {
+  const closeModal = () => {
+    setIsPickerVisible(false);
+  };
+
+  // Проверяем, что footerContent — это React-элемент
+  const footerWithProps = React.isValidElement(footerContent)
+    ? React.cloneElement(footerContent, {
+        fn: closeModal, // Передаём функцию закрытия модального окна
+      })
+    : null; // Если footerContent не React-элемент, задаём null
+
   const theme = useSelector(getTheme);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
-
-
   const handleValueChange = (item) => {
     onSelect(item); // Устанавливаем новое значение
-    setIsPickerVisible(false); // Закрываем Picker
+    closeModal(); // Закрываем Picker
   };
 
   const renderOption = ({ item }) => {
     // const { label, value } = Object.values(item)[0];
 
-    return <TouchableOpacity
-      style={styles.option}
-      onPress={() => handleValueChange(item)} // Устанавливаем выбранное значение
-    >
-      <Text style={styles.optionText}>{item.label}</Text>
-    </TouchableOpacity>
+    return (
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => handleValueChange(item)} // Устанавливаем выбранное значение
+      >
+        <Text style={styles.optionText}>{item.label}</Text>
+      </TouchableOpacity>
+    );
   };
 
-
   const selectedLabel = rows.find((item) => item.value === value)?.label;
-
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
       <Tally color={theme.style.nav.bg} bg={theme.style.bg}>
         {component ? (
           component
-        ) : (<TouchableOpacity
-          style={styles.selectionField}
-          onPress={() => setIsPickerVisible(true)} // Открываем Picker при нажатии
-        >
-          <Text style={styles.selectionText}>{selectedLabel}</Text>
-        </TouchableOpacity>)}
+        ) : (
+          <TouchableOpacity
+            style={styles.selectionField}
+            onPress={() => setIsPickerVisible(true)} // Открываем Picker при нажатии
+          >
+            <Text style={styles.selectionText}>{selectedLabel}</Text>
+          </TouchableOpacity>
+        )}
       </Tally>
       {title && <Text style={styles.infoText}>{title}</Text>}
       {children}
@@ -56,7 +75,7 @@ const ScreenWithPicker = ({
       <Modal
         visible={isPickerVisible}
         transparent={true}
-        animationType="slide"
+        animationType='slide'
         onRequestClose={() => setIsPickerVisible(false)} // Закрываем Picker при нажатии назад
       >
         <TouchableWithoutFeedback onPress={() => setIsPickerVisible(false)}>
@@ -68,12 +87,7 @@ const ScreenWithPicker = ({
                 keyExtractor={(item, index) => index.toString()} // Уникальный ключ для каждого элемента
                 renderItem={renderOption} // Рендерим каждый элемент списка
               />
-              {footerContent && <TouchableOpacity
-                style={styles.option}
-                onPress={() => handleValueChange(item)} // Устанавливаем выбранное значение
-              >
-                {footerContent}
-              </TouchableOpacity>}
+              {footerContent && footerWithProps}
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -138,12 +152,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-
-
-
-
-
-
 
   selectionField: {
     // width: '80%',

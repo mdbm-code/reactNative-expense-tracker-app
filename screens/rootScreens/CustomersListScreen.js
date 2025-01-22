@@ -88,24 +88,32 @@ const CustomersListScreen = ({ navigation }) => {
     );
   }
 
-  let footerComponent = <></>;
-  footerComponent = (
-    <View>
-      <Button
-        onPress={onPressEditRouteList}
-        titleStyle={{ color: theme.style.text.main }}
-      >
-        Редактировать список
-      </Button>
-    </View>
-  );
+  const FooterComponent = ({ fn, navigation, theme }) => {
+    const handlePress = () => {
+      if (typeof fn === 'function') {
+        fn(); // Вызов переданной функции
+      }
+      navigation.navigate('RoutesManageScreen'); // Навигация
+    };
+
+    return (
+      <View>
+        <Button
+          onPress={handlePress}
+          titleStyle={{ color: theme.style.text.main }}
+        >
+          Редактировать список
+        </Button>
+      </View>
+    );
+  };
 
   function selectRouteHandler(listItem) {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedRoute(listItem?.value));
   }
 
-  console.log('selectedRoute', selecteds?.selectedRoute);
+  // console.log('selectedRoute', selecteds?.selectedRoute);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
@@ -117,11 +125,26 @@ const CustomersListScreen = ({ navigation }) => {
         />
       )} */}
       <ScreenWithPicker
+        component={
+          showSearchPanel && (
+            <SearchPanel
+              onCancel={handleCancelSearch}
+              onSearch={handleSearch}
+              theme={theme}
+              value={searchString}
+              onChangeText={setSearchString}
+            />
+          )
+        }
         rows={options || []}
         value={selecteds?.selectedRoute}
         onSelect={selectRouteHandler}
-        footerContent={footerComponent}
-      >{content}</ScreenWithPicker>
+        footerContent={
+          <FooterComponent navigation={navigation} theme={theme} />
+        }
+      >
+        {content}
+      </ScreenWithPicker>
 
       {/* <ScreenWithDropdown
         component={
