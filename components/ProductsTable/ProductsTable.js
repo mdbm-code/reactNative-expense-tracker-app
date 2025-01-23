@@ -7,19 +7,12 @@ import {
   setSelectedProduct,
   setTableOptions,
 } from '../../store/redux/slices/selectedsSlice';
-// import {
-//   findAndUpdateOrderRow,
-//   findAndUpdateReturnRow,
-// } from '../../store/redux/slices/currentOrdersSlice';
 import InputHelper from '../../components/ManageProductsScreen/InputHelper';
-// import { getTheme } from '../../store/redux/selectors/theme';
 import Table from '../../components/GridTable/v2/Table';
 import Tally from '../../components/Tally';
-// import Slider from '@react-native-community/slider';
 import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 import Button from '../ui/Button';
 import SearchPanel from '../SearchPanel';
-// import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
 import { createUpdateOrderItem } from '../../store/redux/thunks/orders';
 
 const ProductsTable = ({
@@ -33,19 +26,12 @@ const ProductsTable = ({
 }) => {
   const dispatch = useDispatch();
   const [showTableOptions, setShowTableOptions] = useState('');
-  const { selectedCustomer, selectedProduct, tableOptions } = useSelector(
-    (state) => state.selecteds
-  );
   const [fontSize, setFontsize] = useState(tableOptions?.fontSize || 12);
   const productSales = useSelector(selectProductSales); //история продаж
   const [enteredSearchText, setEnteredSearchText] = useState('');
-
-  // useEffect(() => {
-  //   if (!searchString && enteredSearchText) {
-  //     setEnteredSearchText('');
-  //     setShowTableOptions('');
-  //   }
-  // }, [searchString, enteredSearchText]);
+  const { selectedCustomer, selectedProduct, tableOptions } = useSelector(
+    (state) => state.selecteds
+  );
 
   const handleSubmitEditing = (product, newValue) => {
     // console.log(product);
@@ -58,16 +44,7 @@ const ProductsTable = ({
 
     //тут можно реагировать на попытку заказть товар без остатка
     if (goal === 'order') {
-      // const restExist = product?.hasOwnProperty('rest') ?? false;
-      // if (restExist && ['', '0', 0, undefined].includes(product?.rest)) {
-      //   Alert.alert('', 'Товара нет на складе', [
-      //     {
-      //       text: 'Ок',
-      //       style: 'cancel',
-      //     },
-      //   ]);
-      //   return;
-      // }
+
     }
 
     const payload = {
@@ -89,16 +66,7 @@ const ProductsTable = ({
     dispatch(setSelectedProduct(null));
   };
 
-  function pressOnItemHandler(returnParams) {
-    setShowTableOptions(null);
 
-    // console.log('returnParams', returnParams);
-    if (returnParams?.item?.code === selectedProduct?.code) {
-      dispatch(setSelectedProduct(null));
-    } else if (returnParams?.item) {
-      dispatch(setSelectedProduct(returnParams?.item));
-    }
-  }
 
   let selectedRowFooter;
   if (goal === 'order') {
@@ -125,32 +93,6 @@ const ProductsTable = ({
       setShowTableOptions(id);
     }
   }
-
-  const HeaderOptions = () => {
-    const icons = [
-      {
-        name: 'options-outline',
-        color: theme.style.text.main,
-        size: 24,
-        onPress: () => onPressOptionsHandler('style'),
-      },
-    ];
-    if (searchable) {
-      icons.push({
-        name: 'search-outline',
-        color: theme.style.text.main,
-        size: 24,
-        onPress: () => onPressOptionsHandler('search'),
-      });
-    }
-    return (
-      <HeaderWithIcons
-        titleStyle={{ color: theme.style.customerList.title }}
-        title={'Товар'}
-        rows={icons}
-      />
-    );
-  };
 
   const onChangeSlider = (value) => {
     setFontsize(value);
@@ -210,6 +152,32 @@ const ProductsTable = ({
     );
   };
 
+  const HeaderOptions = () => {
+    const icons = [
+      {
+        name: 'options-outline',
+        color: theme.style.text.main,
+        size: 24,
+        onPress: () => onPressOptionsHandler('style'),
+      },
+    ];
+    if (searchable) {
+      icons.push({
+        name: 'search-outline',
+        color: theme.style.text.main,
+        size: 24,
+        onPress: () => onPressOptionsHandler('search'),
+      });
+    }
+    return (
+      <HeaderWithIcons
+        titleStyle={{ color: theme.style.customerList.title }}
+        title={'Товар'}
+        rows={icons}
+      />
+    );
+  };
+
   const headerFooter = (
     <Tally position='down' bg={theme.style?.bg} color={headerColor}>
       {showTableOptions === 'style' && (
@@ -234,6 +202,19 @@ const ProductsTable = ({
       )}
     </Tally>
   );
+
+
+
+  function pressOnItemHandler(returnParams) {
+    setShowTableOptions(null);
+
+    // console.log('returnParams', returnParams);
+    if (returnParams?.item?.code === selectedProduct?.code) {
+      dispatch(setSelectedProduct(null));
+    } else if (returnParams?.item) {
+      dispatch(setSelectedProduct(returnParams?.item));
+    }
+  }
 
   const redRowStyle = {
     cond: {
@@ -372,7 +353,7 @@ const ProductsTable = ({
         onChangeText={handleSubmitEditing}
         selectedId={selectedProduct?.code}
         selectedRowFooter={selectedRowFooter}
-        onLongPress={() => {}}
+        onLongPress={() => { }}
       />
       {footer && footer}
     </View>

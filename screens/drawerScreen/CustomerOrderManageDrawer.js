@@ -1,4 +1,4 @@
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
@@ -6,14 +6,13 @@ import ScreenWithDrawer from '../ScreenWithDrawer';
 import CustomerOrderManageScreen from '../contentScreen/CustomerOrderManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 import _log from 'react-dev-log';
-import OrderFooter from '../../components/OrderFooter/OrderFooter';
 
 const CustomerOrderManageDrawer = ({ navigation }) => {
   // _log('/screens/drawerScreen/CustomerOrderManageDrawer');
   const { selectedCustomer, selectedProductMenu, searchString } = useSelector(
     (state) => state.selecteds
   );
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const theme = useSelector(getTheme);
 
   useLayoutEffect(() => {
@@ -33,6 +32,11 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
       ), // ваш компонент иконки
     });
   }, [navigation, selectedCustomer]);
+
+  // console.log('selectedProductManageView', selectedProductManageView);
+
+
+
 
   const headerItems = {
     1: {
@@ -55,15 +59,15 @@ const CustomerOrderManageDrawer = ({ navigation }) => {
         color: theme.style.drawer.header.button.dark.text,
       },
     },
-    3: {
-      title: 'Фильтр',
-      iconName: 'search-outline',
-      color: theme.style.drawer.listItem.title,
-      position: 'left',
-      openDrawer: true,
-      type: 'icon',
-      size: 30,
-    },
+    // 3: {
+    //   title: 'Вид',
+    //   iconName: selectedProductManageView === 'table' ? 'images-outline' : 'reorder-four-outline',
+    //   color: theme.style.drawer.listItem.title,
+    //   position: 'left',
+    //   onPress: pressChangeManageViewHandler,
+    //   type: 'icon',
+    //   size: 30,
+    // },
   };
 
   const screens = [

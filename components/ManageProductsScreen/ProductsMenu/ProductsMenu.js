@@ -1,74 +1,61 @@
 import { FlatList, StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import ProductsMenuItem from './ProductsMenuItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectGroups } from '../../../store/redux/selectors/groups';
+import { selectGroups_v2 } from '../../../store/redux/selectors/groups';
 import FallbackText from '../../FallbackText';
-import { getThemePalette } from '../../../store/redux/selectors/theme';
-import ProductsMenuButton from './ProductsMenuButton';
+import { getTheme } from '../../../store/redux/selectors/theme';
 import {
+  setSearchString,
   setSelectedProductMenu,
-  setUnselectMenu,
 } from '../../../store/redux/slices/selectedsSlice';
 
-const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
+const ProductsMenu = ({ closeDrawer, selectedStyle }) => {
   const dispatch = useDispatch();
-  const { selectedProductMenu } = useSelector((state) => state.selecteds);
-  const groups = useSelector(selectGroups);
-  const theme = useSelector(getThemePalette);
-
-  // console.log('drawerNavigation', typeof drawerNavigation?.closeDrawer);
-
-  function onPressHandler(payload) {
-    dispatch(setUnselectMenu());
-    dispatch(
-      setSelectedProductMenu({
-        title: payload?.name,
-        level: payload?.level,
-        code: payload?.code,
-      })
-    );
-
-    if (typeof navigation?.closeDrawer === 'function') {
-      navigation.closeDrawer();
-    } else if (typeof closeDrawer === 'function') {
-      closeDrawer();
-    }
-  }
+  const { selectedProductMenu, searchString } = useSelector((state) => state.selecteds);
+  const groups = useSelector(selectGroups_v2);
+  const theme = useSelector(getTheme);
+  const [selectedRoot, setSelectedRoot] = useState(null);
 
   if (typeof groups === 'string') {
     return <FallbackText>{groups}</FallbackText>;
   }
 
-  // console.log('selectedProductMenu', selectedProductMenu);
+  function onPressHandler(value) {
+    if (searchString) dispatch(setSearchString(''));
+
+    if (value.level === 1 && !value.childfree) {
+      //кликнули на пункт первого уровня, мы лишь раскрываем его
+      //за исключением пункта "Популярные товары"
+      setSelectedRoot(state => state === value.code ? null : value.code);
+    } else {
+      dispatch(
+        setSelectedProductMenu({
+          title: value?.name,
+          level: value?.level,
+          code: value?.code,
+        })
+      );
+      closeDrawer();
+    }
+  }
 
   return (
     <View style={[styles.container]}>
-      <ProductsMenuButton
-        selectedProductMenu={selectedProductMenu}
-        selectedStyle={selectedStyle}
-        title={'Популярные'}
-        theme={theme}
-        // selected={selectedProductMenu?.level === 0}
-        onPress={() =>
-          onPressHandler({
-            name: 'Популярные',
-            level: 0,
-            code: '0',
-          })
-        }
-      />
       <FlatList
         data={groups}
         keyExtractor={(item) => item.code}
         renderItem={(itemData) => (
           <ProductsMenuItem
+            searchString={searchString}
             selectedProductMenu={selectedProductMenu}
             selectedStyle={selectedStyle}
             item={itemData.item}
             rows={groups}
             closeDrawer={closeDrawer}
             theme={theme}
+            onPress={onPressHandler}
+            selectedRoot={selectedRoot}
           />
         )}
       />
@@ -81,5 +68,6 @@ export default ProductsMenu;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 10,
   },
 });

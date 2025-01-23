@@ -172,8 +172,8 @@ const ScreenWithDrawer = ({
             styles.headerTitle,
             { color: item?.color },
           ]}
-          // numberOfLines={1}
-          // ellipsizeMode='clip'
+        // numberOfLines={1}
+        // ellipsizeMode='clip'
         >
           {/* {breakLongWord(drawerTitle ? drawerTitle : currentScreen?.title)} */}
           {breakLongWord(title)}
@@ -213,7 +213,7 @@ const ScreenWithDrawer = ({
               style={[
                 styles.headerLeftItems,
                 headerStyle?.left?.flex &&
-                  styles[`flex${headerStyle?.left?.flex}`],
+                styles[`flex${headerStyle?.left?.flex}`],
               ]}
             >
               {leftItems.map((item, index) => (
@@ -228,7 +228,7 @@ const ScreenWithDrawer = ({
               style={[
                 styles.headerCenterItems,
                 headerStyle?.center?.flex &&
-                  styles[`flex${headerStyle?.center?.flex}`],
+                styles[`flex${headerStyle?.center?.flex}`],
               ]}
             >
               {centerItems.map((item, index) => (
@@ -243,7 +243,7 @@ const ScreenWithDrawer = ({
               style={[
                 styles.headerRightItems,
                 headerStyle?.right?.flex &&
-                  styles[`flex${headerStyle?.right?.flex}`],
+                styles[`flex${headerStyle?.right?.flex}`],
               ]}
             >
               {rightItems.map((item, index) => (
@@ -280,7 +280,7 @@ const ScreenWithDrawer = ({
       labelStyle.push({
         color:
           theme.style.drawer.listItem[
-            index === state.index ? 'titleActive' : 'title'
+          index === state.index ? 'titleActive' : 'title'
           ],
       });
     }
@@ -303,8 +303,8 @@ const ScreenWithDrawer = ({
             backgroundColor: labelBackground
               ? labelBackground
               : theme.style.drawer.listItem[
-                  index === state.index ? 'bgActive' : 'bg'
-                ],
+              index === state.index ? 'bgActive' : 'bg'
+              ],
           },
         ]}
       />
@@ -386,8 +386,8 @@ const ScreenWithDrawer = ({
           initialRouteName
             ? initialRouteName
             : currentScreen?.name
-            ? currentScreen.name
-            : null
+              ? currentScreen.name
+              : null
         } // Устанавливаем начальный экран
         screenOptions={({ navigation }) => ({
           header: () => (

@@ -11,6 +11,8 @@ const ProductsMenuButton = ({
   titleStyle,
   level = 1,
   selectedStyle,
+  sibling,
+  selectedRoot
 }) => {
   const containerStyles = [styles.container];
 
@@ -19,6 +21,10 @@ const ProductsMenuButton = ({
     if (selectedStyle?.backgroundColor) {
       containerStyles.push({ backgroundColor: selectedStyle?.backgroundColor });
     }
+  }
+
+  if (sibling) {
+    containerStyles.push({ borderLeftWidth: 10, borderLeftColor: selectedStyle?.backgroundColor });
   }
 
   const _titleStyles = [
@@ -37,6 +43,10 @@ const ProductsMenuButton = ({
     }
   }
 
+  if (selectedRoot) {
+    _titleStyles.push({ fontWeight: 'bold' });
+  }
+
   return (
     <Pressable
       onPress={onPress}
@@ -46,7 +56,7 @@ const ProductsMenuButton = ({
       <View style={containerStyles}>
         <View style={styles.firstLineContainer}>
           <Text style={_titleStyles}>{title}</Text>
-          {iconName && <Ionicons name={iconName} size={18} color={iconColor} />}
+          {iconName && <Ionicons name={iconName} size={24} color={iconColor} />}
         </View>
       </View>
     </Pressable>
@@ -58,14 +68,14 @@ export default ProductsMenuButton;
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingRight: 8,
-    marginVertical: 4,
+    // paddingVertical: 4,
     flexDirection: 'column',
   },
   selected: {
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     marginLeft: 0,

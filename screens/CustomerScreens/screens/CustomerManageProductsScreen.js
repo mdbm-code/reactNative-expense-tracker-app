@@ -109,12 +109,12 @@ export const CustomerManageProductsScreen = ({ route }) => {
 
   const renderDrawerContent = () => (
     <View style={[styles.drawerContent, { backgroundColor: theme.bg.color }]}>
-      <ProductsMenuButton
+      {/* <ProductsMenuButton
         title={'Популярные'}
         selected={!selectedMenuLevel_1}
         // iconName={selectedMenuLevel_1 === code ? 'chevron-up-outline' : 'chevron-down-outline'}
         onPress={onPressTopHandler}
-      />
+      /> */}
       <ProductMenu closeDrawer={closeDrawer} />
     </View>
   );

@@ -24,38 +24,6 @@ const CustomerScreensDrawer = ({ navigation }) => {
   const { selectedOrder } = useSelector((state) => state.orders);
   const theme = useSelector(getTheme);
 
-  // console.log('selected customer', selectedCustomer);
-
-  /**
-   * Подтвердить и отправить заявку
-   */
-  // const shareCurrentOrder = () => {
-  //   const res = dispatch(confirmAndSendOrder(selectedOrder?.code));
-  //   console.log('res', res);
-  // };
-
-  // const pressShareIconHandler = () => {
-  //   Alert.alert(
-  //     '',
-  //     'Отправить заявку на сервер ?%',
-  //     [
-  //       {
-  //         text: 'Отмена',
-  //         onPress: () => console.log('Удалить нажато'),
-  //         style: 'cancel',
-  //       },
-  //       {
-  //         text: 'Да',
-  //         onPress: () => shareCurrentOrder('Отмена нажата'),
-  //         style: 'default',
-  //       },
-  //     ],
-  //     {
-  //       cancelable: true,
-  //       onDismiss: () => console.log('Alert был закрыт'), // Вызывается при закрытии
-  //     } // Если true, Alert можно закрыть, нажав вне него);
-  //   );
-  // };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -260,7 +228,7 @@ const CustomerScreensDrawer = ({ navigation }) => {
       <ScreenWithDrawer
         initialRouteName={
           Array.isArray(selectedCustomer?.draftOrders) &&
-          selectedCustomer.draftOrders.length > 1
+            selectedCustomer.draftOrders.length > 1
             ? 'CustomerDocumentsScreen'
             : 'CustomerOrderScreen'
         }

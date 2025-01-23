@@ -1,9 +1,8 @@
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React, { useLayoutEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getTheme } from '../../store/redux/selectors/theme';
 import ScreenWithDrawer from '../ScreenWithDrawer';
-// import ManageProductsTableScreen from './ManageProductsTableScreen';
 import CustomerReturnManageScreen from '../contentScreen/CustomerReturnManageScreen';
 import ProductsMenu from '../../components/ManageProductsScreen/ProductsMenu';
 
@@ -116,8 +115,8 @@ const CustomerReturnManageDrawer = ({ navigation }) => {
         searchString
           ? searchString
           : selectedProductMenu?.title
-          ? selectedProductMenu?.title
-          : 'Популярные'
+            ? selectedProductMenu?.title
+            : 'Популярные'
       }
       screens={screens}
       theme={theme}

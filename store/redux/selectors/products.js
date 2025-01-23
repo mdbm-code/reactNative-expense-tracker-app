@@ -155,9 +155,9 @@ export const getSelector_selectProducts = (query) =>
 
       const productQuantities = Array.isArray(existedOrder?.items)
         ? existedOrder.items.reduce((acc, row) => {
-            acc[row.productCode] = row[`${query.typeQty}Qty`];
-            return acc;
-          }, {})
+          acc[row.productCode] = row[`${query.typeQty}Qty`];
+          return acc;
+        }, {})
         : {};
 
       let catalog = productsCatalog;
@@ -174,6 +174,8 @@ export const getSelector_selectProducts = (query) =>
           selectedCustomer.matrix.includes(product.code)
         );
       }
+
+      let urgentProducts = {};
       if (searchString) {
         catalog = catalog.filter((product) =>
           product.name.toLowerCase().includes(searchString)
@@ -182,9 +184,30 @@ export const getSelector_selectProducts = (query) =>
         catalog = catalog.filter(
           (product) => product.parentCode === selectedProductMenu.code
         );
-      } else {
-        console.log('top');
+      } else if (selectedProductMenu.code === 'spec' && Array.isArray(products.urgentStock)) {
+        urgentProducts = products.urgentStock.reduce((acc, item) => {
+          acc[item.code] = item.qty;
+          return acc;
+        }, {});
 
+        catalog = catalog.filter(
+          (product) => !!urgentProducts[product.code]
+        );
+
+        //// Использование Map: Если вы хотите улучшить производительность при большом количестве данных, 
+        //// вы можете использовать Map вместо обычного объекта для хранения urgentProducts.
+        //// Это может быть полезно, если коды продуктов не являются строками или 
+        //// если вы хотите избежать проблем с прототипами объектов.
+        // const urgentProducts = new Map(
+        //   products.urgentStock.map(item => [item.code, item.qty])
+        // );
+
+        // catalog = catalog.filter(
+        //   (product) => urgentProducts.has(product.code)
+        // );
+
+
+      } else {
         catalog = filterTopSalesProducts(
           catalog,
           productQuantities,
@@ -203,6 +226,7 @@ export const getSelector_selectProducts = (query) =>
             default_price: customerPrice,
             base_price: item.base_price,
           },
+          urgentValue: urgentProducts[item.code] || '',
           qty: productQuantities[item.code] || '',
           rest: productsInventory[item.code] || '',
         };

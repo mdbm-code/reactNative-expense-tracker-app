@@ -49,8 +49,8 @@ export const getSelector_customerOrderList = (pageNumber, periodCode, by) =>
       const pages = documents.length / numberPerPage;
       const portion = documents
         .filter((doc, index) => index >= startIndex && index <= endIndex)
-        .sort((a, b) => b.date - a.date); //свежие сверху
-
+        // .sort((a, b) => new Date(a.date) - new Date(b.date));//по возрастанию даты
+        .sort((a, b) => new Date(b.date) - new Date(a.date));//по убыванию даты
       // console.log('portion', portion?.length, portion);
 
       return {
@@ -118,9 +118,11 @@ export const getSelector_customerOrder = (query) =>
     return toReturn.length > 0 ? toReturn : 'empty';
   });
 
-export const selecteOrderData = createSelector([getOrders], (order) => {
+export const selecteOrderData = createSelector([getOrders, getSelecteds], (order, selecteds) => {
   const selectedOrder = order?.selectedOrder;
   // console.log(selectedOrder);
+
+  const selectedProductManageView = selecteds?.selectedProductManageView;
 
   if (!selectedOrder) return;
   return {
@@ -128,6 +130,7 @@ export const selecteOrderData = createSelector([getOrders], (order) => {
     totalReturn: selectedOrder?.totalReturn,
     totalBase: selectedOrder?.totalBase,
     minSum: selectedOrder?.minSum,
+    selectedProductManageView,
   };
 });
 // export const getSelector_customerOrder = (query) => createSelector(

@@ -7,10 +7,13 @@ import ProductsTable from '../../components/ProductsTable';
 import FallbackText from '../../components/FallbackText';
 import _log from 'react-dev-log';
 import OrderFooter from '../../components/OrderFooter/OrderFooter';
+import ProductsCardList from '../../components/ProductsCardList';
+
 
 const CustomerOrderManageScreen = () => {
   // _log('/screens/contentScreen/CustomerOrderManageScreen');
   const theme = useSelector(getTheme);
+  const { selectedProductManageView } = useSelector((state) => state.selecteds);
   const querySelector = getSelector_selectProducts({ typeQty: 'order' });
   const rows = useSelector(querySelector);
 
@@ -21,6 +24,17 @@ const CustomerOrderManageScreen = () => {
   // "parentCode": "6", "price": 134.4, "prices": {"base_price": 105.6, "default_price": 134.4},
   // "qty": "", "rest": "60", "shortName": "Масло 82,5% традиционное, золотая корова 0,2 кг.",
   // "specs": [[Object]], "unit": "шт"}
+  if (selectedProductManageView?.type === 'table') {
+
+    return <ProductsCardList
+      searchable
+      rows={rows}
+      goal={'order'}
+      headerColor={theme.style.drawer.header.button.light.bg}
+      theme={theme}
+      footer={<OrderFooter theme={theme} view={selectedProductManageView} />}
+    />;
+  }
 
   return (
     <View style={[styles.rootContainer]}>
@@ -30,7 +44,7 @@ const CustomerOrderManageScreen = () => {
         goal={'order'}
         headerColor={theme.style.drawer.header.button.light.bg}
         theme={theme}
-        footer={<OrderFooter theme={theme} />}
+        footer={<OrderFooter theme={theme} view={selectedProductManageView} />}
       />
     </View>
   );

@@ -22,6 +22,7 @@ export const fetchProducts = createAsyncThunk(
 // После того как `redux-persist` сохранит состояние,
 // оно будет загружено из хранилища (например, `AsyncStorage`) при следующем запуске приложения.
 const initialState = {
+  urgentStock: [],
   inventory: {},
   catalog: products,
   status: 'idle', // idle | loading | succeeded | failed

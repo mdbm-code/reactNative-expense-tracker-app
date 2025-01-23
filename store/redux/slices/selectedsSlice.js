@@ -11,6 +11,7 @@ const initialState = {
     level: '',
     code: '',
   },
+  selectedProductManageView: { type: 'table', mode: '' },
   searchString: '',
   customerSearchString: '',
   selectedScreen: null,
@@ -56,6 +57,9 @@ const selectedsSlice = createSlice({
     },
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
+    },
+    setSelectedProductManageView: (state, action) => {
+      state.selectedProductManageView = action.payload;
     },
     setSelectedProductMenu: (state, action) => {
       state.searchString = '';
@@ -126,6 +130,7 @@ export const {
   setUnselectMenu,
   setTableOptions,
   setSelectedCustomerScreen,
+  setSelectedProductManageView
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
