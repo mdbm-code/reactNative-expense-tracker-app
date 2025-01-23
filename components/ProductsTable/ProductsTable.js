@@ -7,10 +7,10 @@ import {
   setSelectedProduct,
   setTableOptions,
 } from '../../store/redux/slices/selectedsSlice';
-import {
-  findAndUpdateOrderRow,
-  findAndUpdateReturnRow,
-} from '../../store/redux/slices/currentOrdersSlice';
+// import {
+//   findAndUpdateOrderRow,
+//   findAndUpdateReturnRow,
+// } from '../../store/redux/slices/currentOrdersSlice';
 import InputHelper from '../../components/ManageProductsScreen/InputHelper';
 // import { getTheme } from '../../store/redux/selectors/theme';
 import Table from '../../components/GridTable/v2/Table';
@@ -19,7 +19,7 @@ import Tally from '../../components/Tally';
 import HeaderWithIcons from '../../components/GridTable/v2/HeaderWithIcons';
 import Button from '../ui/Button';
 import SearchPanel from '../SearchPanel';
-import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
+// import { updateOrderItem } from '../../store/redux/slices/ordersSlice';
 import { createUpdateOrderItem } from '../../store/redux/thunks/orders';
 
 const ProductsTable = ({

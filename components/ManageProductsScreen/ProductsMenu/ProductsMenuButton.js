@@ -1,7 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import IconButton from '../../ui/IconButton';
-import { GlobalStyles } from '../../../constans/styles';
 import { Ionicons } from '@expo/vector-icons';
 
 const ProductsMenuButton = ({
@@ -15,7 +13,8 @@ const ProductsMenuButton = ({
   selectedStyle,
 }) => {
   const containerStyles = [styles.container];
-  if (selected && level === 2) {
+
+  if (selected) {
     containerStyles.push(styles.selected);
     if (selectedStyle?.backgroundColor) {
       containerStyles.push({ backgroundColor: selectedStyle?.backgroundColor });
@@ -27,7 +26,8 @@ const ProductsMenuButton = ({
     { color: theme.style.customerList.title },
   ];
   let iconColor = theme.style.customerList.title;
-  if (selected && level === 2) {
+
+  if (selected) {
     if (selectedStyle?.color) {
       iconColor = theme.style.customerList.title;
       _titleStyles.push({ color: selectedStyle?.color });
@@ -61,24 +61,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingRight: 8,
     marginVertical: 4,
-    // backgroundColor: GlobalStyles.colors.primary500,
     flexDirection: 'column',
-    // justifyContent: 'space-between',
-    // borderRadius: 6,
-
-    // //for Androit
-    // elevation: 3,
-
-    // //for iOS
-    // shadowColor: 'black',
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.4,
-    // shadowRadius: 4,
   },
   selected: {
-    // paddingHorizontal: 0, // Убираем горизонтальные отступы
-    // marginVertical: 8,
-    // paddingVertical: 6, // Задайте нужный вертикальный padding
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
     borderTopLeftRadius: 0,
@@ -86,18 +71,14 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     paddingLeft: 0,
     marginRight: 8,
-    // backgroundColor: 'blue'
   },
   firstLineContainer: {
-    // flex: 1, // Позволяет тексту занимать доступное пространство
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexShrink: 1,
   },
   icon: {
     flex: 1, // Позволяет тексту занимать доступное пространство
-    // justifyContent: 'flex-start',
-    // color: 'white',
     margin: 0,
     padding: 0,
   },
@@ -105,11 +86,9 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   title1: {
-    // color: GlobalStyles.colors.primary50,
     paddingLeft: 10,
   },
   title2: {
-    // color: GlobalStyles.colors.primary50,
     paddingLeft: 30,
   },
 });

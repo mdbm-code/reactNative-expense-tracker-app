@@ -1,5 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import store from '../store';
+import { updateStatus } from '../slices/postsSlice';
 
 // Создаем экземпляр axios с базовыми настройками
 const apiClient = axios.create({
@@ -34,6 +36,20 @@ apiClient.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+
+      // Add unsent bodies to the request (except for getLeftovers endpoint)
+      if (!config.url.includes('getLeftovers')) {
+        const state = store.getState();
+        const unsentBodies = state.posts.bodies.filter(
+          (body) => body.status === 'draft'
+        );
+        if (unsentBodies.length > 0) {
+          config.data = {
+            ...config.data,
+            unsentBodies,
+          };
+        }
+      }
     } catch (error) {
       console.error('Ошибка при добавлении токена в запрос:', error);
     }
@@ -47,6 +63,14 @@ apiClient.interceptors.request.use(
 // Интерсептор для обработки ответов
 apiClient.interceptors.response.use(
   (response) => {
+    // Update status of sent bodies
+    if (response.config.data?.unsentBodies) {
+      const unsentBodies = JSON.parse(response.config.data.unsentBodies);
+      unsentBodies.forEach((body) => {
+        store.dispatch(updateStatus({ id: body.id, status: 'sent' }));
+      });
+    }
+
     // Если сервер возвращает новый токен, сохраняем его
     const newToken = response.headers['x-new-jwt-token']; // Пример: сервер может отправить новый токен в заголовке
     if (newToken) {

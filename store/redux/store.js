@@ -14,9 +14,9 @@ import salesReducer from './slices/salesSlice';
 import imagesReducer from './slices/imagesSlice';
 import ordersReduxer from './slices/ordersSlice';
 import updateReducer from './slices/updateSlice';
+import postsReducer from './slices/postsSlice';
 import { apiSlice } from './api/apiSlices';
 import { createLogger } from 'redux-logger'; // Импорт logger
-
 
 // const logger = createLogger(); // Создайте экземпляр logger
 // Фильтруем действия для конкретного слайса
@@ -36,7 +36,7 @@ const logger = createLogger({
   transformed: (getState) => {
     const orderState = getState().orders; // Получаем состояние слайса
     console.log('Order State:', orderState);
-  }
+  },
 });
 
 //Объединяю все редьюсеры с помощью `combineReducers`
@@ -55,7 +55,8 @@ const appReducer = combineReducers({
   sales: salesReducer,
   images: imagesReducer,
   orders: ordersReduxer,
-  updateSlice: updateReducer
+  updateSlice: updateReducer,
+  posts: postsReducer,
 });
 
 const rootReducer = (state, action) => {
@@ -95,7 +96,6 @@ const reduxStore = configureStore({
   // }).concat(logger, apiSlice.middleware), // Добавляем middleware из apiSlice
 });
 
-
 //serializableCheck**: Это опция, которая позволяет вам игнорировать проверку
 // сериализуемости для определенных действий.
 // В данном случае мы игнорируем действия `persist/PERSIST` и `persist/REHYDRATE`,
@@ -106,20 +106,16 @@ const reduxPersistor = persistStore(reduxStore);
 //затем в App.js оборачиваю приложение с помощью <PersistGate loading={null} persistor={persistor}>
 //чтобы обеспечить восстановление состояния перед рендерингом.
 
-
-
-
 // Функция для перезапуска хранилища// Функция для сброса состояния
 export const resetStore = async () => {
   // Очистка сохраненного состояния в AsyncStorage
-  //persistor.purge() очищает сохраненное состояние 
+  //persistor.purge() очищает сохраненное состояние
   // в AsyncStorage(или другом хранилище, которое вы используете).
   await reduxPersistor.purge();
 
-  // Действие RESET_STORE сбрасывает состояние всех редьюсеров, 
+  // Действие RESET_STORE сбрасывает состояние всех редьюсеров,
   // так как в rootReducer состояние устанавливается в undefined
   reduxStore.dispatch({ type: 'RESET_STORE' });
 };
-
 
 export { reduxStore, reduxPersistor };

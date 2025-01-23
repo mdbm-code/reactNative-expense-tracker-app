@@ -11,9 +11,9 @@ const Paginator = ({ theme, pages, page, onPress, style }) => {
         style,
       ]}
     >
-      <Text style={[styles.text, { color: theme.style.customerList.title }]}>
-        Страница:{' '}
-      </Text>
+      {/* <Text style={[styles.text, { color: theme.style.customerList.title }]}>
+        Страница:
+      </Text> */}
       <Pager
         minimumValue={1}
         maximumValue={Number(pages)}

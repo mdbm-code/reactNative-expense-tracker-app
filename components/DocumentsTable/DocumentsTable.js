@@ -50,7 +50,13 @@ const DocumentsTable = ({
           style={styles.titleContainer}
         >
           {!hideData.includes('customerName') && (
-            <Text style={{ color: theme.style.text.main, textAlign: 'left' }}>
+            <Text
+              style={{
+                color: theme.style.text.main,
+                textAlign: 'left',
+                flexWrap: 'wrap',
+              }}
+            >
               {row?.customerName}
             </Text>
           )}
@@ -70,12 +76,13 @@ const DocumentsTable = ({
             backgroundColor: iconSet[1],
             // borderBottomLeftRadius: 8,
             borderBottomRightRadius: 8,
-            padding: 2,
-            marginBottom: 6,
+            padding: 1,
+            // marginBottom: 6,
             width: 40,
-            height: 40,
+            height: '100%',
             justifyContent: 'center',
             alignItems: 'center',
+            // margin: 10,
           }}
         >
           <Ionicons
@@ -132,13 +139,13 @@ const DocumentsTable = ({
         // borderLeftWidth: 1,
         paddingBottom: 5,
         backgroundColor: theme.style.drawer.header.bg,
-        height: 50,
+        // height: 50,
       },
       iffalse: {
         // borderLeftWidth: 1,
         paddingBottom: 5,
         backgroundColor: theme.style.customerList.bg2,
-        height: 50,
+        // height: 50,
       },
     },
   };

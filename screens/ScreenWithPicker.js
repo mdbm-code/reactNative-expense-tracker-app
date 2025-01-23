@@ -15,7 +15,7 @@ import Tally from '../components/Tally';
 const ScreenWithPicker = ({
   onSwipe,
   component,
-  rows,
+  rows = [],
   value,
   onSelect,
   children,
@@ -62,7 +62,10 @@ const ScreenWithPicker = ({
           component
         ) : (
           <TouchableOpacity
-            style={styles.selectionField}
+            style={[
+              styles.selectionField,
+              { backgroundColor: theme.style.bars[2].bg },
+            ]}
             onPress={() => setIsPickerVisible(true)} // Открываем Picker при нажатии
           >
             <Text style={styles.selectionText}>{selectedLabel}</Text>
@@ -79,9 +82,14 @@ const ScreenWithPicker = ({
         onRequestClose={() => setIsPickerVisible(false)} // Закрываем Picker при нажатии назад
       >
         <TouchableWithoutFeedback onPress={() => setIsPickerVisible(false)}>
-          <View style={styles.modalContainer}>
+          <View style={[styles.modalContainer]}>
             {/* <View style={styles.pickerContainer}> */}
-            <View style={styles.listContainer}>
+            <View
+              style={[
+                styles.listContainer,
+                { backgroundColor: theme.style.bars[2].bg },
+              ]}
+            >
               <FlatList
                 data={rows} // Передаем список опций
                 keyExtractor={(item, index) => index.toString()} // Уникальный ключ для каждого элемента
@@ -107,64 +115,35 @@ const styles = StyleSheet.create({
     minHeight: 30,
   },
 
-  selectionField: {
-    width: '80%',
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  selectionText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end', // Размещаем модальное окно внизу экрана
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Полупрозрачный фон
-  },
   listContainer: {
     height: '50%', // Высота модального окна — 50% экрана
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   option: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    // borderBottomColor: '#ccc',
   },
   optionText: {
     fontSize: 16,
-    color: '#333',
+    // color: '#333',
   },
-  closeButton: {
-    marginTop: 10,
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#007BFF',
-    borderRadius: 8,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-
   selectionField: {
     // width: '80%',
     padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    // borderColor: '#ccc',
+    borderRadius: 12,
+    // backgroundColor: '#fff',
     alignItems: 'center',
   },
   selectionText: {
     fontSize: 16,
-    color: '#333',
+    // color: '#333',
   },
   modalContainer: {
     flex: 1,
@@ -173,20 +152,20 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     height: '50%', // Высота модального окна — 50% экрана
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
+    paddingHorizontal: 20,
   },
   closeButton: {
     marginTop: 10,
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#007BFF',
+    // backgroundColor: '#007BFF',
     borderRadius: 8,
   },
   closeButtonText: {
-    color: '#fff',
+    // color: '#fff',
     fontSize: 16,
   },
 });

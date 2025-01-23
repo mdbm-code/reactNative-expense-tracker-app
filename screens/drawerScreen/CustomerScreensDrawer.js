@@ -16,6 +16,7 @@ import {
 } from '../../store/redux/slices/ordersSlice';
 import CustomerRoutesScreen from '../contentScreen/CustomerRoutesScreen';
 import OrderFooter from '../../components/OrderFooter/OrderFooter';
+import { setSelectedProductMenu } from '../../store/redux/slices/selectedsSlice';
 
 const CustomerScreensDrawer = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,9 +85,17 @@ const CustomerScreensDrawer = ({ navigation }) => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       // Предотвращаем переход, если пользователь не подтвердил
       // e.preventDefault();
-      // console.log('unsubscribe');
+      console.log('unsubscribe');
       const res = dispatch(setSelectedOrder({}));
       if (typeof res === 'string') console.log(res);
+
+      dispatch(
+        setSelectedProductMenu({
+          title: '',
+          level: 0,
+          code: '',
+        })
+      );
 
       // // Показываем предупреждение
       // Alert.alert(
@@ -166,18 +175,6 @@ const CustomerScreensDrawer = ({ navigation }) => {
       },
     },
     {
-      name: 'CustomerDebtScreen',
-      component: CustomerDebtScreen,
-      drawer: {
-        label: 'Акт-сверки',
-      },
-      header: {
-        style: { backgroundColor: theme.style.drawer.header.bg },
-        title: 'Акт-сверки',
-        items: [headerItems[1], headerItems[2]],
-      },
-    },
-    {
       name: 'CustomerReturnScreen',
       component: CustomerReturnScreen,
       drawer: {
@@ -193,6 +190,20 @@ const CustomerScreensDrawer = ({ navigation }) => {
         items: [headerItems[1], headerItems[2], headerItems[4]],
       },
     },
+
+    {
+      name: 'CustomerDebtScreen',
+      component: CustomerDebtScreen,
+      drawer: {
+        label: 'Акт-сверки',
+      },
+      header: {
+        style: { backgroundColor: theme.style.drawer.header.bg },
+        title: 'Акт-сверки',
+        items: [headerItems[1], headerItems[2]],
+      },
+    },
+
     {
       name: 'CustomerProfileScreen',
       component: CustomerProfileScreen,

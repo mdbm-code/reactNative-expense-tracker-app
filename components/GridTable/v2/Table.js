@@ -87,7 +87,7 @@ const Table = ({
       keyboardVerticalOffset={90} // значение сдвига
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {refreshing && <ActivityIndicator size='large' color='#00ff00' />}
+      {/* {refreshing && <ActivityIndicator size='large' color={null} />} */}
       {!hideHeader && <TableHead columns={columns} />}
       {headerFooter}
       <FlatList

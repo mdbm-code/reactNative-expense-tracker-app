@@ -2,13 +2,13 @@ import { StyleSheet, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getTheme } from '../../store/redux/selectors/theme';
 import { useDispatch, useSelector } from 'react-redux';
-import ScreenWithDropdown from '../ScreenWithDropdown';
 import DocumentsTable from '../../components/DocumentsTable';
 import { setSelectedOrderByCode } from '../../store/redux/slices/ordersSlice';
 import { getSelector_customerOrderList } from '../../store/redux/selectors/orders';
 import Paginator from '../../components/ui/Pager/Paginator';
 import { periods } from '../../constans/dates';
 import { useFocusEffect } from '@react-navigation/native';
+import ScreenWithPicker from '../ScreenWithPicker';
 
 const DocumentsScreen = ({ navigation }) => {
   const theme = useSelector(getTheme);
@@ -16,29 +16,33 @@ const DocumentsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+  // Локальное состояние для управления вызовом селектора
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Создаем селектор с учетом текущего состояния
   const selector = getSelector_customerOrderList(
     page,
     selectedPeriod,
-    'byManager'
+    'byManager',
+    refreshTrigger
   );
   const { rows, pages } = useSelector(selector);
 
-  function selectHandler(value) {
-    setSelectedPeriod(value);
-  }
-
-  //Обновление при открытии. Варинат 1
   useFocusEffect(
     useCallback(() => {
-      // Действие, которое выполняется при фокусе экрана
-      // console.log('Screen is focused');
-
-      return () => {
-        // Действие, которое выполняется при уходе с экрана (опционально)
-        // console.log('Screen is unfocused');
-      };
-    }, [])
+      // Увеличиваем значение триггера, чтобы перезапустить селектор
+      setRefreshTrigger((prev) => prev + 1);
+    }, [page, selectedPeriod]) // Зависимости для обновления при изменении этих значений
   );
+
+  // Обработчик для кнопки "Обновить"
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  function pickHandler(listItem) {
+    setSelectedPeriod(listItem?.value);
+  }
 
   //Обновление при открытии. Варинат 2
   useEffect(() => {
@@ -54,10 +58,11 @@ const DocumentsScreen = ({ navigation }) => {
     setRefreshing(true);
     // Имитация обновления данных
     setTimeout(() => {
-      // setData(['New Item 1', 'New Item 2', 'New Item 3']);
       setRefreshing(false);
+      handleRefresh();
     }, 2000);
   }, []);
+
 
   function pressOnItemHandler(returnParams) {
     if (returnParams?.item?.code) {
@@ -65,36 +70,36 @@ const DocumentsScreen = ({ navigation }) => {
     }
   }
 
-  const onSwipeHandler = (event) => {
-    const { translationX, translationY } = event.nativeEvent;
-    const selectedPeriodIndex = periods.findIndex(
-      (item) => item.value === selectedPeriod
-    );
-    // Определите направление свайпа
-    if (Math.abs(translationX) > Math.abs(translationY)) {
-      if (translationX > 0) {
-        const nextIndex =
-          selectedPeriodIndex - 1 < 0
-            ? periods.length - 1
-            : selectedPeriodIndex - 1;
-        setSelectedPeriod(periods[nextIndex]?.value);
-      } else {
-        // console.log('Свайп влево');
+  // const onSwipeHandler = (event) => {
+  //   const { translationX, translationY } = event.nativeEvent;
+  //   const selectedPeriodIndex = periods.findIndex(
+  //     (item) => item.value === selectedPeriod
+  //   );
+  //   // Определите направление свайпа
+  //   if (Math.abs(translationX) > Math.abs(translationY)) {
+  //     if (translationX > 0) {
+  //       const nextIndex =
+  //         selectedPeriodIndex - 1 < 0
+  //           ? periods.length - 1
+  //           : selectedPeriodIndex - 1;
+  //       setSelectedPeriod(periods[nextIndex]?.value);
+  //     } else {
+  //       // console.log('Свайп влево');
 
-        const nextIndex =
-          selectedPeriodIndex + 1 > periods.length - 1
-            ? 0
-            : selectedPeriodIndex + 1;
-        setSelectedPeriod(periods[nextIndex]?.value);
-      }
-    } else {
-      if (translationY > 0) {
-        console.log('Свайп вниз');
-      } else {
-        console.log('Свайп вверх');
-      }
-    }
-  };
+  //       const nextIndex =
+  //         selectedPeriodIndex + 1 > periods.length - 1
+  //           ? 0
+  //           : selectedPeriodIndex + 1;
+  //       setSelectedPeriod(periods[nextIndex]?.value);
+  //     }
+  //   } else {
+  //     if (translationY > 0) {
+  //       console.log('Свайп вниз');
+  //     } else {
+  //       console.log('Свайп вверх');
+  //     }
+  //   }
+  // };
 
   function onPageChangeHandler(page) {
     setPage(page);
@@ -102,12 +107,10 @@ const DocumentsScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
-      <ScreenWithDropdown
-        onSwipe={onSwipeHandler}
+      <ScreenWithPicker
         rows={periods || []}
         value={selectedPeriod}
-        onSelect={selectHandler}
-        // title={'Таблица с заявками'}
+        onSelect={pickHandler}
       >
         <DocumentsTable
           onRefresh={onRefreshHandler}
@@ -128,7 +131,7 @@ const DocumentsScreen = ({ navigation }) => {
             theme={theme}
           />
         )}
-      </ScreenWithDropdown>
+      </ScreenWithPicker>
     </View>
   );
 };

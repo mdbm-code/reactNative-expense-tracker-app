@@ -35,18 +35,23 @@ export const getSelector_customerOrderList = (pageNumber, periodCode, by) =>
       }
 
       // Предполагается, что selectedCustomer имеет поле code
-      const customerCode = selectedCustomer.code;
+      const customerCode = selectedCustomer?.code;
       let documents = catalog;
-      if ((by = 'byCustomer')) {
+      // console.log('documents before filter byCustomer', documents?.length);
+      if (by === 'byCustomer') {
         documents = catalog.filter((doc) => doc?.customerCode === customerCode);
       }
 
+      // console.log('documents before filter by period', documents?.length);
       documents = filterByDateRange(periodCode, documents);
+      // console.log('documents after filter  by period', documents?.length);
 
       const pages = documents.length / numberPerPage;
       const portion = documents
         .filter((doc, index) => index >= startIndex && index <= endIndex)
         .sort((a, b) => b.date - a.date); //свежие сверху
+
+      // console.log('portion', portion?.length, portion);
 
       return {
         rows: portion,

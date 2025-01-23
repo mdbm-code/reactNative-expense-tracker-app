@@ -171,7 +171,7 @@ const TableRow = ({
     //     }
     //   ]
     // },
-    let result = false;
+    let result = autoFocus;
     if (autoFocus?.or && Array.isArray(autoFocus.or)) {
       for (let i = 0; i < autoFocus.or.length; i++) {
         const option = autoFocus.or[i];
@@ -219,8 +219,8 @@ const TableRow = ({
       condValue = as.cond.eq;
 
       if ('iftrue' in as.cond && cellValue === condValue) {
-        console.log(cellValue, '=', condValue);
-        console.log('return', as.cond.iftrue);
+        // console.log(cellValue, '=', condValue);
+        // console.log('return', as.cond.iftrue);
         return as.cond.iftrue;
       }
       if ('iffalse' in as.cond && !cellValue === condValue) {

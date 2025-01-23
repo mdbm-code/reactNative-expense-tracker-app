@@ -13,9 +13,7 @@ import {
 
 const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
   const dispatch = useDispatch();
-  const { selectedMenuLevel_1, selectedMenuLevel_2 } = useSelector(
-    (state) => state.selecteds
-  );
+  const { selectedProductMenu } = useSelector((state) => state.selecteds);
   const groups = useSelector(selectGroups);
   const theme = useSelector(getThemePalette);
 
@@ -41,16 +39,17 @@ const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
   if (typeof groups === 'string') {
     return <FallbackText>{groups}</FallbackText>;
   }
+
+  // console.log('selectedProductMenu', selectedProductMenu);
+
   return (
     <View style={[styles.container]}>
       <ProductsMenuButton
-        // iconName={'star-outline'}
+        selectedProductMenu={selectedProductMenu}
         selectedStyle={selectedStyle}
         title={'Популярные'}
         theme={theme}
-        selected={!selectedMenuLevel_1 && !selectedMenuLevel_2}
-        level={!selectedMenuLevel_1 && !selectedMenuLevel_2 ? 2 : 1}
-        // iconName={selectedMenuLevel_1 === code ? 'chevron-up-outline' : 'chevron-down-outline'}
+        // selected={selectedProductMenu?.level === 0}
         onPress={() =>
           onPressHandler({
             name: 'Популярные',
@@ -64,6 +63,7 @@ const ProductsMenu = ({ closeDrawer, navigation, selectedStyle }) => {
         keyExtractor={(item) => item.code}
         renderItem={(itemData) => (
           <ProductsMenuItem
+            selectedProductMenu={selectedProductMenu}
             selectedStyle={selectedStyle}
             item={itemData.item}
             rows={groups}

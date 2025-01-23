@@ -123,87 +123,106 @@ export const selectProductSales = createSelector(
   }
 );
 
-export const getSelector_selectProducts = (query) => createSelector(
-  [getSelecteds, getProducts, getOrders, getSales],
-  (selecteds, products, orders, sales) => {
+export const getSelector_selectProducts = (query) =>
+  createSelector(
+    [getSelecteds, getProducts, getOrders, getSales],
+    (selecteds, products, orders, sales) => {
+      const { typeQty, stateName } = query;
 
-    const { typeQty, stateName } = query;
+      if (!typeQty) return 'Тип данных (return или order) не указан';
+      if (!['return', 'order'].includes(typeQty)) {
+        return `Указанное тип данных [${typeQty}] не найден`;
+      }
 
-    if (!typeQty) return 'Тип данных (return или order) не указан';
-    if (!['return', 'order'].includes(typeQty)) {
-      return `Указанное тип данных [${typeQty}] не найден`;
-    }
+      const orderList = orders?.catalog || [];
+      // const orderList = orders[`${stateName}Orders`] || [];
+      const productsCatalog = products.catalog || [];
+      const productsInventory = products.inventory || {};
+      const selectedOrder = orders.selectedOrder || {};
+      const selectedProductMenu = selecteds.selectedProductMenu || {};
+      const searchString = selecteds.searchString?.toLowerCase() || '';
+      const selectedCustomer = selecteds.selectedCustomer || {};
+      console.log('selectedProductMenu', selectedProductMenu);
 
-    const orderList = orders?.catalog || [];
-    // const orderList = orders[`${stateName}Orders`] || [];
-    const productsCatalog = products.catalog || [];
-    const productsInventory = products.inventory || {};
-    const selectedOrder = orders.selectedOrder || {};
-    const selectedProductMenu = selecteds.selectedProductMenu || {};
-    const searchString = selecteds.searchString?.toLowerCase() || '';
-    const selectedCustomer = selecteds.selectedCustomer || {};
-    // console.log('selectedCustomer', selectedCustomer);
+      if (!Array.isArray(productsCatalog) || productsCatalog.length === 0) {
+        return 'Товары не загружены';
+      }
 
+      const existedOrder = orderList.find(
+        (doc) => doc.code === selectedOrder?.code
+      );
+      // const existedOrder = orderList.find((doc) => doc.customerCode === query.customerCode);
 
-    if (!Array.isArray(productsCatalog) || productsCatalog.length === 0) {
-      return 'Товары не загружены';
-    }
+      const productQuantities = Array.isArray(existedOrder?.items)
+        ? existedOrder.items.reduce((acc, row) => {
+            acc[row.productCode] = row[`${query.typeQty}Qty`];
+            return acc;
+          }, {})
+        : {};
 
-    const existedOrder = orderList.find((doc) => doc.code === selectedOrder?.code);
-    // const existedOrder = orderList.find((doc) => doc.customerCode === query.customerCode);
+      let catalog = productsCatalog;
+      const topSalesProductCodes = getTopSalesProductCodes(
+        sales,
+        selectedCustomer.code
+      );
 
-    const productQuantities = Array.isArray(existedOrder?.items) ? existedOrder.items.reduce((acc, row) => {
-      acc[row.productCode] = row[`${query.typeQty}Qty`];
-      return acc;
-    }, {}) : {};
+      if (
+        Array.isArray(selectedCustomer?.matrix) &&
+        selectedCustomer.matrix.length > 0
+      ) {
+        catalog = catalog.filter((product) =>
+          selectedCustomer.matrix.includes(product.code)
+        );
+      }
+      if (searchString) {
+        catalog = catalog.filter((product) =>
+          product.name.toLowerCase().includes(searchString)
+        );
+      } else if (selectedProductMenu.level === 2) {
+        catalog = catalog.filter(
+          (product) => product.parentCode === selectedProductMenu.code
+        );
+      } else {
+        console.log('top');
 
-    let catalog = productsCatalog;
-    const topSalesProductCodes = getTopSalesProductCodes(sales, selectedCustomer.code);
+        catalog = filterTopSalesProducts(
+          catalog,
+          productQuantities,
+          topSalesProductCodes
+        );
+      }
 
-    if (Array.isArray(selectedCustomer?.matrix) && selectedCustomer.matrix.length > 0) {
-      catalog = catalog.filter(product => selectedCustomer.matrix.includes(product.code));
-    }
-    if (searchString) {
-      catalog = catalog.filter(product => product.name.toLowerCase().includes(searchString));
-    } else if (selectedProductMenu.level === 2) {
-      catalog = catalog.filter(product => product.parentCode === selectedProductMenu.code);
-    } else {
-      catalog = filterTopSalesProducts(catalog, productQuantities, topSalesProductCodes);
-    }
-
-
-    const toReturn = catalog.map(item => {
-      const customerPrice = getCustomerPrice(item, selectedCustomer);
-      return {
-        ...item,
-        autofocus: !topSalesProductCodes.includes(item.code), //при клике на строку сразу предлагать ввод вместо окна выбора из истории
-        price: customerPrice,
-        default_price: customerPrice,
-        prices: {
+      const toReturn = catalog.map((item) => {
+        const customerPrice = getCustomerPrice(item, selectedCustomer);
+        return {
+          ...item,
+          autofocus: !topSalesProductCodes.includes(item.code), //при клике на строку сразу предлагать ввод вместо окна выбора из истории
+          price: customerPrice,
           default_price: customerPrice,
-          base_price: item.base_price,
-        },
-        qty: productQuantities[item.code] || '',
-        rest: productsInventory[item.code] || '',
-      };
-    });
-    // console.log('existedOrder', existedOrder);
-    // console.log('productQuantities', productQuantities);
-    // console.log('toReturn', toReturn.length, toReturn);
-    return toReturn;
-
-
-  }
-
-);
+          prices: {
+            default_price: customerPrice,
+            base_price: item.base_price,
+          },
+          qty: productQuantities[item.code] || '',
+          rest: productsInventory[item.code] || '',
+        };
+      });
+      // console.log('existedOrder', existedOrder);
+      // console.log('productQuantities', productQuantities);
+      // console.log('toReturn', toReturn.length, toReturn);
+      return toReturn;
+    }
+  );
 
 // Вспомогательные функции
 const getTopSalesProductCodes = (sales, customerCode) => {
-  const customerSales = sales.find(sale => sale.customerCode === customerCode);
+  const customerSales = sales.find(
+    (sale) => sale.customerCode === customerCode
+  );
   const topSalesProductCodes = [];
 
   if (Array.isArray(customerSales?.sales)) {
-    customerSales.sales.forEach(row => {
+    customerSales.sales.forEach((row) => {
       topSalesProductCodes.push(row.productCode);
     });
   }
@@ -211,24 +230,35 @@ const getTopSalesProductCodes = (sales, customerCode) => {
   return topSalesProductCodes;
 };
 
-
-const filterTopSalesProducts = (catalog, productQuantities, topSalesProductCodes) => {
-  const combinedProductCodes = [...new Set([...topSalesProductCodes, ...Object.keys(productQuantities)])];
+const filterTopSalesProducts = (
+  catalog,
+  productQuantities,
+  topSalesProductCodes
+) => {
+  const combinedProductCodes = [
+    ...new Set([...topSalesProductCodes, ...Object.keys(productQuantities)]),
+  ];
 
   if (combinedProductCodes.length > 0) {
-    return catalog.filter(item => combinedProductCodes.includes(item.code));
+    return catalog.filter((item) => combinedProductCodes.includes(item.code));
   } else {
-    return [];// нет популярных: новый клиент, нет истории
+    return []; // нет популярных: новый клиент, нет истории
   }
 };
 
 const getCustomerPrice = (item, selectedCustomer) => {
-  const specPrice = selectedCustomer?.spec && item.specs?.find(spec => spec.spec === selectedCustomer.spec)?.value;
+  const specPrice =
+    selectedCustomer?.spec &&
+    item.specs?.find((spec) => spec.spec === selectedCustomer.spec)?.value;
   if (specPrice) return specPrice;
 
-  return selectedCustomer.price && item.prices?.find(price => price.price === selectedCustomer.price)?.value || '';
+  return (
+    (selectedCustomer.price &&
+      item.prices?.find((price) => price.price === selectedCustomer.price)
+        ?.value) ||
+    ''
+  );
 };
-
 
 // export const selectProducts = createSelector(
 //   [getSelecteds, getProducts, getCurrentOrders, getSales],

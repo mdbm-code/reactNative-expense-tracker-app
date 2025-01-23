@@ -18,10 +18,10 @@ import { getTheme } from '../../store/redux/selectors/theme';
 //components
 import SearchPanel from '../../components/SearchPanel';
 import IconButton from '../../components/ui/IconButton';
-import ScreenWithDropdown from '../ScreenWithDropdown';
 import ClientsList from '../../components/Clients/ClientsList';
 import Button from '../../components/ui/Button';
 import ScreenWithPicker from '../ScreenWithPicker';
+import FallbackText from '../../components/FallbackText';
 
 const CustomersListScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -56,8 +56,19 @@ const CustomersListScreen = ({ navigation }) => {
           }}
         />
       ),
+      headerLeft: ({ tintColor }) => (
+        <IconButton
+          name={'person-add'}
+          color={tintColor}
+          size={24}
+          onPress={() => navigation.navigate('NewCustomerScreen')}
+        />
+      ),
     });
   }, [navigation, showSearchPanel]);
+
+  if (typeof options === 'string')
+    return <FallbackText>{options}</FallbackText>;
 
   function handleSearch() {
     dispatch(setCustomerSearchString(searchString)); // Сохраняем поисковую строку в состоянии
@@ -69,13 +80,7 @@ const CustomersListScreen = ({ navigation }) => {
     setShowSearchPanel(false);
   }
 
-  function onPressEditRouteList() {
-    navigation.navigate('RoutesManageScreen');
-  }
-
-  // console.log('points', points);
-
-  let content = <></>;
+  let content = null;
   if (typeof points === 'string') {
     content = <Text style={styles.infoText}>{points}</Text>;
   } else if (points.length > 0) {
@@ -97,10 +102,18 @@ const CustomersListScreen = ({ navigation }) => {
     };
 
     return (
-      <View>
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+        }}
+      >
         <Button
           onPress={handlePress}
-          titleStyle={{ color: theme.style.text.main }}
+          titleStyle={{
+            color: theme.style.info.dark,
+            textDecorationLine: 'underline',
+          }}
         >
           Редактировать список
         </Button>
@@ -108,22 +121,13 @@ const CustomersListScreen = ({ navigation }) => {
     );
   };
 
-  function selectRouteHandler(listItem) {
+  function pickHandler(listItem) {
     dispatch(setSelectedCustomerListItem(''));
     dispatch(setSelectedRoute(listItem?.value));
   }
 
-  // console.log('selectedRoute', selecteds?.selectedRoute);
-
   return (
     <View style={[styles.container, { backgroundColor: theme.style.bg }]}>
-      {/* {showSearchPanel && (
-        <SearchPanel
-          onCancel={handleCancelSearch}
-          onSearch={handleSearch}
-          theme={theme}
-        />
-      )} */}
       <ScreenWithPicker
         component={
           showSearchPanel && (
@@ -138,33 +142,13 @@ const CustomersListScreen = ({ navigation }) => {
         }
         rows={options || []}
         value={selecteds?.selectedRoute}
-        onSelect={selectRouteHandler}
+        onSelect={pickHandler}
         footerContent={
           <FooterComponent navigation={navigation} theme={theme} />
         }
       >
         {content}
       </ScreenWithPicker>
-
-      {/* <ScreenWithDropdown
-        component={
-          showSearchPanel && (
-            <SearchPanel
-              onCancel={handleCancelSearch}
-              onSearch={handleSearch}
-              theme={theme}
-              value={searchString}
-              onChangeText={setSearchString}
-            />
-          )
-        }
-        rows={options || []}
-        value={selecteds?.selectedRoute}
-        onSelect={selectRouteHandler}
-        footerContent={footerComponent}
-      >
-        {content}
-      </ScreenWithDropdown> */}
     </View>
   );
 };

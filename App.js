@@ -31,6 +31,7 @@ import CustomerOrderManageDrawer from './screens/drawerScreen/CustomerOrderManag
 import CustomerReturnManageDrawer from './screens/drawerScreen/CustomerReturnManageDrawer.js';
 import Updater from './components/Updater/index.js';
 import RoutesManageScreen from './screens/contentScreen/RoutesManageScreen.js';
+import NewCustomerScreen from './screens/secondaryScreens/NewCustomerScreen.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -145,6 +146,10 @@ function AppContent() {
           <Stack.Screen
             name='CustomerScreensDrawer'
             component={CustomerScreensDrawer} //страница клиента
+          />
+          <Stack.Screen
+            name='NewCustomerScreen'
+            component={NewCustomerScreen} //страница клиента
           />
           <Stack.Screen
             name='CustomerPromoScreen'

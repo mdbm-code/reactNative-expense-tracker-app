@@ -15,11 +15,11 @@ const ProductsMenuItem = ({
   closeDrawer,
   theme,
   selectedStyle,
+  selectedProductMenu,
 }) => {
   const { name, code } = item;
   const dispatch = useDispatch();
-  const { selectedMenuLevel_1, selectedMenuLevel_2, searchString } =
-    useSelector((state) => state.selecteds);
+  const { searchString } = useSelector((state) => state.selecteds);
 
   function onPressHandler(value) {
     dispatch(
@@ -32,14 +32,14 @@ const ProductsMenuItem = ({
     // {"children": [{"code": "285", "name": "колбаса", "parent": "00001", "sort": 1}, {"code": "38", "name": "Консервы", "parent": "00001", "sort": 2}],
     // "code": "00001", "name": "Мясоконсервная продукция", "parent": "", "sort": 4}
 
-    if (selectedMenuLevel_1?.code === value?.code) {
-      dispatch(setSelectedMenuLevel_1(null));
-    } else {
-      delete value.children;
-      dispatch(setSelectedMenuLevel_1(value));
-    }
-    //всегда сбрасываем выбранный пункт второго уровня, если кликнули на первый уровень
-    dispatch(setSelectedMenuLevel_2(null));
+    // if (selectedMenuLevel_1?.code === value?.code) {
+    //   dispatch(setSelectedMenuLevel_1(null));
+    // } else {
+    //   delete value.children;
+    //   dispatch(setSelectedMenuLevel_1(value));
+    // }
+    // //всегда сбрасываем выбранный пункт второго уровня, если кликнули на первый уровень
+    // dispatch(setSelectedMenuLevel_2(null));
   }
 
   function onPressSublevelHandler(value) {
@@ -55,15 +55,15 @@ const ProductsMenuItem = ({
       })
     );
     // {"code": "48", "name": "ЧакЧак", "parent": "конди", "sort": 2}
-    dispatch(setSelectedMenuLevel_2(value));
+    // dispatch(setSelectedMenuLevel_2(value));
     closeDrawer();
   }
 
   let subLevels = [];
 
-  if (selectedMenuLevel_1?.code === code && Array.isArray(rows)) {
+  if (selectedProductMenu?.code === code && Array.isArray(rows)) {
     //если у выбранной группы первого уровня есть дочерние элементы, то формируем из них массив subLevels для вывода
-    const parent = rows.find((root) => root.code === selectedMenuLevel_1?.code);
+    const parent = rows.find((root) => root.code === selectedProductMenu?.code);
     if (
       parent['children'] &&
       Array.isArray(parent['children']) &&
@@ -87,7 +87,11 @@ const ProductsMenuItem = ({
                 style={styles.menuItem}
                 theme={theme}
                 title={itemData.item.name}
-                selected={selectedMenuLevel_2?.code === itemData.item.code}
+                selected={
+                  selectedProductMenu.level === 0 ||
+                  (selectedProductMenu?.code === itemData.item.code &&
+                    selectedProductMenu.level === 1)
+                }
                 level={2}
                 onPress={() =>
                   onPressSublevelHandler({
@@ -109,9 +113,13 @@ const ProductsMenuItem = ({
       <ProductsMenuButton
         style={styles.menuItem}
         title={name}
-        selected={selectedMenuLevel_1?.code === code}
+        selected={
+          selectedProductMenu.level === 0 ||
+          (selectedProductMenu?.code === code &&
+            selectedProductMenu.level === 1)
+        }
         iconName={
-          selectedMenuLevel_1?.code === code
+          selectedProductMenu?.code === code
             ? 'chevron-up-outline'
             : 'chevron-down-outline'
         }

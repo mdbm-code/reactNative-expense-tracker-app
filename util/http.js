@@ -27,3 +27,15 @@ export async function fetchOrders() {
 
   return orders;
 }
+
+export const uploadImageToServer = async (base64Image) => {
+  try {
+    const response = await axios.post('https://your-server.com/upload', {
+      image: base64Image, // Отправляем строку Base64
+    });
+
+    console.log('Ответ сервера:', response.data);
+  } catch (error) {
+    console.error('Ошибка при загрузке изображения на сервер:', error);
+  }
+};

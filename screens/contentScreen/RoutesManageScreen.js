@@ -45,24 +45,6 @@ const RoutesManageScreen = ({ navigation }) => {
     console.log(payload);
   }
 
-  const rows = routes.map((item) => {
-    return {
-      ...item,
-      buttons: (
-        <View style={{ flex: 1, padding: 10 }}>
-          <IconButton
-            onPress={() =>
-              setEditCode((prevState) =>
-                prevState === item.code ? null : item.code
-              )
-            }
-            name='pencil-outline'
-          />
-        </View>
-      ),
-    };
-  });
-
   const columns = [
     {
       id: 'code',
@@ -115,6 +97,29 @@ const RoutesManageScreen = ({ navigation }) => {
     }
     setEditCode(null);
   };
+
+  function pressIconHandle(routeCode) {
+    if (routeCode === editCode) {
+      setEditCode(null);
+    } else {
+      setEditCode((prevState) => (prevState === routeCode ? null : routeCode));
+    }
+  }
+
+  const rows = routes.map((item) => {
+    return {
+      ...item,
+      buttons: (
+        <View style={{ flex: 1, padding: 4 }}>
+          <IconButton
+            onPress={() => pressIconHandle(item.code)}
+            name={editCode === item.code ? 'close' : 'pencil-outline'}
+            size={28}
+          />
+        </View>
+      ),
+    };
+  });
 
   return (
     <View style={[styles.rootContainer, { backgroundColor: theme.style.bg }]}>
