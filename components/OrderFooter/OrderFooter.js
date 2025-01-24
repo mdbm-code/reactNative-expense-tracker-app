@@ -6,30 +6,34 @@ import { setSelectedProductManageView } from '../../store/redux/slices/selecteds
 import { Ionicons } from '@expo/vector-icons';
 
 const OrderFooter = ({ theme, view }) => {
-  const { totalAmount, minSum, selectedProductManageView } = useSelector(selecteOrderData);
+  const { totalAmount, minSum, selectedProductManageView } =
+    useSelector(selecteOrderData);
 
   const dispatch = useDispatch();
 
   const pressChangeManageViewHandler = () => {
-    dispatch(setSelectedProductManageView(
-      selectedProductManageView.type === 'table'
-        ? { ...selectedProductManageView, type: 'card' }
-        : { ...selectedProductManageView, type: 'table' }
-    ));
-  }
+    dispatch(
+      setSelectedProductManageView(
+        selectedProductManageView?.type === 'table'
+          ? { ...selectedProductManageView, type: 'card' }
+          : { ...selectedProductManageView, type: 'table' }
+      )
+    );
+  };
   const pressChangeManageViewModeHandler = (mode) => {
-    dispatch(setSelectedProductManageView({ ...selectedProductManageView, mode }));
-  }
-
+    dispatch(
+      setSelectedProductManageView({ ...selectedProductManageView, mode })
+    );
+  };
 
   let proc = '';
   if (totalAmount > 0) {
     proc = Math.round((minSum / totalAmount) * 100) / 100;
   }
 
-
   function modeIconColor(mode) {
-    if (selectedProductManageView?.mode === mode) return theme?.style?.customerList?.warningBorder
+    if (selectedProductManageView?.mode === mode)
+      return theme?.style?.customerList?.warningBorder;
     return theme?.style?.nav?.text;
   }
 
@@ -37,20 +41,23 @@ const OrderFooter = ({ theme, view }) => {
   const modeButtons = [
     ['single-column', 'square'],
     ['two-column', 'grid'],
-    ['three-column', 'list']
+    ['three-column', 'list'],
   ];
 
   buttons = (
-    <View style={styles.buttonsContainer} >
-      <TouchableOpacity
-        onPress={pressChangeManageViewHandler}
-      >
+    <View style={styles.buttonsContainer}>
+      <TouchableOpacity onPress={pressChangeManageViewHandler}>
         <Ionicons
-          name={selectedProductManageView.type !== 'table' ? 'images-outline' : 'reorder-four-outline'}
+          name={
+            selectedProductManageView?.type !== 'table'
+              ? 'images-outline'
+              : 'reorder-four-outline'
+          }
           size={24}
-          color={theme?.style?.nav?.text} />
+          color={theme?.style?.nav?.text}
+        />
       </TouchableOpacity>
-      {selectedProductManageView.type === 'table' && (
+      {selectedProductManageView?.type === 'table' && (
         <View style={styles.buttonModeContainer}>
           {modeButtons.map(([mode, iconName]) => (
             <TouchableOpacity
@@ -58,18 +65,13 @@ const OrderFooter = ({ theme, view }) => {
               style={styles.buttonModeItem}
               onPress={() => pressChangeManageViewModeHandler(mode)}
             >
-              <Ionicons
-                name={iconName}
-                size={24}
-                color={modeIconColor(mode)} />
+              <Ionicons name={iconName} size={24} color={modeIconColor(mode)} />
             </TouchableOpacity>
           ))}
-
         </View>
       )}
-    </View >
+    </View>
   );
-
 
   let content = (
     <View style={styles.sumContainer}>
@@ -124,10 +126,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-
   },
   buttonModeItem: {
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
   sumContainer: {
     // flex: 1,

@@ -1,14 +1,5 @@
-// imagesSlice.js
+// features/imagesSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import {} from '../../../assets';
-
-const localImages = [
-  require('../../../assets/images/2.jpg'),
-  require('../../../assets/images/3.jpg'),
-  require('../../../assets/images/4.jpg'),
-  require('../../../assets/images/6.jpg'),
-  // Добавьте остальные изображения
-];
 
 export const fetchImages = createAsyncThunk(
   'images/fetchImages',
@@ -36,14 +27,6 @@ const imagesSlice = createSlice({
         (image) => image._id !== action.payload
       );
     },
-    setImages: (state, action) => {
-      return action.payload; // Сохраните полученные изображения в состояние
-    },
-    loadLocalImages: (state) => {
-      // console.log('loadLocalImages', localImages);
-
-      return localImages; // Загрузите локальные изображения
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -68,8 +51,5 @@ const imagesSlice = createSlice({
   },
 });
 
-export const { setImages, loadLocalImages, removeImage } = imagesSlice.actions;
-
-export const selectImages = (state) => state.images;
-
+export const { removeImage } = imagesSlice.actions;
 export default imagesSlice.reducer;
