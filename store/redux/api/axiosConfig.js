@@ -2,9 +2,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import store from '../store';
 import { updateStatus } from '../slices/postsSlice';
+import { logoutUser } from '../slices/selectedsSlice';
 
 // Создаем экземпляр axios с базовыми настройками
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: 'https://your-api-url.com/api', // Замените на ваш базовый URL
   timeout: 10000, // Таймаут запросов (10 секунд)
   headers: {
@@ -17,6 +18,11 @@ let isRefreshing = false;
 let failedQueue = [];
 
 // Функция для обработки очереди запросов, ожидающих обновления токена
+// очередь для обработки запросов, ожидающих обновления токена.
+// Однако, если в процессе обновления токена произойдет ошибка, 
+// все запросы в очереди будут отклонены.
+// Это поведение корректно, но убедитесь, что вы обрабатываете эти отклоненные 
+// запросы в вашем приложении(например, показываете пользователю сообщение об ошибке)
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
@@ -64,8 +70,9 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Update status of sent bodies
-    if (response.config.data?.unsentBodies) {
-      const unsentBodies = JSON.parse(response.config.data.unsentBodies);
+
+    if (response.config.data && typeof response.config.data === 'string') {
+      const unsentBodies = JSON.parse(response.config.data.unsentBodies || '[]');
       unsentBodies.forEach((body) => {
         store.dispatch(updateStatus({ id: body.id, status: 'sent' }));
       });
@@ -81,13 +88,56 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Обработка таймаута запроса
+    if (error.code === 'ECONNABORTED') {
+      console.error('Таймаут запроса:', error.message);
+      // Здесь можно показать пользователю сообщение о проблемах с сетью
+      return Promise.reject(new Error('Таймаут запроса. Проверьте подключение к сети.'));
+    }
+    if (!error.response) {
+      console.error('Ошибка сети:', error.message);
+      // Здесь можно показать пользователю сообщение о проблемах с сетью
+      return Promise.reject(new Error('Ошибка сети. Проверьте подключение к интернету.'));
+    }
+    switch (error.response.status) {
+      case 400:
+        console.error('Некорректный запрос:', error.response.data);
+        return Promise.reject(new Error('Некорректный запрос. Проверьте введенные данные.'))
+      case 403:
+        console.error('Доступ запрещен:', error.response.data);
+        return Promise.reject(new Error('Доступ запрещен. У вас нет прав для выполнения этого действия.'));
+      case 404:
+        console.error('Ресурс не найден:', error.response.config.url);
+        return Promise.reject(new Error('Ресурс не найден. Проверьте URL.'));
+      case 429:
+        console.error('Слишком много запросов:', error.response.data);
+        return Promise.reject(new Error('Слишком много запросов. Попробуйте позже.'));
+      case 500:
+        console.error('Ошибка сервера:', error.response.data);
+        return Promise.reject(new Error('Ошибка сервера. Попробуйте позже.'));
+      default:
+        console.error('Ошибка:');
+    }
+
     // Если ошибка 401 и запрос не был на обновление токена
     if (
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
+      //флаг _retry, чтобы предотвратить повторное выполнение одного и того же запроса 
+      // при ошибке 401. Это предотвращает зацикливание.
       originalRequest._retry = true;
+      // Добавляем счетчик повторных попыток
+      if (!originalRequest._retryCount) {
+        originalRequest._retryCount = 0;
+      }
+      if (originalRequest._retryCount >= 3) {
+        console.error('Превышено количество попыток обновления токена');
+        return Promise.reject(error); // Прекращаем попытки после 3 неудач
+      }
+      originalRequest._retryCount++;
+
 
       if (isRefreshing) {
         // Если токен уже обновляется, добавляем запрос в очередь
@@ -138,6 +188,7 @@ apiClient.interceptors.response.use(
         // Если обновление токена не удалось, очищаем хранилище и перенаправляем пользователя на экран входа
         await AsyncStorage.removeItem('jwtToken');
         await AsyncStorage.removeItem('refreshToken');
+        store.dispatch(logoutUser());
         console.error('Ошибка обновления токена:', err.message);
         // Здесь можно перенаправить пользователя на экран входа
         return Promise.reject(err);

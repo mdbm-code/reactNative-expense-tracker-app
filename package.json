@@ -20,7 +20,10 @@
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "expo": "~52.0.23",
+    "expo-app-loading": "^2.1.1",
+    "expo-device": "~7.0.2",
     "expo-image-picker": "^16.0.4",
+    "expo-secure-store": "^14.0.1",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-dev-log": "^1.0.0",
@@ -44,8 +47,7 @@
     "react-redux": "^9.2.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "reselect": "^5.1.1",
-    "expo-device": "~7.0.2"
+    "reselect": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

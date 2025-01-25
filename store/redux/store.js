@@ -15,6 +15,7 @@ import imagesReducer from './slices/imagesSlice';
 import ordersReduxer from './slices/ordersSlice';
 import updateReducer from './slices/updateSlice';
 import postsReducer from './slices/postsSlice';
+import manageReducer from './slices/managerSlice';
 import { apiSlice } from './api/apiSlices';
 import { createLogger } from 'redux-logger'; // Импорт logger
 
@@ -57,6 +58,7 @@ const appReducer = combineReducers({
   orders: ordersReduxer,
   updateSlice: updateReducer,
   posts: postsReducer,
+  manage: manageReducer,
 });
 
 const rootReducer = (state, action) => {

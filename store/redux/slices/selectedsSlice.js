@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // Начальное состояние
 //initialState**: Это состояние будет использоваться только при первом запуске
@@ -55,6 +55,7 @@ const selectedsSlice = createSlice({
         state.selectedScreen = action.payload;
       }
     },
+
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
     },
@@ -130,7 +131,7 @@ export const {
   setUnselectMenu,
   setTableOptions,
   setSelectedCustomerScreen,
-  setSelectedProductManageView
+  setSelectedProductManageView,
 } = selectedsSlice.actions;
 
 // Экспорт редьюсера для добавления в store
