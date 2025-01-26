@@ -52,7 +52,7 @@ function AuthContent({ isLogin, onAuthenticate, theme }) {
       });
       return;
     }
-    // onAuthenticate({ email, password });
+    onAuthenticate({ email, password });
   }
 
   return (

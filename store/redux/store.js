@@ -15,9 +15,11 @@ import imagesReducer from './slices/imagesSlice';
 import ordersReduxer from './slices/ordersSlice';
 import updateReducer from './slices/updateSlice';
 import postsReducer from './slices/postsSlice';
-import manageReducer from './slices/managerSlice';
+import userReducer from './features/user';
+import errorLoggerReducer from './slices/errorLoggerSlice';
 import { apiSlice } from './api/apiSlices';
 import { createLogger } from 'redux-logger'; // Импорт logger
+import errorLoggerMiddleware from './middlewares/errorLoggerMiddleware';
 
 // const logger = createLogger(); // Создайте экземпляр logger
 // Фильтруем действия для конкретного слайса
@@ -58,7 +60,8 @@ const appReducer = combineReducers({
   orders: ordersReduxer,
   updateSlice: updateReducer,
   posts: postsReducer,
-  manage: manageReducer,
+  user: userReducer,
+  errorLogger: errorLoggerReducer,
 });
 
 const rootReducer = (state, action) => {
@@ -94,7 +97,7 @@ const reduxStore = configureStore({
     getDefaultMiddleware({
       immutableCheck: false, // Отключаем проверку неизменности
       serializableCheck: false, // Отключаем проверку сериализуемости, если необходимо
-    }).concat(apiSlice.middleware), // Добавляем middleware из apiSlice
+    }).concat(apiSlice.middleware, errorLoggerMiddleware), // Добавляем middleware из apiSlice
   // }).concat(logger, apiSlice.middleware), // Добавляем middleware из apiSlice
 });
 

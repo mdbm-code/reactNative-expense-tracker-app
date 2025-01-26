@@ -1,0 +1,140 @@
+Поля status и error часто используются в приложениях 
+для управления состоянием загрузки данных, 
+отображения ошибок и улучшения пользовательского опыта. 
+Вот несколько примеров, как это применяется на практике:
+
+Пример 1: Управление состоянием загрузки
+Поле status используется для отображения индикатора 
+загрузки (loading spinner) или блокировки интерфейса, 
+пока данные загружаются.
+const initialState = {
+  data: null,
+  status: 'idle', // idle | loading | succeeded | failed
+  error: null,
+};
+
+const dataSlice = createSlice({
+  name: 'data',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchData.pending, (state) => {
+        state.status = 'loading';
+        state.error = null; // Сбрасываем ошибку при новой загрузке
+      })
+      .addCase(fetchData.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.data = action.payload;
+      })
+      .addCase(fetchData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      });
+  },
+});
+
+Использование в компоненте:
+
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchData } from './dataSlice';
+
+const MyComponent = () => {
+  const dispatch = useDispatch();
+  const { data, status, error } = useSelector((state) => state.data);
+
+  useEffect(() => {
+    dispatch(fetchData());
+  }, [dispatch]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      {data ? <div>Data: {JSON.stringify(data)}</div> : <div>No data available</div>}
+    </div>
+  );
+};
+
+
+Пример 2: Управление формами
+
+Поле status может использоваться для управления состоянием 
+отправки формы, а error — для отображения ошибок валидации 
+или ошибок сервера.
+
+const initialState = {
+  formData: null,
+  status: 'idle', // idle | submitting | succeeded | failed
+  error: null,
+};
+
+const formSlice = createSlice({
+  name: 'form',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(submitForm.pending, (state) => {
+        state.status = 'submitting';
+        state.error = null;
+      })
+      .addCase(submitForm.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.formData = action.payload;
+      })
+      .addCase(submitForm.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      });
+  },
+});
+
+Использование в компоненте:
+
+const FormComponent = () => {
+  const dispatch = useDispatch();
+  const { status, error } = useSelector((state) => state.form);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    dispatch(submitForm(formData));
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="name" placeholder="Name" />
+      <button type="submit" disabled={status === 'submitting'}>
+        {status === 'submitting' ? 'Submitting...' : 'Submit'}
+      </button>
+      {status === 'failed' && <div className="error">{error}</div>}
+    </form>
+  );
+};
+
+
+
+Пример 3: Глобальная обработка ошибок
+
+Поле error может использоваться для отображения глобальных 
+уведомлений об ошибках (например, через Toast или Snackbar).
+
+const GlobalErrorComponent = () => {
+  const error = useSelector((state) => state.someSlice.error);
+
+  useEffect(() => {
+    if (error) {
+      // Показать уведомление об ошибке
+      alert(`Error: ${error}`);
+    }
+  }, [error]);
+
+  return null; // Компонент не рендерит ничего, только обрабатывает ошибки
+};

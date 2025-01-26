@@ -4,14 +4,26 @@ import store from '../store';
 import { updateStatus } from '../slices/postsSlice';
 import { logoutUser } from '../slices/selectedsSlice';
 
+const API_KEY = 'AIzaSyCK0rYrmA3SQKKqNbb2FfQgzdyMtQpwyv8';
+const PROJECT_ID = 'AIzaSyCK0rYrmA3SQKKqNbb2FfQgzdyMtQpwyv8';
+const ACCOUNT_URL = 'https://identitytoolkit.googleapis.com/v1/accounts:';
+const DATABASE_URL = `https://${PROJECT_ID}.firebaseio.com`;
+
 // Создаем экземпляр axios с базовыми настройками
 export const apiClient = axios.create({
-  baseURL: 'https://your-api-url.com/api', // Замените на ваш базовый URL
   timeout: 10000, // Таймаут запросов (10 секунд)
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Функция для создания полного URL с методом и API_KEY
+export const createApiUrl = (method) => {
+  return `${ACCOUNT_URL}:${method}?key=${API_KEY}`;
+};
+export const createDatabaseUrl = (url) => {
+  return `${DATABASE_URL}${url}?key=${API_KEY}`;
+};
 
 // Флаг для предотвращения множественных запросов на обновление токена
 let isRefreshing = false;

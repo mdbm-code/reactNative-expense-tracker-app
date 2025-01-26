@@ -32,11 +32,12 @@ import CustomerReturnManageDrawer from './screens/drawerScreen/CustomerReturnMan
 import Updater from './components/Updater/index.js';
 import RoutesManageScreen from './screens/contentScreen/RoutesManageScreen.js';
 import NewCustomerScreen from './screens/secondaryScreens/NewCustomerScreen.js';
-import { useState } from 'react';
-import { authenticate, getAccessToken } from './store/redux/slices/managerSlice.js';
-import AppLoading from 'expo-app-loading';
+// import { useState } from 'react';
+// import { authenticate, getAccessToken } from './store/redux/slices/managerSlice.js';
+// import AppLoading from 'expo-app-loading';
 import LoginScreen from './screens/secondaryScreens/LoginScreen.js';
 import SignupScreen from './screens/secondaryScreens/SignupScreen.js';
+import ErrorLogger from './components/ErrorLogger/index.js';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -230,6 +231,7 @@ export default function App() {
         <Provider store={reduxStore}>
           <PersistGate loading={null} persistor={reduxPersistor}>
             <Updater />
+            <ErrorLogger />
             <AppContent />
           </PersistGate>
         </Provider>

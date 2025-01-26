@@ -1,48 +1,6 @@
-import * as SecureStore from 'expo-secure-store';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import apiClient from '../api/axiosConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-// Функции для работы с SecureStore
-export const saveToSecureStore = async (key, value) => {
-	try {
-		await SecureStore.setItemAsync(key, value);
-	} catch (error) {
-		console.error(`Ошибка сохранения в SecureStore (${key}):`, error.message);
-		throw new Error('Failed to save data securely');
-	}
-};
-
-export const getFromSecureStore = async (key) => {
-	try {
-		return await SecureStore.getItemAsync(key);
-	} catch (error) {
-		console.error(`Ошибка чтения из SecureStore (${key}):`, error.message);
-		throw new Error('Failed to read data securely');
-	}
-};
-
-export const deleteFromSecureStore = async (key) => {
-	try {
-		await SecureStore.deleteItemAsync(key);
-	} catch (error) {
-		console.error(`Ошибка удаления из SecureStore (${key}):`, error.message);
-		throw new Error('Failed to delete data securely');
-	}
-};
-
-export const getAccessToken = async () => {
-	try {
-		const accessToken = await getFromSecureStore('accessToken');
-		console.log('Access Token:', accessToken);
-		return accessToken;
-	} catch (error) {
-		console.error('Ошибка получения токена:', error.message);
-		return null;
-	}
-};
-
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import apiClient, { createApiUrl } from '../api/axiosConfig';
+import { deleteFromStore, getFromStore, saveToStore } from '../localStorage';
 
 const tokenFields = {
 	access_token: '',
@@ -74,49 +32,59 @@ const tokenFields = {
 }
 
 export const authenticateWithSecureStore = createAsyncThunk(
-	'selecteds/authenticate',
+	'manager/authenticateWithSecureStore',
 	async (data, { getState, rejectWithValue }) => {
+		console.log('authenticateWithSecureStore', data);
+
 		const state = getState();
 		const body = {};
 		let accessToken = null;
-
+		let url = '';
 		try {
 			switch (data.type) {
 				case 'login':
-					if (!data.username || !data.password) {
+					if (!data.email || !data.password) {
 						return rejectWithValue('Username and password are required');
 					}
-					body.username = data.username;
+					body.email = data.email;
 					body.password = data.password;
+					url = createApiUrl('signInWithEmailAndPassword');
 					break;
 				case 'logout':
 					state.manager.tokens = {};
-					await deleteFromSecureStore('accessToken');
-					await deleteFromSecureStore('refreshToken');
+					await deleteFromStore('accessToken');
+					await deleteFromStore('refreshToken');
 					return '';
 				case 'register':
-					if (!data.username || !data.password || !data.email) {
+					if (!data.password || !data.email) {
 						return rejectWithValue('Username, password, and email are required');
 					}
-					body.username = data.username;
+					body.email = data.email;
 					body.password = data.password;
 					body.email = data.email;
+					url = createApiUrl('signUpWithEmailAndPassword');
 					break;
 				case 'refresh':
-					body.refresh = await getFromSecureStore('refreshToken');
+					body.refresh = await getFromStore('refreshToken');
 					if (!body.refresh) {
 						return rejectWithValue('No refresh token found');
 					}
+					return '';
 					break;
 				default:
 					return rejectWithValue('Invalid authentication type');
 			}
 
-			const response = await apiClient.post(`/user/${data.type}`, body);
+			console.log('body', body);
+			const response = await apiClient.post(url, body);
+			// const response = await apiClient.post(`/user/${data.type}`, body);
+			console.log('response.data', response.data);
+
+
 			accessToken = response.data?.token || response.data.accessToken;
 
 			if (accessToken) {
-				await saveToSecureStore('accessToken', accessToken);
+				await saveToStore('accessToken', accessToken);
 				if (response.data.refreshToken) {
 					await saveToSecureStore('refreshToken', response.data.refreshToken);
 				}
@@ -149,8 +117,8 @@ export const authenticateWithAsyncStorage = createAsyncThunk(
 					break;
 				case 'logout':
 					state.manager.tokens = {};
-					await AsyncStorage.removeItem('accessToken');
-					await AsyncStorage.removeItem('refreshToken');
+					await deleteFromStore('accessToken');
+					await deleteFromStore('refreshToken');
 					return '';
 				case 'register':
 					if (!data.username || !data.password || !data.email) {
@@ -161,7 +129,7 @@ export const authenticateWithAsyncStorage = createAsyncThunk(
 					body.email = data.email;
 					break;
 				case 'refresh':
-					body.refresh = await AsyncStorage.getItem('refreshToken');
+					body.refresh = await getFromStore('refreshToken');
 					if (!body.refresh) {
 						return rejectWithValue('No refresh token found');
 					}
@@ -174,9 +142,9 @@ export const authenticateWithAsyncStorage = createAsyncThunk(
 			accessToken = response.data?.token || response.data.accessToken;
 
 			if (accessToken) {
-				await AsyncStorage.setItem('accessToken', accessToken);
+				await saveToStore('accessToken', accessToken);
 				if (response.data.refreshToken) {
-					await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
+					await saveToStore('refreshToken', response.data.refreshToken);
 				}
 			}
 
@@ -188,107 +156,3 @@ export const authenticateWithAsyncStorage = createAsyncThunk(
 		}
 	}
 );
-
-const initialState = {
-	id: null,
-	code: '',
-	name: '',
-	phone: '',
-	email: '',
-	isAuthorized: false,
-	tokens: {
-		refresh_token: '',
-		access_token: '',
-		expires_in: '',
-	},
-	status: 'idle', // idle | loading | succeeded | failed
-	error: null,
-};
-
-// Создание слайса
-const managerSlice = createSlice({
-	name: 'manager',
-	initialState,
-	reducers: {
-		setSelectedManager: (state, action) => {
-			state.name = action.payload?.name || state.name;
-			state.phone = action.payload?.phone || state.phone;
-			state.email = action.payload?.email || state.email;
-			if (!'tokens' in action.state) {
-				action.state.tokens = {};
-			}
-			if ('refresh_token' in action.payload) {
-				state.tokens.refresh_token = action.payload.refresh_token;
-			}
-			if ('access_token' in action.payload) {
-				state.tokens.access_token = action.payload.access_token;
-			}
-			if ('expires_in' in action.payload) {
-				state.tokens.expires_in = action.payload.expires_in;
-			}
-		},
-		updateManagerValue: (state, action) => {
-			if (action.payload.key) {
-				state[action.payload.key] = action.payload.value;
-			}
-		},
-		logout: (state, action) => {
-			state.isAuthorized = false;
-		},
-		authenticate: (state, action) => {
-			state.isAuthorized = true;
-		},
-	},
-});
-
-// Экспорт действий для использования в компонентах
-export const { setSelectedManager, updateManagerValue } = managerSlice.actions;
-
-// Экспорт редьюсера для добавления в store
-export default managerSlice.reducer;
-
-export const logout = () => async (dispatch) => {
-	dispatch(managerSlice.actions.logout());
-	await deleteFromSecureStore('jwtToken');
-	await deleteFromSecureStore('refreshToken');
-	// await AsyncStorage.removeItem('jwtToken');
-	// await AsyncStorage.removeItem('refreshToken');
-};
-export const authenticate = () => async (dispatch) => {
-	dispatch(managerSlice.actions.authenticate());
-	// await AsyncStorage.removeItem('jwtToken');
-	// await AsyncStorage.removeItem('refreshToken');
-};
-
-
-
-
-
-
-
-//************************************************************************************ */
-//ПРИМЕР ИСПОЛЬЗОВАНИЯ
-//
-// const AuthScreen = () => {
-// 	const dispatch = useDispatch();
-// 	const [username, setUsername] = useState('');
-// 	const [password, setPassword] = useState('');
-
-// 	const handleLogin = async () => {
-// 		try {
-// 			const resultAction = await dispatch(
-// 				authenticate({ type: 'login', username, password })
-// 			);
-
-// 			if (authenticate.fulfilled.match(resultAction)) {
-// 				const { accessToken, user } = resultAction.payload;
-// 				Alert.alert('Успех', `Добро пожаловать, ${user.username}`);
-// 				console.log('Access Token:', accessToken);
-// 			} else {
-// 				Alert.alert('Ошибка', resultAction.payload || 'Не удалось авторизоваться');
-// 			}
-// 		} catch (error) {
-// 			console.error('Ошибка авторизации:', error.message);
-// 			Alert.alert('Ошибка', 'Что-то пошло не так');
-// 		}
-// 	};
