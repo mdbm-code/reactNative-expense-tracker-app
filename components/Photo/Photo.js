@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { launchCamera } from 'react-native-image-picker';
+// import { launchCamera } from 'react-native-image-picker';
 // import { setPhoto } from '../store/redux/slices/photoSlice'; // Предположим, что у вас есть такой экшен
 import { getThemePalette } from '../../store/redux/selectors/theme';
 import { getCustomerPhoto } from '../../store/redux/selectors/customers';
@@ -20,22 +20,22 @@ const Photo = ({ code }) => {
   const photoUri = useSelector(getCustomerPhoto);
 
   const handleTakePhoto = () => {
-    launchCamera(
-      {
-        mediaType: 'photo',
-        saveToPhotos: true,
-      },
-      (response) => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.errorCode) {
-          console.log('ImagePicker Error: ', response.errorMessage);
-        } else {
-          const uri = response.assets[0].uri;
-          dispatch(setCustomerPhoto({ code, uri })); // Сохраняем URI фото в Redux
-        }
-      }
-    );
+    // launchCamera(
+    //   {
+    //     mediaType: 'photo',
+    //     saveToPhotos: true,
+    //   },
+    //   (response) => {
+    //     if (response.didCancel) {
+    //       console.log('User cancelled image picker');
+    //     } else if (response.errorCode) {
+    //       console.log('ImagePicker Error: ', response.errorMessage);
+    //     } else {
+    //       const uri = response.assets[0].uri;
+    //       dispatch(setCustomerPhoto({ code, uri })); // Сохраняем URI фото в Redux
+    //     }
+    //   }
+    // );
   };
 
   return (
